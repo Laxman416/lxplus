@@ -54,7 +54,7 @@ ttree.SetBranchStatus("D0_MM", 1)
 x = RooRealVar("D0_MM", "D0 mass / [MeV]", 1810, 1910) # D0_MM - invariant mass
 data = RooDataSet("data", "Data", ttree, RooArgSet(x))
 
-def gauss_crystal_chebychev(x,data,ttree):
+def gauss_crystal_chebychev(x,data,ttree,options):
     """Model 14:
     Signal - gauss and crystall ball function
     Background - chebychev
@@ -109,7 +109,7 @@ def gauss_crystal_chebychev(x,data,ttree):
 
     return
 
-def gauss_crystal_exp(x,data,ttree):
+def gauss_crystal_exp(x,data,ttree,options):
     """Model 15:
     Signal - gauss and crystall ball function
     Background - exponential
@@ -169,9 +169,9 @@ def gauss_crystal_exp(x,data,ttree):
 
 
 if options.model==14:
-    gauss_crystal_chebychev(x,data,ttree)
+    gauss_crystal_chebychev(x,data,ttree,options)
 elif options.model==15:
-    gauss_crystal_exp(x,data,ttree)
+    gauss_crystal_exp(x,data,ttree,options)
 
 def file_writer():
     file = open(f"tightcuts_{options.model}_{options.meson}_{options.polarity}_{options.year}.txt", "w")
