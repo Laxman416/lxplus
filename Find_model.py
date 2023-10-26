@@ -50,7 +50,7 @@ parser.add_argument(
 options = parser.parse_args()
 
 ttree = TChain("D02Kpi_Tuple/DecayTree")
-ttree.Add(f"/afs/cern.ch/work/l/lseelan/{options.meson}_{options.polarity}_data_{options.year}_{options.size}_clean.root")
+ttree.Add(f"/afs/cern.ch/work/l/lseelan/lxplus/{options.meson}_{options.polarity}_data_{options.year}_{options.size}_clean.root")
 
 ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
@@ -139,9 +139,9 @@ def gauss_crystal_exp(x,data,ttree):
 
     frac15 = RooRealVar("frac15", "frac15", 0.567, 0, 1)
 
-    #Chebychev parameters
-    a15 = RooRealVar("a15", "a15", -0.4, -5, 5)
-    chebychev14 = RooChebychev("Chebychev14", "Chebychev", x, RooArgList(a15))
+    #exponential parameters
+    c15 = RooRealVar("c15","c15",-0.1,-1,0)
+    exponential15 = RooExponential("Expo15", "Exponential",x,c15)
 
     #Normalisation of Background and Signal
     Nsig15 = RooRealVar("Nsig15", "Nsig15", 0.95*ttree.GetEntries(), 0, ttree.GetEntries())
@@ -149,22 +149,21 @@ def gauss_crystal_exp(x,data,ttree):
 
     signal = RooAddPdf("signal", "signal", RooArgList(Gauss15, Crystal15), RooArgList(frac15))
     model_15 = {
-        "total": RooAddPdf("total", "Total", RooArgList(signal, chebychev15), RooArgList(Nsig15, Nbkg15)), # extended likelihood
+        "total": RooAddPdf("total", "Total", RooArgList(signal, exponential15), RooArgList(Nsig15, Nbkg15)), # extended likelihood
         "signals": {
-            Gauss14.GetName(): Gauss14.GetTitle(),
-            Crystal14.GetName(): Crystal14.GetTitle(),
+            Gauss15.GetName(): Gauss15.GetTitle(),
+            Crystal15.GetName(): Crystal15.GetTitle(),
         },
         "backgrounds": {
-            chebychev15.GetName(): chebychev15.GetTitle()
+            exponential15.GetName(): exponential15.GetTitle()
         }
     }
     model_15["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-    chi2, pull_mean, pull_std = plot(x, data, model_15, nbins=100, setlogy=False, save_to= f"fit_exp")
+    chi2, pull_mean, pull_std = plot(x, data, model_15, nbins=100, setlogy=False, save_to= "fit2")
     Nsig = Nsig15.getValV()
     Nsig_err = Nsig15.getError()
     Nbkg = Nbkg15.getValV()
     Nbkg_err = Nbkg15.getError()
-
     return
 
 
