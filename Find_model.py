@@ -46,6 +46,9 @@ parser.add_argument(
     required=True,
     help="flag to set the model."
 )
+
+options = parser.parse_args()
+
 ttree = TChain("D02Kpi_Tuple/DecayTree")
 ttree.Add(f"/afs/cern.ch/work/l/lseelan/{options.meson}_{options.polarity}_data_{options.year}_{options.size}_clean.root")
 
@@ -54,7 +57,7 @@ ttree.SetBranchStatus("D0_MM", 1)
 x = RooRealVar("D0_MM", "D0 mass / [MeV]", 1810, 1910) # D0_MM - invariant mass
 data = RooDataSet("data", "Data", ttree, RooArgSet(x))
 
-def gauss_crystal_chebychev(x,data,ttree,options):
+def gauss_crystal_chebychev(x,data,ttree):
     """Model 14:
     Signal - gauss and crystall ball function
     Background - chebychev
@@ -101,7 +104,7 @@ def gauss_crystal_chebychev(x,data,ttree,options):
         }
     }
     model_14["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-    chi2, pull_mean, pull_std = plot(x, data, model_14, nbins=100, setlogy=False, save_to= f"fit_{options.meson}_{options.polarity}_data_{options.year}_{options.size}_{options.model}")
+    chi2, pull_mean, pull_std = plot(x, data, model_14, nbins=100, setlogy=False, save_to= f"fit_")
     Nsig = Nsig14.getValV()
     Nsig_err = Nsig14.getError()
     Nbkg = Nbkg14.getValV()
@@ -109,7 +112,7 @@ def gauss_crystal_chebychev(x,data,ttree,options):
 
     return
 
-def gauss_crystal_exp(x,data,ttree,options):
+def gauss_crystal_exp(x,data,ttree):
     """Model 15:
     Signal - gauss and crystall ball function
     Background - exponential
@@ -156,7 +159,7 @@ def gauss_crystal_exp(x,data,ttree,options):
         }
     }
     model_15["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-    chi2, pull_mean, pull_std = plot(x, data, model_15, nbins=100, setlogy=False, save_to= f"fit_{options.meson}_{options.polarity}_data_{options.year}_{options.size}_{options.model}")
+    chi2, pull_mean, pull_std = plot(x, data, model_15, nbins=100, setlogy=False, save_to= f"fit_exp")
     Nsig = Nsig15.getValV()
     Nsig_err = Nsig15.getError()
     Nbkg = Nbkg15.getValV()
@@ -169,9 +172,9 @@ def gauss_crystal_exp(x,data,ttree,options):
 
 
 if options.model==14:
-    gauss_crystal_chebychev(x,data,ttree,options)
+    gauss_crystal_chebychev(x,data,ttree)
 elif options.model==15:
-    gauss_crystal_exp(x,data,ttree,options)
+    gauss_crystal_exp(x,data,ttree)
 
 def file_writer():
     file = open(f"tightcuts_{options.model}_{options.meson}_{options.polarity}_{options.year}.txt", "w")
