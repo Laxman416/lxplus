@@ -57,7 +57,11 @@ ttree.SetBranchStatus("D0_MM", 1)
 x = RooRealVar("D0_MM", "D0 mass / [MeV]", 1810, 1910) # D0_MM - invariant mass
 data = RooDataSet("data", "Data", ttree, RooArgSet(x))
 
-def gauss_crystal_chebychev(x,data,ttree):
+
+
+
+
+def gauss_crystal_chebychev(x,data,ttree,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model):
     """Model 14:
     Signal - gauss and crystall ball function
     Background - chebychev
@@ -69,7 +73,7 @@ def gauss_crystal_chebychev(x,data,ttree):
     """
     
     #Gaussian parameters
-    Gmu14 = RooRealVar("Gmu14", "Gmu14", 1855, 1855, 1875)
+    Gmu14 = RooRealVar("Gmu14", "Gmu14", 1855, 1835, 1875)
     Gsig14 = RooRealVar("Gsig14", "Gsig14", 6.59, 0, 100)
     Gauss14 = RooGaussian("Gauss14", "Gaussian", x, Gmu14, Gsig14)
 
@@ -104,15 +108,24 @@ def gauss_crystal_chebychev(x,data,ttree):
         }
     }
     model_14["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-    chi2, pull_mean, pull_std = plot(x, data, model_14, nbins=100, setlogy=False, save_to= f"fit_")
+    chi2, pull_mean, pull_std = plot(x, data, model_14, nbins=100, setlogy=False, save_to= f"fit{model}_{meson}_{polarity}_{year}_{size}")
     Nsig = Nsig14.getValV()
     Nsig_err = Nsig14.getError()
     Nbkg = Nbkg14.getValV()
     Nbkg_err = Nbkg14.getError()
 
+    #Saving file
+    file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
+    text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
+    file.write(text)
+    file.close
     return
 
-def gauss_crystal_exp(x,data,ttree):
+
+
+
+
+def gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model):
     """Model 15:
     Signal - gauss and crystall ball function
     Background - exponential
@@ -124,23 +137,23 @@ def gauss_crystal_exp(x,data,ttree):
     """
     
     #Gaussian parameters
-    Gmu15 = RooRealVar("Gmu15", "Gmu15", 1855, 1855, 1875)
-    Gsig15 = RooRealVar("Gsig15", "Gsig15", 6.59, 0, 100)
+    Gmu15 = RooRealVar("Gmu15", "Gmu15", 1865, 1835, 1875)
+    Gsig15 = RooRealVar("Gsig15", "Gsig15", 6.42, 0, 100)
     Gauss15 = RooGaussian("Gauss15", "Gaussian", x, Gmu15, Gsig15)
 
     #Crystal Ball parameters
     Cmu15 = RooRealVar("Cmu", "Cmu", 1865.07, 1855, 1875)
-    Csig15 = RooRealVar("Csig", "Csig", 10.65, 0, 100)
-    aL15 = RooRealVar("aL", "aL", 1.77, -10, 10)
-    nL15 = RooRealVar("nL", "nL", 9.5, -10, 10)
-    aR15 = RooRealVar("aR", "aR", 3.73, -10, 10)
-    nR15 = RooRealVar("nR", "nR", 4.34, -10, 10)
+    Csig15 = RooRealVar("Csig", "Csig", 10.24, 0, 100)
+    aL15 = RooRealVar("aL", "aL", 1.70, -10, 10)
+    nL15 = RooRealVar("nL", "nL", 8.4, -10, 10)
+    aR15 = RooRealVar("aR", "aR", 2.34, -10, 10)
+    nR15 = RooRealVar("nR", "nR", 8.16, -10, 10)
     Crystal15 = RooCrystalBall("Crystal", "Crystal Ball", x, Cmu15, Csig15, aL15, nL15, aR15, nR15)
 
     frac15 = RooRealVar("frac15", "frac15", 0.567, 0, 1)
 
     #exponential parameters
-    c15 = RooRealVar("c15","c15",-0.1,-1,0)
+    c15 = RooRealVar("c15","c15",-0.008,-1,0)
     exponential15 = RooExponential("Expo15", "Exponential",x,c15)
 
     #Normalisation of Background and Signal
@@ -159,11 +172,17 @@ def gauss_crystal_exp(x,data,ttree):
         }
     }
     model_15["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-    chi2, pull_mean, pull_std = plot(x, data, model_15, nbins=100, setlogy=False, save_to= "fit2")
+    chi2, pull_mean, pull_std = plot(x, data, model_15, nbins=100, setlogy=False, save_to= f"fit_{model}_{meson}_{polarity}_{year}_{size}")
     Nsig = Nsig15.getValV()
     Nsig_err = Nsig15.getError()
     Nbkg = Nbkg15.getValV()
     Nbkg_err = Nbkg15.getError()
+
+    #Saving File
+    file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
+    text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
+    file.write(text)
+    file.close
     return
 
 
@@ -175,11 +194,7 @@ if options.model==14:
 elif options.model==15:
     gauss_crystal_exp(x,data,ttree)
 
-def file_writer():
-    file = open(f"tightcuts_{options.model}_{options.meson}_{options.polarity}_{options.year}.txt", "w")
-    text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
-    file.write(text)
-    file.close
+
 
 print(ttree.GetEntries())
     
