@@ -35,7 +35,7 @@ parser.add_argument(
 parser.add_argument(
     "--model",
     type=str,
-    choices=["2","4","5","14"],
+    choices=[14,15],
     required=True,
     help="flag to set the model."
 )
