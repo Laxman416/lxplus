@@ -44,7 +44,14 @@ parser.add_argument(
     type=str,
     choices=["large", "medium", "small", "1", "2", "3", "4", "5", "6", "7", "8"],
     required=True,
-    help="flag to set the model."
+    help="flag to set the size."
+)
+parser.add_argument(
+    "--binned",
+    type=str,
+    choices=["y", "n"],
+    required=True,
+    help="flag to set the data will be binned."
 )
 
 options = parser.parse_args()
@@ -54,14 +61,14 @@ ttree.Add(f"/afs/cern.ch/work/l/lseelan/lxplus/{options.meson}_{options.polarity
 
 ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
-x = RooRealVar("D0_MM", "D0 mass / [MeV]", 1810, 1910) # D0_MM - invariant mass
+x = RooRealVar("D0_MM", "D0 mass / [MeV]", 1820, 1910) # D0_MM - invariant mass
 data = RooDataSet("data", "Data", ttree, RooArgSet(x))
 
 
 
 
 
-def gauss_crystal_chebychev(x,data,ttree,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model):
+def gauss_crystal_chebychev(x,data,ttree,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model,binned=options.binned):
     """Model 14:
     Signal - gauss and crystall ball function
     Background - chebychev
@@ -96,36 +103,36 @@ def gauss_crystal_chebychev(x,data,ttree,meson=options.meson,polarity=options.po
     Nsig14 = RooRealVar("Nsig14", "Nsig14", 0.95*ttree.GetEntries(), 0, ttree.GetEntries())
     Nbkg14 = RooRealVar("Nbkg14", "Nbkg14", 0.05*ttree.GetEntries(), 0, ttree.GetEntries())
 
-    signal = RooAddPdf("signal", "signal", RooArgList(Gauss14, Crystal14), RooArgList(frac14))
-    model_14 = {
-        "total": RooAddPdf("total", "Total", RooArgList(signal, chebychev14), RooArgList(Nsig14, Nbkg14)), # extended likelihood
-        "signals": {
-            Gauss14.GetName(): Gauss14.GetTitle(),
-            Crystal14.GetName(): Crystal14.GetTitle(),
-        },
-        "backgrounds": {
-            chebychev14.GetName(): chebychev14.GetTitle()
+    if binned=='n':
+        signal = RooAddPdf("signal", "signal", RooArgList(Gauss14, Crystal14), RooArgList(frac14))
+        model_14 = {
+            "total": RooAddPdf("total", "Total", RooArgList(signal, chebychev14), RooArgList(Nsig14, Nbkg14)), # extended likelihood
+            "signals": {
+                Gauss14.GetName(): Gauss14.GetTitle(),
+                Crystal14.GetName(): Crystal14.GetTitle(),
+            },
+            "backgrounds": {
+                chebychev14.GetName(): chebychev14.GetTitle()
+            }
         }
-    }
-    model_14["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-    chi2, pull_mean, pull_std = plot(x, data, model_14, nbins=100, setlogy=False, save_to= f"fit{model}_{meson}_{polarity}_{year}_{size}")
-    Nsig = Nsig14.getValV()
-    Nsig_err = Nsig14.getError()
-    Nbkg = Nbkg14.getValV()
-    Nbkg_err = Nbkg14.getError()
+        model_14["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
+        chi2, pull_mean, pull_std = plot(x, data, model_14, nbins=100, setlogy=False, save_to= f"fit{model}_{meson}_{polarity}_{year}_{size}")
+        Nsig = Nsig14.getValV()
+        Nsig_err = Nsig14.getError()
+        Nbkg = Nbkg14.getValV()
+        Nbkg_err = Nbkg14.getError()
+        
+        #Saving file
+        file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
+        text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
+        file.write(text)
+        file.close
+        return
 
-    #Saving file
-    file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
-    text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
-    file.write(text)
-    file.close
-    return
+    elif binned=='y':
+        print()
 
-
-
-
-
-def gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model):
+def gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model,binned=options.binned):
     """Model 15:
     Signal - gauss and crystall ball function
     Background - exponential
@@ -160,29 +167,32 @@ def gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polarity
     Nsig15 = RooRealVar("Nsig15", "Nsig15", 0.95*ttree.GetEntries(), 0, ttree.GetEntries())
     Nbkg15 = RooRealVar("Nbkg15", "Nbkg15", 0.05*ttree.GetEntries(), 0, ttree.GetEntries())
 
-    signal = RooAddPdf("signal", "signal", RooArgList(Gauss15, Crystal15), RooArgList(frac15))
-    model_15 = {
-        "total": RooAddPdf("total", "Total", RooArgList(signal, exponential15), RooArgList(Nsig15, Nbkg15)), # extended likelihood
-        "signals": {
-            Gauss15.GetName(): Gauss15.GetTitle(),
-            Crystal15.GetName(): Crystal15.GetTitle(),
-        },
-        "backgrounds": {
-            exponential15.GetName(): exponential15.GetTitle()
+    if binned=='n':
+        signal = RooAddPdf("signal", "signal", RooArgList(Gauss15, Crystal15), RooArgList(frac15))
+        model_15 = {
+            "total": RooAddPdf("total", "Total", RooArgList(signal, exponential15), RooArgList(Nsig15, Nbkg15)), # extended likelihood
+            "signals": {
+                Gauss15.GetName(): Gauss15.GetTitle(),
+                Crystal15.GetName(): Crystal15.GetTitle(),
+            },
+            "backgrounds": {
+                exponential15.GetName(): exponential15.GetTitle()
+            }
         }
-    }
-    model_15["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-    chi2, pull_mean, pull_std = plot(x, data, model_15, nbins=100, setlogy=False, save_to= f"fit_{model}_{meson}_{polarity}_{year}_{size}")
-    Nsig = Nsig15.getValV()
-    Nsig_err = Nsig15.getError()
-    Nbkg = Nbkg15.getValV()
-    Nbkg_err = Nbkg15.getError()
+        model_15["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
+        chi2, pull_mean, pull_std = plot(x, data, model_15, nbins=100, setlogy=False, save_to= f"fit_{model}_{meson}_{polarity}_{year}_{size}")
+        Nsig = Nsig15.getValV()
+        Nsig_err = Nsig15.getError()
+        Nbkg = Nbkg15.getValV()
+        Nbkg_err = Nbkg15.getError()
 
-    #Saving File
-    file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
-    text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
-    file.write(text)
-    file.close
+        #Saving File
+        file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
+        text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
+        file.write(text)
+        file.close
+    elif binned=='y':
+        print()
     return
 
 
