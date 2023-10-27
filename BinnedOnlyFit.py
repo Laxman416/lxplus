@@ -9,7 +9,7 @@ ROOT.gROOT.SetBatch(True)
 tree = "D02Kpi_Tuple/DecayTree"
 filename_D0_up = 'D0_up_data_16_8_clean'
 filename_D0bar_up = 'D0bar_up_data_16_8_clean'
-numbins = 2
+numbins = 50
 lower_boundary = 1800
 upper_boundary = 1900
 
