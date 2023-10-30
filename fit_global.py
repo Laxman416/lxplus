@@ -15,7 +15,8 @@ import uproot
 import argparse
 import os
 from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooChebychev, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist
-
+import time 
+start_time = time.time()
 def dir_path(string):
     '''
     Checks if a given string is the path to a directory.
@@ -268,3 +269,4 @@ fitResult.Print()
 # Get results
 parameters = np.array([mean.getValV(), sigma.getValV(), Cmu.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV()])
 np.savetxt(f"{args.path}/fit_parameters.txt", parameters, delimiter=',')
+print("My program took", time.time() - start_time, "to run")
