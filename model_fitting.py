@@ -131,7 +131,7 @@ parameters = np.loadtxt(f"{options.parameters_path}/fit_parameters.txt", delimit
 
 # Read data
 ttree = TChain("D02Kpi_Tuple/DecayTree")
-ttree.Add(f"{options.input}/{options.meson}_data{options.polarity}_{options.year}_{options.size}_clean.root")
+ttree.Add(f"{options.input}/{options.meson}_{options.polarity}_data_{options.year}_{options.size}_clean.root")
 
 ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
