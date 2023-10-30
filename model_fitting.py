@@ -48,8 +48,6 @@ def parse_arguments():
     --parameters_path
                 Used to specify the directory in which the global best-fit parameters should be found. It is not required,
                 in the case it is not specified, the default path is the current working directory.
-    --bin       Used to select the bin to be analysed.
-                The argument must be an integer between 00 and 99 (note that two characters must be entered for all integers)
     --binned_fit
                 Used to specify if the data should be binned before performing the fit or an unbinned fit should be performed.
                 Type either y or Y for a binned fit. Type n or N for an unbinned fit.
@@ -107,12 +105,6 @@ def parse_arguments():
         help="flag to set the path where the input files should be taken from"
     )
     parser.add_argument(
-        "--bin",
-        type=str,
-        required=True,
-        help="flag to set the path where the output files should be written to"
-    )
-    parser.add_argument(
         "--binned_fit",
         type=str,
         choices=["y", "Y", "n", "N"],
@@ -139,7 +131,7 @@ parameters = np.loadtxt(f"{options.parameters_path}/fit_parameters.txt", delimit
 
 # Read data
 ttree = TChain("D02Kpi_Tuple/DecayTree")
-ttree.Add(f"{options.input}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}.root")
+ttree.Add(f"{options.input}/{options.meson}_{options.polarity}_{options.year}_{options.size}.root")
 
 ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
@@ -346,10 +338,10 @@ else:
     unbinned_data = RooDataSet("data", "Data", ttree, RooArgSet(D0_M))
     model["total"].fitTo(unbinned_data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
     # Generate plots
-    chi2, pull_mean, pull_std = plot(D0_M, unbinned_data, model, nbins=numbins, setlogy=False, save_to=f'{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}', plot_type=f"20{options.year} Mag{(options.polarity).title()}", meson=options.meson)
+    chi2, pull_mean, pull_std = plot(D0_M, unbinned_data, model, nbins=numbins, setlogy=False, save_to=f'{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}', plot_type=f"20{options.year} Mag{(options.polarity).title()}", meson=options.meson)
 
 # Write out results
-file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}.txt", "w")
+file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
 text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError()) + ', ' + str(chi2) + ', ' + str(pull_mean) + ', ' + str(pull_std)
 file.write(text)
 file.close
