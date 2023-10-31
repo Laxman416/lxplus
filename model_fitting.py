@@ -181,7 +181,7 @@ if binned:
     # D0_Hist recalled from memory and saved to the local variable
     D0_Hist = ROOT.gPad.GetPrimitive("D0_Hist")
     # Creating Binned container sets using RooDataHist
-    Binned_data = RooDataHist("Binned_D0_up", "Binned D0 Up Data", RooArgList(D0_M), D0_Hist)
+    Binned_data = RooDataHist("Binned_data", "Binned Data Set", RooArgList(D0_M), D0_Hist)
 
 
     result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
@@ -195,7 +195,6 @@ if binned:
         RooFit.Name(model["total"].GetName()),
         RooFit.LineWidth(5),
         RooFit.LineColor(ROOT.kAzure),
-        RooFit.Range("FULL")
     )
     pull_hist = frame.pullHist()
 
@@ -214,7 +213,6 @@ if binned:
             ROOT.RooFit.LineWidth(4),
             ROOT.RooFit.LineColor(signal_colours[i % len(signal_colours)]),
             ROOT.RooFit.LineStyle(signal_line_styles[i % len(signal_line_styles)]),
-            ROOT.RooFit.Range("FULL")
         )
         legend_entries[legend_name] = {"title": title, "style": "l"}
         i += 1
@@ -232,12 +230,11 @@ if binned:
             ROOT.RooFit.LineWidth(4),
             ROOT.RooFit.LineColor(background_colours[i % len(background_colours)]),
             ROOT.RooFit.LineStyle(background_line_styles[i % len(background_line_styles)]),
-            ROOT.RooFit.Range("FULL")
         )
         legend_entries[legend_name] = {"title": title, "style": "l"}
         i += 1
     
-    # plot datapoints on top again
+    # plot data points on top again
     Binned_data.plotOn(frame, ROOT.RooFit.Name("remove_me_B"))
     frame.remove("remove_me_A")
     frame.remove("remove_me_B")
@@ -245,7 +242,7 @@ if binned:
     legend_entries[D0_Hist.GetName()] = {"title": D0_Hist.GetTitle(), "style": "PE"}
 
 
-    frame.SetYTitle(f"Candidates / ({(D0_M.getRange('FULL').second-D0_M.getRange('FULL').first)/numbins:.2f} MeV/c^{{2}})")
+    frame.SetYTitle(f"Entries MeV/c^{{2}})")
 
     c = ROOT.TCanvas("fit", "fit", 900, 800)
     fit_pad = ROOT.TPad("fit_pad", "fit pad", 0, 0.2, 1.0, 1.0)
@@ -278,8 +275,8 @@ if binned:
 
 
     pull_frame = D0_M.frame(ROOT.RooFit.Title(" "))
-    pull_TH1 = ROOT.TH1D("pull_TH1", "pull_TH1", numbins, mD0_bins)
-    bad_pull_TH1 = ROOT.TH1D("bad_pull_TH1", "bad_pull_TH1", numbins, mD0_bins)
+    pull_TH1 = ROOT.TH1D("pull_TH1", "pull_TH1", numbins)
+    bad_pull_TH1 = ROOT.TH1D("bad_pull_TH1", "bad_pull_TH1", numbins)
     for i in range(pull_hist.GetN()):
         if pull_hist.GetPointY(i) > 5:
             pull_TH1.SetBinContent(i + 1, 5)
@@ -295,7 +292,7 @@ if binned:
             if abs(pull_hist.GetPointY(i)) >= 3:
                 bad_pull_TH1.SetBinContent(i + 1, pull_hist.GetPointY(i))
 
-    bad_pull_TH1.SetFillColor(R.kRed)
+    bad_pull_TH1.SetFillColor(ROOT.kRed)
     pull_frame.addTH1(pull_TH1, "bar min0")
     pull_frame.addTH1(bad_pull_TH1, "bar min0")
 
