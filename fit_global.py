@@ -211,7 +211,7 @@ if binned:
     simultaneous_pdf.addPdf(model_D0bar_down, "Binned_D0bar_down_sample")
 
     # Recombine the data into a simultaneous dataset
-    imports = [ROOT.RooFit.Import("Binned_D0_up_sample", Binned_D0_up), ROOT.RooFit.Import("Binned_D0bar_up_sample", Binned_D0bar_up)]
+    imports = [ROOT.RooFit.Import("Binned_D0_up_sample", Binned_D0_up), ROOT.RooFit.Import("Binned_D0bar_up_sample", Binned_D0bar_up), ROOT.RooFit.Import("Binned_D0_down_sample", Binned_D0_down), ROOT.RooFit.Import("Binned_D0bar_down_sample", Binned_D0bar_down)]
     simultaneous_data = RooDataHist("simultaneous_data", "simultaneous data", RooArgList(D0_M), ROOT.RooFit.Index(binned_sample), *imports)
 
     # Performs the simultaneous fit
