@@ -275,8 +275,8 @@ if binned:
 
 
     pull_frame = D0_M.frame(ROOT.RooFit.Title(" "))
-    pull_TH1 = ROOT.TH1D("pull_TH1", "pull_TH1", numbins)
-    bad_pull_TH1 = ROOT.TH1D("bad_pull_TH1", "bad_pull_TH1", numbins)
+    pull_TH1 = ROOT.TH1D("pull_TH1", "pull_TH1", numbins, mD0_bins)
+    bad_pull_TH1 = ROOT.TH1D("bad_pull_TH1", "bad_pull_TH1", numbins, mD0_bins)
     for i in range(pull_hist.GetN()):
         if pull_hist.GetPointY(i) > 5:
             pull_TH1.SetBinContent(i + 1, 5)
