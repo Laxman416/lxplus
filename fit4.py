@@ -54,12 +54,12 @@ parser.add_argument(
     help="flag to set the data will be binned."
 )
 parser.add_argument(
-    "--path",
-    type=dir_path,
-    required=False,
-    default=os.getcwd(),
-    help="flag to set where the data is."
-)
+        "--path",
+        type=dir_path,
+        required=False,
+        default=os.getcwd(),
+        help="flag to set the path where the output files should be written to"
+    )
 
 options = parser.parse_args()
 
