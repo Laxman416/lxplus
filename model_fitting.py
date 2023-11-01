@@ -152,7 +152,7 @@ Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mu, Csig, aL, nL, aR, 
 
 frac = RooRealVar("frac", "frac", 0.567)
 # Model Exponential Background
-a = RooRealVar("a0", "a0", -0.00966581)
+a = RooRealVar("a0", "a0", parameters[7])
 background = RooExponential("Exponential", "Exponential", D0_M, parameters[7])
 # Define Normalisation constants for signal and background
 Nsig = RooRealVar("Nsig", "Nsig", 0.95*ttree.GetEntries(), 0, ttree.GetEntries())
