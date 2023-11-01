@@ -64,7 +64,7 @@ parser.add_argument(
 options = parser.parse_args()
 
 ttree = TChain("D02Kpi_Tuple/DecayTree")
-ttree.Add(f"/home/lseelan/Labs/small-file/{options.meson}_{options.polarity}_data_{options.year}_{options.size}_clean.root")
+ttree.Add(f"/afs/cern.ch/work/l/lseelan/lxplus/{options.path}/{options.meson}_{options.polarity}_data_{options.year}_{options.size}_clean.root")
 
 ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
