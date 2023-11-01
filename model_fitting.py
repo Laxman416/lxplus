@@ -119,8 +119,8 @@ def parse_arguments():
 
 options = parse_arguments()
 numbins = 100
-lower_boundary = 1800
-upper_boundary = 1900
+lower_boundary = 1820
+upper_boundary = 1910
 
 if options.binned_fit=="y" or options.binned_fit=="Y":
     binned = True
@@ -136,7 +136,7 @@ ttree.Add(f"{options.input}/{options.meson}_{options.polarity}_data_{options.yea
 
 ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
-D0_M = RooRealVar("D0_MM", r"D0 mass / [MeVc^{-2}]", 1810, 1910) # D0_MM - invariant mass
+D0_M = RooRealVar("D0_MM", r"D0 mass / [MeVc^{-2}]", lower_boundary, upper_boundary) # D0_MM - invariant mass
 
 # Define variables for signal model
 mu = RooRealVar("mu", "mu", 1865.54)
