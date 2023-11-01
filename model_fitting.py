@@ -186,7 +186,7 @@ if binned:
         result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
 
         mD0 = 1864.84
-        mD0_range = (mD0-54, mD0+45)
+        mD0_range = (mD0-44.84, mD0+45.16)
         mD0_bins = np.linspace(*mD0_range, numbins+1)
 
         frame = D0_M.frame(RooFit.Name(""))
