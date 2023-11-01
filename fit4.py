@@ -7,6 +7,7 @@ import matplotlib.pylab as plt
 from pylab import cm
 from utils import plot
 import argparse
+import os
 
 # -- parsing -- #
 
