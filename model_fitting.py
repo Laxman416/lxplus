@@ -135,7 +135,7 @@ ttree.Add(f"{options.input}/{options.meson}_{options.polarity}_data_{options.yea
 
 ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
-D0_M = RooRealVar("D0_MM", r"D0 mass / [MeV$c^{-2}$]", 1810, 1910) # D0_MM - invariant mass
+D0_M = RooRealVar("D0_MM", r"D0 mass / [MeVc^{-2}]", 1810, 1910) # D0_MM - invariant mass
 
 # Define variables for signal model
 mu = RooRealVar("mu", "mu", parameters[0])
@@ -184,7 +184,7 @@ if binned:
     result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
 
     mD0 = 1864.84
-    mD0_range = (mD0-54, mD0+55)
+    mD0_range = (mD0-54, mD0+45)
     mD0_bins = np.linspace(*mD0_range, numbins+1)
 
     frame = D0_M.frame(RooFit.Name(""))
@@ -299,7 +299,7 @@ if binned:
 
     c.cd(0)
     pull_pad = ROOT.TPad("pull_pad", "pull pad", 0.0, 0.0, 1.0, 0.31)
-    pull_pad.SetBottomMargin(0.4)
+    pull_pad.SetBottomMargin(0.2)
     pull_pad.Draw()
     pull_pad.cd()
 
