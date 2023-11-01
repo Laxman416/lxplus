@@ -118,8 +118,8 @@ def parse_arguments():
 # - - - - - - - MAIN BODY - - - - - - - #
 
 options = parse_arguments()
-numbins = 100
-lower_boundary = 1820
+numbins = 1000
+lower_boundary = 1810
 upper_boundary = 1910
 
 if options.binned_fit=="y" or options.binned_fit=="Y":
@@ -186,7 +186,7 @@ if binned:
         result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
 
         mD0 = 1864.84
-        mD0_range = (mD0-44.84, mD0+45.16)
+        mD0_range = (mD0-54.84, mD0+45.16)
         mD0_bins = np.linspace(*mD0_range, numbins+1)
 
         frame = D0_M.frame(RooFit.Name(""))
