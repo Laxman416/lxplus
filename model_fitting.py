@@ -139,21 +139,21 @@ ttree.SetBranchStatus("D0_MM", 1)
 D0_M = RooRealVar("D0_MM", r"D0 mass / [MeVc^{-2}]", 1810, 1910) # D0_MM - invariant mass
 
 # Define variables for signal model
-mu = RooRealVar("mu", "mu", parameters[0])
-Gsig = RooRealVar("sigma", "sigma", parameters[1])
+mu = RooRealVar("mu", "mu", 1865.54)
+Gsig = RooRealVar("sigma", "sigma", 6.4223)
 Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
 
-Cmu = RooRealVar("Cmu", "Cmu", parameters[2])
-Csig = RooRealVar("Csig", "Csig", 10.02)
-aL = RooRealVar("aL", "aL", parameters[4])
-nL = RooRealVar("nL", "nL", parameters[5])
-aR = RooRealVar("aR", "aR", parameters[6])
-nR = RooRealVar("nR", "nR", parameters[7])
+Cmu = RooRealVar("Cmu", "Cmu", 1865.18)
+Csig = RooRealVar("Csig", "Csig", 10.0244)
+aL = RooRealVar("aL", "aL", 1.7065)
+nL = RooRealVar("nL", "nL", 8.447)
+aR = RooRealVar("aR", "aR", 2.33631)
+nR = RooRealVar("nR", "nR", 8.1638)
 Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, Cmu, Csig, aL, nL, aR, nR)
 
 frac = RooRealVar("frac", "frac", 0.575)
 # Model Exponential Background
-a = RooRealVar("a0", "a0", parameters[8])
+a = RooRealVar("a0", "a0", -0.008496)
 background = RooExponential("Exponential", "Exponential", D0_M, a)
 # Define Normalisation constants for signal and background
 Nsig = RooRealVar("Nsig", "Nsig", 0.95*ttree.GetEntries(), 0, ttree.GetEntries())
