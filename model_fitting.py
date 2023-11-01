@@ -118,7 +118,7 @@ def parse_arguments():
 # - - - - - - - MAIN BODY - - - - - - - #
 
 options = parse_arguments()
-numbins = 100
+numbins = 200
 lower_boundary = 1820
 upper_boundary = 1910
 
@@ -139,19 +139,18 @@ ttree.SetBranchStatus("D0_MM", 1)
 D0_M = RooRealVar("D0_MM", r"D0 mass / [MeVc^{-2}]", lower_boundary, upper_boundary) # D0_MM - invariant mass
 
 # Define variables for signal model
-mu = RooRealVar("mu", "mu", 1865.54)
-Gsig = RooRealVar("sigma", "sigma", 6.31413)
+mu = RooRealVar("mu", "mu", parameters[0])
+Gsig = RooRealVar("sigma", "sigma", parameters[1])
 Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
 
-Cmu = RooRealVar("Cmu", "Cmu", 1865.23)
-Csig = RooRealVar("Csig", "Csig", 9.97499)
-aL = RooRealVar("aL", "aL", 1.7521)
-nL = RooRealVar("nL", "nL", 10)
-aR = RooRealVar("aR", "aR", 2.28482)
-nR = RooRealVar("nR", "nR", 10)
-Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, Cmu, Csig, aL, nL, aR, nR)
+Csig = RooRealVar("Csig", "Csig", parameters[2])
+aL = RooRealVar("aL", "aL", parameters[3])
+nL = RooRealVar("nL", "nL", parameters[4])
+aR = RooRealVar("aR", "aR", parameters[5])
+nR = RooRealVar("nR", "nR", parameters[6])
+Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mu, Csig, aL, nL, aR, nR)
 
-frac = RooRealVar("frac", "frac", 0.532129)
+frac = RooRealVar("frac", "frac", parameters[7])
 # Model Exponential Background
 a = RooRealVar("a0", "a0", -0.00966581)
 background = RooExponential("Exponential", "Exponential", D0_M, a)
