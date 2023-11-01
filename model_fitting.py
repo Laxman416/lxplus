@@ -118,7 +118,7 @@ def parse_arguments():
 # - - - - - - - MAIN BODY - - - - - - - #
 
 options = parse_arguments()
-numbins = 1000
+numbins = 100
 lower_boundary = 1820
 upper_boundary = 1910
 
