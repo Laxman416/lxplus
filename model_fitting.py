@@ -144,14 +144,14 @@ Gsig = RooRealVar("sigma", "sigma", parameters[1])
 Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
 
 Cmu = RooRealVar("Cmu", "Cmu", parameters[2])
-Csig = RooRealVar("Csig", "Csig", parameters[3])
+Csig = RooRealVar("Csig", "Csig", 10.02)
 aL = RooRealVar("aL", "aL", parameters[4])
 nL = RooRealVar("nL", "nL", parameters[5])
 aR = RooRealVar("aR", "aR", parameters[6])
 nR = RooRealVar("nR", "nR", parameters[7])
 Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, Cmu, Csig, aL, nL, aR, nR)
 
-frac = RooRealVar("frac", "frac", 0.575, 0, 1)
+frac = RooRealVar("frac", "frac", 0.575)
 # Model Exponential Background
 a = RooRealVar("a0", "a0", parameters[8])
 background = RooExponential("Exponential", "Exponential", D0_M, a)
