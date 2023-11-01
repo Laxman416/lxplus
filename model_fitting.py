@@ -137,10 +137,6 @@ ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
 D0_M = RooRealVar("D0_MM", "D0 mass / [MeV]", 1810, 1910) # D0_MM - invariant mass
 
-mD0 = 1864.84
-mD0_range = (mD0-100, mD0+100)
-mD0_bins = np.linspace(*mD0_range, numbins+1)
-
 # Define variables for signal model
 mu = RooRealVar("mu", "mu", 1865, 1862, 1868)
 Gsig = RooRealVar("sigma", "sigma", 6.59, 0, 100)
@@ -184,8 +180,11 @@ if binned:
     # Creating Binned container sets using RooDataHist
     Binned_data = RooDataHist("Binned_data", "Binned Data Set", RooArgList(D0_M), D0_Hist)
 
-
     result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
+
+    mD0 = 1864.84
+    mD0_range = (mD0-100, mD0+100)
+    mD0_bins = np.linspace(*mD0_range, numbins+1)
 
     frame = D0_M.frame(RooFit.Name(""))
     legend_entries = dict()
@@ -327,10 +326,10 @@ if binned:
     three.Draw("same")
     nthree.Draw("same")
 
-    c.SaveAs(f"{str(output_directory)}/D0_fit_ANA.root")
-    c.SaveAs(f"{str(output_directory)}/D0_fit_ANA.C")
-    c.SaveAs(f"{str(output_directory)}/D0_fit_ANA.pdf")
-    c.SaveAs(f"{str(output_directory)}/D0_fit_ANA.jpg")
+    c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.root")
+    c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.C")
+    c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.pdf")
+    c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.jpg")
 
 else:
     unbinned_data = RooDataSet("data", "Data", ttree, RooArgSet(D0_M))
