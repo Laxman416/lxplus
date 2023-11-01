@@ -140,20 +140,20 @@ D0_M = RooRealVar("D0_MM", r"D0 mass / [MeVc^{-2}]", lower_boundary, upper_bound
 
 # Define variables for signal model
 mu = RooRealVar("mu", "mu", 1865.54)
-Gsig = RooRealVar("sigma", "sigma", 6.4223)
+Gsig = RooRealVar("sigma", "sigma", 6.31413)
 Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
 
-Cmu = RooRealVar("Cmu", "Cmu", 1865.18)
-Csig = RooRealVar("Csig", "Csig", 10.0244)
-aL = RooRealVar("aL", "aL", 1.7065)
-nL = RooRealVar("nL", "nL", 8.447)
-aR = RooRealVar("aR", "aR", 2.33631)
-nR = RooRealVar("nR", "nR", 8.1638)
+Cmu = RooRealVar("Cmu", "Cmu", 1865.23)
+Csig = RooRealVar("Csig", "Csig", 9.97499)
+aL = RooRealVar("aL", "aL", 1.7521)
+nL = RooRealVar("nL", "nL", 10)
+aR = RooRealVar("aR", "aR", 2.28482)
+nR = RooRealVar("nR", "nR", 10)
 Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, Cmu, Csig, aL, nL, aR, nR)
 
-frac = RooRealVar("frac", "frac", 0.575)
+frac = RooRealVar("frac", "frac", 0.532129)
 # Model Exponential Background
-a = RooRealVar("a0", "a0", -0.008496)
+a = RooRealVar("a0", "a0", -0.00966581)
 background = RooExponential("Exponential", "Exponential", D0_M, a)
 # Define Normalisation constants for signal and background
 Nsig = RooRealVar("Nsig", "Nsig", 0.95*ttree.GetEntries(), 0, ttree.GetEntries())
