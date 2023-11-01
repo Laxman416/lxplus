@@ -83,8 +83,8 @@ fit_params = {}
 fit_PDFs = {}
 # Bin Parameters
 numbins = 100
-lower_boundary = 1800
-upper_boundary = 1900
+lower_boundary = 1820
+upper_boundary = 1910
 
 if args.binned_fit=="y" or args.binned_fit=="Y":
     binned = True
