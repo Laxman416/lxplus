@@ -137,8 +137,9 @@ ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
 D0_M = RooRealVar("D0_MM", "D0 mass / [MeV]", 1810, 1910) # D0_MM - invariant mass
 
-if binned:
-   mD0_bins = D0_M.setBins(numbins)
+mD0 = 1864.84
+mD0_range = (mD0-100, mD0+100)
+mD0_bins = np.linspace(*mD0_range, numbins+1)
 
 # Define variables for signal model
 mu = RooRealVar("mu", "mu", 1865, 1862, 1868)
