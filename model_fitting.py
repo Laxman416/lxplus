@@ -248,9 +248,9 @@ if binned:
     fit_pad = ROOT.TPad("fit_pad", "fit pad", 0, 0.2, 1.0, 1.0)
     fit_pad.Draw()
     fit_pad.cd()
-    # R.gPad.SetLeftMargin(0.15)
+    ROOT.gPad.SetLeftMargin(0.15)
     # Draw the plot on a canvas
-    # frame.GetYaxis().SetTitleOffset(1.4)
+    frame.GetYaxis().SetTitleOffset(1.4)
     # frame.GetYaxis().SetMaxDigits(len(str(int(plotted_data.GetMaximum()/1000)))+1)  # TODO : a better fix than this?
     frame.Draw()
     
