@@ -55,9 +55,9 @@ parser.add_argument(
 )
 parser.add_argument(
     "--path",
-    type=str,
-    choices=[],
+    type=dir_pat,
     required=False,
+    default=os.getcwd(),
     help="flag to set where the data is."
 )
 
