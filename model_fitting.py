@@ -16,6 +16,7 @@ import os
 from utils import plot
 import numpy as np
 from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooChebychev, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist
+from lhcbstyle import LHCbStyle
 
 # - - - - - - - FUNCTIONS - - - - - - - #
 def dir_path(string):
@@ -173,159 +174,160 @@ model = {
 
 # Fit data
 if binned:
-    # Creates the histogram for the meson by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
-    # TTree.Draw plots a histogram with name D0_Hist and given bin parameters and saves it to memory using: >>
-    ttree.Draw(f"D0_MM>>D0_Hist({numbins},{lower_boundary},{upper_boundary})")
-    # D0_Hist recalled from memory and saved to the local variable
-    D0_Hist = ROOT.gPad.GetPrimitive("D0_Hist")
-    # Creating Binned container sets using RooDataHist
-    Binned_data = RooDataHist("Binned_data", "Binned Data Set", RooArgList(D0_M), D0_Hist)
+    with LHCbStyle():
+        # Creates the histogram for the meson by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
+        # TTree.Draw plots a histogram with name D0_Hist and given bin parameters and saves it to memory using: >>
+        ttree.Draw(f"D0_MM>>D0_Hist({numbins},{lower_boundary},{upper_boundary})")
+        # D0_Hist recalled from memory and saved to the local variable
+        D0_Hist = ROOT.gPad.GetPrimitive("D0_Hist")
+        # Creating Binned container sets using RooDataHist
+        Binned_data = RooDataHist("Binned_data", "Binned Data Set", RooArgList(D0_M), D0_Hist)
 
-    result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
+        result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
 
-    mD0 = 1864.84
-    mD0_range = (mD0-54, mD0+45)
-    mD0_bins = np.linspace(*mD0_range, numbins+1)
+        mD0 = 1864.84
+        mD0_range = (mD0-54, mD0+45)
+        mD0_bins = np.linspace(*mD0_range, numbins+1)
 
-    frame = D0_M.frame(RooFit.Name(""))
-    legend_entries = dict()
+        frame = D0_M.frame(RooFit.Name(""))
+        legend_entries = dict()
 
-    Binned_data.plotOn(frame, ROOT.RooFit.Name("remove_me_A"))
-    model["total"].plotOn(
-        frame,
-        RooFit.Name(model["total"].GetName()),
-        RooFit.LineWidth(5),
-        RooFit.LineColor(ROOT.kAzure),
-    )
-    pull_hist = frame.pullHist()
-
-    legend_entries[model["total"].GetName()] = {"title": model["total"].GetTitle(), "style": "l"}
-
-    # plot signal components
-    signal_colours = [ROOT.kRed, ROOT.kSpring, ROOT.kAzure + 7, ROOT.kOrange + 7]
-    signal_line_styles = [2, 7, 9, 10]
-    i = 0
-    for name, title in model["signals"].items():
-        legend_name = f"S{i}"
+        Binned_data.plotOn(frame, ROOT.RooFit.Name("remove_me_A"))
         model["total"].plotOn(
             frame,
-            ROOT.RooFit.Components(name),
-            ROOT.RooFit.Name(legend_name),
-            ROOT.RooFit.LineWidth(4),
-            ROOT.RooFit.LineColor(signal_colours[i % len(signal_colours)]),
-            ROOT.RooFit.LineStyle(signal_line_styles[i % len(signal_line_styles)]),
+            RooFit.Name(model["total"].GetName()),
+            RooFit.LineWidth(5),
+            RooFit.LineColor(ROOT.kAzure),
         )
-        legend_entries[legend_name] = {"title": title, "style": "l"}
-        i += 1
+        pull_hist = frame.pullHist()
 
-    # plot background components
-    background_colours = [ROOT.kMagenta + 2, ROOT.kPink + 7, ROOT.kMagenta + 4]
-    background_line_styles = [5, 8, 6]
-    i = 0
-    for name, title in model["backgrounds"].items():
-        legend_name = f"B{i}"
-        model["total"].plotOn(
-            frame,
-            ROOT.RooFit.Components(name),
-            ROOT.RooFit.Name(legend_name),
-            ROOT.RooFit.LineWidth(4),
-            ROOT.RooFit.LineColor(background_colours[i % len(background_colours)]),
-            ROOT.RooFit.LineStyle(background_line_styles[i % len(background_line_styles)]),
+        legend_entries[model["total"].GetName()] = {"title": model["total"].GetTitle(), "style": "l"}
+
+        # plot signal components
+        signal_colours = [ROOT.kRed, ROOT.kSpring, ROOT.kAzure + 7, ROOT.kOrange + 7]
+        signal_line_styles = [2, 7, 9, 10]
+        i = 0
+        for name, title in model["signals"].items():
+            legend_name = f"S{i}"
+            model["total"].plotOn(
+                frame,
+                ROOT.RooFit.Components(name),
+                ROOT.RooFit.Name(legend_name),
+                ROOT.RooFit.LineWidth(4),
+                ROOT.RooFit.LineColor(signal_colours[i % len(signal_colours)]),
+                ROOT.RooFit.LineStyle(signal_line_styles[i % len(signal_line_styles)]),
+            )
+            legend_entries[legend_name] = {"title": title, "style": "l"}
+            i += 1
+
+        # plot background components
+        background_colours = [ROOT.kMagenta + 2, ROOT.kPink + 7, ROOT.kMagenta + 4]
+        background_line_styles = [5, 8, 6]
+        i = 0
+        for name, title in model["backgrounds"].items():
+            legend_name = f"B{i}"
+            model["total"].plotOn(
+                frame,
+                ROOT.RooFit.Components(name),
+                ROOT.RooFit.Name(legend_name),
+                ROOT.RooFit.LineWidth(4),
+                ROOT.RooFit.LineColor(background_colours[i % len(background_colours)]),
+                ROOT.RooFit.LineStyle(background_line_styles[i % len(background_line_styles)]),
+            )
+            legend_entries[legend_name] = {"title": title, "style": "l"}
+            i += 1
+        
+        # plot data points on top again
+        Binned_data.plotOn(frame, ROOT.RooFit.Name("remove_me_B"))
+        frame.remove("remove_me_A")
+        frame.remove("remove_me_B")
+        frame.addTH1(D0_Hist, "PE")
+        legend_entries[D0_Hist.GetName()] = {"title": D0_Hist.GetTitle(), "style": "PE"}
+
+
+        frame.SetYTitle(f"Entries MeV/c^{{2}})")
+
+        c = ROOT.TCanvas("fit", "fit", 900, 800)
+        fit_pad = ROOT.TPad("fit_pad", "fit pad", 0, 0.2, 1.0, 1.0)
+        fit_pad.Draw()
+        fit_pad.cd()
+        ROOT.gPad.SetLeftMargin(0.15)
+        # Draw the plot on a canvas
+        frame.GetYaxis().SetTitleOffset(1.4)
+        # frame.GetYaxis().SetMaxDigits(len(str(int(plotted_data.GetMaximum()/1000)))+1)  # TODO : a better fix than this?
+        frame.Draw()
+        
+        frame.GetXaxis().SetLabelSize(0)
+        frame.GetXaxis().SetTitleSize(0)
+        frame.Draw()
+        title_size = frame.GetYaxis().GetTitleSize() * 2.5
+        label_size = frame.GetYaxis().GetLabelSize() * 2.5
+
+        # plot_type + total + signals + backgrounds + data
+        nlines = 1 + 1 + len(model["signals"]) + len(model["backgrounds"]) + 1
+        xwidth = 0.4
+        ywidth = 0.03 * nlines
+        legend = ROOT.TLegend(
+            0.6, 0.89 - ywidth, 0.6 + xwidth, 0.89, "#bf{#it{LHCb Unofficial}}"
         )
-        legend_entries[legend_name] = {"title": title, "style": "l"}
-        i += 1
-    
-    # plot data points on top again
-    Binned_data.plotOn(frame, ROOT.RooFit.Name("remove_me_B"))
-    frame.remove("remove_me_A")
-    frame.remove("remove_me_B")
-    frame.addTH1(D0_Hist, "PE")
-    legend_entries[D0_Hist.GetName()] = {"title": D0_Hist.GetTitle(), "style": "PE"}
+        legend.SetFillStyle(0)
+        legend.SetBorderSize(0)
+        for key, val in legend_entries.items():
+            legend.AddEntry(key, val["title"], val["style"])
+        legend.Draw("same")
 
 
-    frame.SetYTitle(f"Entries MeV/c^{{2}})")
+        pull_frame = D0_M.frame(ROOT.RooFit.Title(" "))
+        pull_TH1 = ROOT.TH1D("pull_TH1", "pull_TH1", numbins, mD0_bins)
+        bad_pull_TH1 = ROOT.TH1D("bad_pull_TH1", "bad_pull_TH1", numbins, mD0_bins)
+        for i in range(pull_hist.GetN()):
+            if pull_hist.GetPointY(i) > 5:
+                pull_TH1.SetBinContent(i + 1, 5)
+                bad_pull_TH1.SetBinContent(i + 1, 5)
+            elif pull_hist.GetPointY(i) < -5:
+                pull_TH1.SetBinContent(i + 1, -5)
+                bad_pull_TH1.SetBinContent(i + 1, -5)
+            elif pull_hist.GetPointY(i) == 0:
+                pull_TH1.SetBinContent(i + 1, 0)
+                bad_pull_TH1.SetBinContent(i + 1, 0)
+            else:
+                pull_TH1.SetBinContent(i + 1, pull_hist.GetPointY(i))
+                if abs(pull_hist.GetPointY(i)) >= 3:
+                    bad_pull_TH1.SetBinContent(i + 1, pull_hist.GetPointY(i))
 
-    c = ROOT.TCanvas("fit", "fit", 900, 800)
-    fit_pad = ROOT.TPad("fit_pad", "fit pad", 0, 0.2, 1.0, 1.0)
-    fit_pad.Draw()
-    fit_pad.cd()
-    ROOT.gPad.SetLeftMargin(0.15)
-    # Draw the plot on a canvas
-    frame.GetYaxis().SetTitleOffset(1.4)
-    # frame.GetYaxis().SetMaxDigits(len(str(int(plotted_data.GetMaximum()/1000)))+1)  # TODO : a better fix than this?
-    frame.Draw()
-    
-    frame.GetXaxis().SetLabelSize(0)
-    frame.GetXaxis().SetTitleSize(0)
-    frame.Draw()
-    title_size = frame.GetYaxis().GetTitleSize() * 2.5
-    label_size = frame.GetYaxis().GetLabelSize() * 2.5
+        bad_pull_TH1.SetFillColor(ROOT.kRed)
+        pull_frame.addTH1(pull_TH1, "bar min0")
+        pull_frame.addTH1(bad_pull_TH1, "bar min0")
 
-    # plot_type + total + signals + backgrounds + data
-    nlines = 1 + 1 + len(model["signals"]) + len(model["backgrounds"]) + 1
-    xwidth = 0.4
-    ywidth = 0.03 * nlines
-    legend = ROOT.TLegend(
-        0.6, 0.89 - ywidth, 0.6 + xwidth, 0.89, "#bf{#it{LHCb Unofficial}}"
-    )
-    legend.SetFillStyle(0)
-    legend.SetBorderSize(0)
-    for key, val in legend_entries.items():
-        legend.AddEntry(key, val["title"], val["style"])
-    legend.Draw("same")
+        c.cd(0)
+        pull_pad = ROOT.TPad("pull_pad", "pull pad", 0.0, 0.0, 1.0, 0.31)
+        pull_pad.SetBottomMargin(0.2)
+        pull_pad.Draw()
+        pull_pad.cd()
 
 
-    pull_frame = D0_M.frame(ROOT.RooFit.Title(" "))
-    pull_TH1 = ROOT.TH1D("pull_TH1", "pull_TH1", numbins, mD0_bins)
-    bad_pull_TH1 = ROOT.TH1D("bad_pull_TH1", "bad_pull_TH1", numbins, mD0_bins)
-    for i in range(pull_hist.GetN()):
-        if pull_hist.GetPointY(i) > 5:
-            pull_TH1.SetBinContent(i + 1, 5)
-            bad_pull_TH1.SetBinContent(i + 1, 5)
-        elif pull_hist.GetPointY(i) < -5:
-            pull_TH1.SetBinContent(i + 1, -5)
-            bad_pull_TH1.SetBinContent(i + 1, -5)
-        elif pull_hist.GetPointY(i) == 0:
-            pull_TH1.SetBinContent(i + 1, 0)
-            bad_pull_TH1.SetBinContent(i + 1, 0)
-        else:
-            pull_TH1.SetBinContent(i + 1, pull_hist.GetPointY(i))
-            if abs(pull_hist.GetPointY(i)) >= 3:
-                bad_pull_TH1.SetBinContent(i + 1, pull_hist.GetPointY(i))
+        pull_frame.GetXaxis().SetLabelSize(label_size)
+        pull_frame.GetXaxis().SetTitleSize(title_size)
+        pull_frame.GetXaxis().SetTitleOffset(1)
+        pull_frame.GetYaxis().SetRangeUser(-5, 5)
+        pull_frame.GetYaxis().SetNdivisions(5)
+        pull_frame.GetYaxis().SetTitle("Pull [#sigma]")
+        pull_frame.GetYaxis().SetLabelSize(label_size)
+        pull_frame.GetYaxis().SetTitleSize(title_size)
+        pull_frame.GetYaxis().SetTitleOffset(0.39)
 
-    bad_pull_TH1.SetFillColor(ROOT.kRed)
-    pull_frame.addTH1(pull_TH1, "bar min0")
-    pull_frame.addTH1(bad_pull_TH1, "bar min0")
+        line = ROOT.TLine(D0_M.getMin(), 0, D0_M.getMax(), 0)
+        pull_frame.Draw()
+        line.Draw("same")
 
-    c.cd(0)
-    pull_pad = ROOT.TPad("pull_pad", "pull pad", 0.0, 0.0, 1.0, 0.31)
-    pull_pad.SetBottomMargin(0.2)
-    pull_pad.Draw()
-    pull_pad.cd()
-
-
-    pull_frame.GetXaxis().SetLabelSize(label_size)
-    pull_frame.GetXaxis().SetTitleSize(title_size)
-    pull_frame.GetXaxis().SetTitleOffset(1)
-    pull_frame.GetYaxis().SetRangeUser(-5, 5)
-    pull_frame.GetYaxis().SetNdivisions(5)
-    pull_frame.GetYaxis().SetTitle("Pull [#sigma]")
-    pull_frame.GetYaxis().SetLabelSize(label_size)
-    pull_frame.GetYaxis().SetTitleSize(title_size)
-    pull_frame.GetYaxis().SetTitleOffset(0.39)
-
-    line = ROOT.TLine(D0_M.getMin(), 0, D0_M.getMax(), 0)
-    pull_frame.Draw()
-    line.Draw("same")
-
-    three = ROOT.TLine(D0_M.getMin(), 3, D0_M.getMax(), 3)
-    nthree = ROOT.TLine(D0_M.getMin(), -3, D0_M.getMax(), -3)
-    three.SetLineColor(ROOT.kRed)
-    three.SetLineStyle(9)
-    nthree.SetLineColor(ROOT.kRed)
-    nthree.SetLineStyle(9)
-    three.Draw("same")
-    nthree.Draw("same")
+        three = ROOT.TLine(D0_M.getMin(), 3, D0_M.getMax(), 3)
+        nthree = ROOT.TLine(D0_M.getMin(), -3, D0_M.getMax(), -3)
+        three.SetLineColor(ROOT.kRed)
+        three.SetLineStyle(9)
+        nthree.SetLineColor(ROOT.kRed)
+        nthree.SetLineStyle(9)
+        three.Draw("same")
+        nthree.Draw("same")
 
     c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.root")
     c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.C")
