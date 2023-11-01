@@ -55,7 +55,7 @@ parser.add_argument(
 )
 parser.add_argument(
         "--path",
-        type=dir_path(options.path),
+        type=str,
         required=False,
         default=os.getcwd(),
         help="flag to set the path where the output files should be written to"
