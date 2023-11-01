@@ -137,10 +137,10 @@ a0 = RooRealVar("a0", "a0", -0.00966581)
 background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Model Signal
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.532129)
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.532129)
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up",  0.532129)
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down",  0.532129)
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.478981)
+frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.478981)
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.478981)
+frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.478981)
 
 if binned:
     # Creating the histograms for both polarities for D0 and D0bar by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
