@@ -154,19 +154,24 @@ Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mu, Csig, aL, nL, aR, 
 a = RooRealVar("a0", "a0", parameters[7])
 background = RooExponential("Exponential", "Exponential", D0_M, a)
 
-Nsig = RooRealVar("Nsig", "Nsig", 0.95*ttree.GetEntries(), 0, ttree.GetEntries())
-Nbkg = RooRealVar("Nbkg", "Nbkg", 0.05*ttree.GetEntries(), 0, ttree.GetEntries())
-
 if options.meson == "D0":
     if options.polarity == "down":
         frac = RooRealVar("frac_D0_down", "frac_D0_down", parameters[8])
+        Nsig = RooRealVar("Nsig", "Nsig", parameters[12])
+        Nbkg = RooRealVar("Nbkg", "Nbkg", parameters[13])  
     elif options.polarity == "up":
         frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[9])
+        Nsig = RooRealVar("Nsig", "Nsig", parameters[14])
+        Nbkg = RooRealVar("Nbkg", "Nbkg", parameters[15])  
 elif options.meson == "D0bar":
     if options.polarity == "down":
         frac = RooRealVar("frac_D0bar_down", "frac_D0bar_down", parameters[10])
+        Nsig = RooRealVar("Nsig", "Nsig", parameters[16])
+        Nbkg = RooRealVar("Nbkg", "Nbkg", parameters[17])  
     elif options.polarity == "up":
         frac = RooRealVar("frac_D0bar_up", "frac_D0bar_up", parameters[11])
+        Nsig = RooRealVar("Nsig", "Nsig", parameters[18])
+        Nbkg = RooRealVar("Nbkg", "Nbkg", parameters[19])  
 
 # Create model
 signal = RooAddPdf("signal", "signal", RooArgList(Gauss, Crystal), RooArgList(frac))
