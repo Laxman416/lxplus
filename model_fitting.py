@@ -15,7 +15,7 @@ import argparse
 import os
 from utils import plot
 import numpy as np
-from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooChebychev, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist
+from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooChebychev, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist, RooExponential
 from lhcbstyle import LHCbStyle
 
 # - - - - - - - FUNCTIONS - - - - - - - #
@@ -152,9 +152,9 @@ nR = RooRealVar("nR", "nR", parameters[7])
 Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, Cmu, Csig, aL, nL, aR, nR)
 
 frac = RooRealVar("frac", "frac", 0.575, 0, 1)
-# Define variables for background model
-a = RooRealVar("a", "a", parameters[8])
-chebychev = RooChebychev("Chebychev", "Chebychev", D0_M, RooArgList(a))
+# Model Exponential Background
+a = RooRealVar("a0", "a0", parameters[8])
+background = RooExponential("Exponential", "Exponential", D0_M, RooArgList(a))
 # Define Normalisation constants for signal and background
 Nsig = RooRealVar("Nsig", "Nsig", 0.95*ttree.GetEntries(), 0, ttree.GetEntries())
 Nbkg = RooRealVar("Nbkg", "Nbkg", 0.05*ttree.GetEntries(), 0, ttree.GetEntries())
@@ -162,13 +162,13 @@ Nbkg = RooRealVar("Nbkg", "Nbkg", 0.05*ttree.GetEntries(), 0, ttree.GetEntries()
 # Create model
 signal = RooAddPdf("signal", "signal", RooArgList(Gauss, Crystal), RooArgList(frac))
 model = {
-    "total": RooAddPdf("total", "Total", RooArgList(signal, chebychev), RooArgList(Nsig, Nbkg)), # extended likelihood
+    "total": RooAddPdf("total", "Total", RooArgList(signal, background), RooArgList(Nsig, Nbkg)), # extended likelihood
     "signals": {
         Gauss.GetName(): Gauss.GetTitle(),
         Crystal.GetName(): Crystal.GetTitle(),
     },
     "backgrounds": {
-        chebychev.GetName(): chebychev.GetTitle()
+        background.GetName(): background.GetTitle()
     }
 }
 
