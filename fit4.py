@@ -55,7 +55,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--path",
-    type=dir_pat,
+    type=dir_path,
     required=False,
     default=os.getcwd(),
     help="flag to set where the data is."
@@ -70,6 +70,17 @@ ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
 x = RooRealVar("D0_MM", "D0 mass / [MeV]", 1820, 1910) # D0_MM - invariant mass
 data = RooDataSet("data", "Data", ttree, RooArgSet(x))
+
+def dir_path(string):
+    '''
+    Checks if a given string is the path to a directory.
+    If affirmative, returns the string. If negative, gives an error.
+    '''
+    if os.path.isdir(string):
+        return string
+    else:
+        raise NotADirectoryError(string)
+        
 
 
 
