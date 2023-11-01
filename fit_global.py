@@ -135,7 +135,7 @@ crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, Cmu, Csig, aL, nL, aR,
 
 # Model Exponential Background
 a0 = RooRealVar("a0", "a0", -0.008, -1, 0)
-background = RooExponential("exponential", "exponential", D0_M, RooArgList(a0))
+background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Model Signal
 frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.567, 0, 1)
