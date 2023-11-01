@@ -1,7 +1,7 @@
 """
 fit_global.py
 
-This code is used to perform a global fit on the selected data. In order to do so a simulatenous fit is done on the four datasets (with different mesons and polarities). This simulatenous fit keeps all variables constant across the four fits except for the normalization constants which are allowed to vary independently. The model used consists of a Crystal Ball function and a Gaussian distribution to model the signal and a Chebychev polynomial to model the background.
+This code is used to perform a global fit on the selected data. In order to do so a simulatenous fit is done on the four datasets (with different mesons and polarities). This simulatenous fit keeps all variables constant across the four fits except for the normalization constants which are allowed to vary independently. The model used consists of a Crystal Ball function and a Gaussian distribution to model the signal and an Exponential decay to model the background.
 The year of interest and size of the data to be analysed must be specified using the required flags --year --size. It is necessary to specify if the fit should be performed on the binned data or the unbinned data using the flag --binned_fit. There is a flag --path, which is not required. This one is used to specify the directory where the input data is located, and where the output file should be written. By default it is set to be the current working directory.
 It outputs the value of the constants shared in the simultaneous fit to a text file. This code is heavily inspired by Marc Oriol Pérez (marc.oriolperez@student.manchester.ac.uk), however it has been redesigned so that the binned fit is succesfully performed.
 
@@ -14,7 +14,7 @@ import numpy as np
 import uproot
 import argparse
 import os
-from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooChebychev, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist
+from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist, RooExponential
 import time 
 start_time = time.time()
 def dir_path(string):
@@ -121,21 +121,21 @@ D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
 
 # Model Gaussian
 mean = RooRealVar("mean", "mean", 1865, 1850, 1880)
-sigma = RooRealVar("sigma", "sigma", 6.59, 0, 100)
+sigma = RooRealVar("sigma", "sigma", 6.42, 0, 100)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
 Cmu = RooRealVar("Cmu", "Cmu", 1865.07, 1855, 1875)
-Csig = RooRealVar("Csig", "Csig", 10.65, 0, 100)
-aL = RooRealVar("aL", "aL", 1.77, -10, 10)
-nL = RooRealVar("nL", "nL", 9.5, -10, 10)
-aR = RooRealVar("aR", "aR", 3.73, -10, 10)
-nR = RooRealVar("nR", "nR", 4.34, -10, 10)
+Csig = RooRealVar("Csig", "Csig", 10.24, 0, 100)
+aL = RooRealVar("aL", "aL", 1.70, -10, 10)
+nL = RooRealVar("nL", "nL", 8.4, -10, 10)
+aR = RooRealVar("aR", "aR", 2.34, -10, 10)
+nR = RooRealVar("nR", "nR", 8.16, -10, 10)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, Cmu, Csig, aL, nL, aR, nR)
 
-# Model Chebychev Background
-a0 = RooRealVar("a0", "a0", -0.4, -5, 5)
-background = RooChebychev("chebyshev", "chebyshev", D0_M, RooArgList(a0))
+# Model Exponential Background
+a0 = RooRealVar("a0", "a0", -0.008, -1, 0)
+background = RooExponential("exponential", "exponential", D0_M, RooArgList(a0))
 
 # Model Signal
 frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.567, 0, 1)
