@@ -138,16 +138,17 @@ ttree.SetBranchStatus("D0_MM", 1)
 D0_M = RooRealVar("D0_MM", "D0 mass / [MeV]", 1810, 1910) # D0_MM - invariant mass
 
 # Define variables for signal model
-mu = RooRealVar("mu", "mu", 1865, 1862, 1868)
-Gsig = RooRealVar("sigma", "sigma", 6.59, 0, 100)
+mu = RooRealVar("mu", "mu", parameters[0])
+Gsig = RooRealVar("sigma", "sigma", parameters[1])
 Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
 
-Csig = RooRealVar("Csig", "Csig", 10.65, 0, 100)
-aL = RooRealVar("aL", "aL", 1.77, -10, 10)
-nL = RooRealVar("nL", "nL", 9.5, -10, 10)
+Cmu = RooRealVar("Cmu", "Cmu", parameters[2])
+Csig = RooRealVar("Csig", "Csig", parameters[3])
+aL = RooRealVar("aL", "aL", parameters[4])
+nL = RooRealVar("nL", "nL", parameters[5])
 aR = RooRealVar("aR", "aR", parameters[6])
 nR = RooRealVar("nR", "nR", parameters[7])
-Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mu, Csig, aL, nL, aR, nR)
+Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, Cmu, Csig, aL, nL, aR, nR)
 
 frac = RooRealVar("frac", "frac", 0.575, 0, 1)
 # Define variables for background model
@@ -336,11 +337,11 @@ else:
     model["total"].fitTo(unbinned_data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
     # Generate plots
     chi2, pull_mean, pull_std = plot(D0_M, unbinned_data, model, nbins=numbins, setlogy=False, save_to=f'{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}', plot_type=f"20{options.year} Mag{(options.polarity).title()}", meson=options.meson)
+    # Write out results
+    file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
+    text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError()) + ', ' + str(chi2) + ', ' + str(pull_mean) + ', ' + str(pull_std)
+    file.write(text)
+    file.close
 
-# Write out results
-file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
-text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError()) + ', ' + str(chi2) + ', ' + str(pull_mean) + ', ' + str(pull_std)
-file.write(text)
-file.close
 
 print(ttree.GetEntries())
