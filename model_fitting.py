@@ -119,8 +119,8 @@ def parse_arguments():
 
 options = parse_arguments()
 numbins = 100
-lower_boundary = 1800
-upper_boundary = 1900
+lower_boundary = 1820
+upper_boundary = 1910
 
 if options.binned_fit=="y" or options.binned_fit=="Y":
     binned = True
@@ -136,7 +136,7 @@ ttree.Add(f"{options.input}/{options.meson}_{options.polarity}_data_{options.yea
 
 ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
-D0_M = RooRealVar("D0_MM", r"D0 mass / [MeVc^{-2}]", 1810, 1910) # D0_MM - invariant mass
+D0_M = RooRealVar("D0_MM", r"D0 mass / [MeVc^{-2}]", lower_boundary, upper_boundary) # D0_MM - invariant mass
 
 # Define variables for signal model
 mu = RooRealVar("mu", "mu", parameters[0])
@@ -175,6 +175,7 @@ model = {
 # Fit data
 if binned:
     with LHCbStyle():
+        plot_type: str = "LHCb Simulation",
         # Creates the histogram for the meson by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
         # TTree.Draw plots a histogram with name D0_Hist and given bin parameters and saves it to memory using: >>
         ttree.Draw(f"D0_MM>>D0_Hist({numbins},{lower_boundary},{upper_boundary})")
@@ -186,7 +187,7 @@ if binned:
         result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
 
         mD0 = 1864.84
-        mD0_range = (mD0-54, mD0+45)
+        mD0_range = (mD0-44.84, mD0+45.16)
         mD0_bins = np.linspace(*mD0_range, numbins+1)
 
         frame = D0_M.frame(RooFit.Name(""))
@@ -251,9 +252,9 @@ if binned:
         fit_pad = ROOT.TPad("fit_pad", "fit pad", 0, 0.2, 1.0, 1.0)
         fit_pad.Draw()
         fit_pad.cd()
-        ROOT.gPad.SetLeftMargin(0.15)
+        #ROOT.gPad.SetLeftMargin(0.15)
         # Draw the plot on a canvas
-        frame.GetYaxis().SetTitleOffset(1.4)
+        # frame.GetYaxis().SetTitleOffset(1.4)
         # frame.GetYaxis().SetMaxDigits(len(str(int(plotted_data.GetMaximum()/1000)))+1)  # TODO : a better fix than this?
         frame.Draw()
         
@@ -268,10 +269,11 @@ if binned:
         xwidth = 0.4
         ywidth = 0.03 * nlines
         legend = ROOT.TLegend(
-            0.6, 0.89 - ywidth, 0.6 + xwidth, 0.89, "#bf{#it{LHCb Unofficial}}"
+            0.18, 0.89 - ywidth, 0.18 + xwidth, 0.89, "#bf{#it{+plot_type+}}"
         )
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
+        legend.SetTextSize(label_size*0.33)
         for key, val in legend_entries.items():
             legend.AddEntry(key, val["title"], val["style"])
         legend.Draw("same")
@@ -301,7 +303,7 @@ if binned:
 
         c.cd(0)
         pull_pad = ROOT.TPad("pull_pad", "pull pad", 0.0, 0.0, 1.0, 0.31)
-        pull_pad.SetBottomMargin(0.2)
+        pull_pad.SetBottomMargin(0.4)
         pull_pad.Draw()
         pull_pad.cd()
 
