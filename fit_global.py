@@ -139,7 +139,7 @@ background = RooExponential("exponential", "exponential", D0_M, a0)
 # Model Signal
 frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.62, 0, 1)
 frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.62, 0, 1)
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.62, 0, 0)
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.62, 0, 1)
 frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.62, 0, 1)
 
 if binned:
