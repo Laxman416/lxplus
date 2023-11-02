@@ -155,7 +155,7 @@ a = RooRealVar("a0", "a0", parameters[7])
 background = RooExponential("Exponential", "Exponential", D0_M, a)
 
 if options.meson == "D0":
-    # D0 MagDowb
+    # D0 MagDown
     if options.polarity == "down":
         frac = RooRealVar("frac_D0_down", "frac_D0_down", parameters[8])
         Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[12])
