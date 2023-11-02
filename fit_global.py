@@ -137,10 +137,10 @@ a0 = RooRealVar("a0", "a0", -0.008, -1, 0)
 background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Model Signal
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.567, 0.3, 0.7)
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.567, 0.3, 0.7)
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.567, 0.3, 0.7)
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.567, 0.3, 0.7)
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.567)
+frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.567)
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.567)
+frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.567)
 
 if binned:
     # Creating the histograms for both polarities for D0 and D0bar by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
@@ -266,6 +266,6 @@ else:
 fitResult.Print()
 
 # Get results
-parameters = np.array([mean.getValV(), sigma.getValV(), Cmu.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV()])
+parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV(), frac_D0_down.getValV(), frac_D0_up.getValV(), frac_D0bar_down.getValV(), frac_D0bar_up.getValV()])
 np.savetxt(f"{args.path}/fit_parameters.txt", parameters, delimiter=',')
 print("My program took", time.time() - start_time, "to run")
