@@ -126,7 +126,7 @@ gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
 Csig = RooRealVar("Csig", "Csig", 5.63, 0, 20)
-aL = RooRealVar("aL", "aL", 2.2, -10, 10)
+aL = RooRealVar("aL", "aL", 5.7, -10, 10)
 nL = RooRealVar("nL", "nL", 2, -10, 10)
 aR = RooRealVar("aR", "aR", 5.73, -10, 10)
 nR = RooRealVar("nR", "nR", 3.1, -10, 10)
