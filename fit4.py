@@ -173,7 +173,7 @@ def gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polarity
     aL15 = RooRealVar("aL", "aL", 1.70, 0, 2)
     nL15 = RooRealVar("nL", "nL", 16, 14, 18)
     aR15 = RooRealVar("aR", "aR", 2.34, -10, 10)
-    nR15 = RooRealVar("nR", "nR", 28, 25, 33)
+    nR15 = RooRealVar("nR", "nR", 0, 25, 100)
     Crystal15 = RooCrystalBall("Crystal", "Crystal Ball", x, Cmu15, Csig15, aL15, nL15, aR15, nR15)
 
     frac15 = RooRealVar("frac15", "frac15", 0.567, 0, 1)
