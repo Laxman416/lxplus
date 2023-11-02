@@ -107,9 +107,9 @@ def gauss_crystal_chebychev(x,data,ttree,meson=options.meson,polarity=options.po
     Cmu14 = RooRealVar("Cmu", "Cmu", 1865.07, 1855, 1875)
     Csig14 = RooRealVar("Csig", "Csig", 10.65, 0, 100)
     aL14 = RooRealVar("aL", "aL", 1.77, -10, 10)
-    nL14 = RooRealVar("nL", "nL", 9.5, -10, 10)
+    nL14 = RooRealVar("nL", "nL", 9.5, 0, 30)
     aR14 = RooRealVar("aR", "aR", 3.73, -10, 10)
-    nR14 = RooRealVar("nR", "nR", 4.34, -10, 10)
+    nR14 = RooRealVar("nR", "nR", 4.34, 0, 30)
     Crystal14 = RooCrystalBall("Crystal", "Crystal Ball", x, Cmu14, Csig14, aL14, nL14, aR14, nR14)
 
     frac14 = RooRealVar("frac14", "frac14", 0.567, 0, 1)
