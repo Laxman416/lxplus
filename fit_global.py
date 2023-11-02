@@ -82,7 +82,7 @@ args = parse_arguments()
 fit_params = {}
 fit_PDFs = {}
 # Bin Parameters
-numbins = 100
+numbins = 10
 lower_boundary = 1820
 upper_boundary = 1910
 
