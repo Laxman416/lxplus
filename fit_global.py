@@ -173,8 +173,8 @@ if binned:
     binned_sample.defineType("Binned_D0_up_sample")
     signal_D0_up = RooAddPdf("signal_D0_up", "signal D0 up", RooArgList(gaussian, crystal), RooArgList(frac_D0_up))
     # Generate normalization variables for D0 MagUp
-    Nsig_D0_up = RooRealVar("Nsig_D0_up", "Nsig D0 up", 0.9*Binned_D0_up.numEntries(), 0, Binned_D0_up.numEntries())
-    Nbkg_D0_up = RooRealVar("Nbkg_D0_up", "Nbkg D0 up", 0.1*Binned_D0_up.numEntries(), 0, Binned_D0_up.numEntries())
+    Nsig_D0_up = RooRealVar("Nsig_D0_up", "Nsig D0 up", 0.95*Binned_D0_up.numEntries(), 0.9*Binned_D0_up.numEntries(), Binned_D0_up.numEntries())
+    Nbkg_D0_up = RooRealVar("Nbkg_D0_up", "Nbkg D0 up", 0.05*Binned_D0_up.numEntries(), 0, 0.1*Binned_D0_up.numEntries())
     # Generate model for D0 MagUp
     model_D0_up = RooAddPdf("model_D0_up", "model D0 up", [signal_D0_up, background], [Nsig_D0_up, Nbkg_D0_up])
     simultaneous_pdf.addPdf(model_D0_up, "Binned_D0_up_sample")
@@ -183,8 +183,8 @@ if binned:
     binned_sample.defineType("Binned_D0_down_sample")
     signal_D0_down = RooAddPdf("signal_D0_down", "signal D0 down", RooArgList(gaussian, crystal), RooArgList(frac_D0_down))
     # Generate normalization variables for D0 MagDown
-    Nsig_D0_down = RooRealVar("Nsig_D0_down", "Nsig D0 down", 0.9*Binned_D0_down.numEntries(), 0, Binned_D0_down.numEntries())
-    Nbkg_D0_down = RooRealVar("Nbkg_D0_down", "Nbkg D0 down", 0.1*Binned_D0_down.numEntries(), 0, Binned_D0_down.numEntries())
+    Nsig_D0_down = RooRealVar("Nsig_D0_down", "Nsig D0 down", 0.95*Binned_D0_down.numEntries(), 0.9*Binned_D0_down.numEntries(), Binned_D0_down.numEntries())
+    Nbkg_D0_down = RooRealVar("Nbkg_D0_down", "Nbkg D0 down", 0.05*Binned_D0_down.numEntries(), 0, 0.1*Binned_D0_down.numEntries())
     # Generate model for D0 MagDown
     model_D0_down = RooAddPdf("model_D0_down", "model D0 down", [signal_D0_down, background], [Nsig_D0_down, Nbkg_D0_down])
     simultaneous_pdf.addPdf(model_D0_down, "Binned_D0_down_sample")
@@ -193,8 +193,8 @@ if binned:
     binned_sample.defineType("Binned_D0bar_up_sample")
     signal_D0bar_up = RooAddPdf("signal_D0bar_up", "signal D0bar up", RooArgList(gaussian, crystal), RooArgList(frac_D0bar_up))
     # Generate normalization variables for D0bar MagUp
-    Nsig_D0bar_up = RooRealVar("Nsig_D0bar_up", "Nsig D0bar up", 0.9*Binned_D0bar_up.numEntries(), 0, Binned_D0bar_up.numEntries())
-    Nbkg_D0bar_up = RooRealVar("Nbkg_D0bar_up", "Nbkg D0bar up", 0.1*Binned_D0bar_up.numEntries(), 0, Binned_D0bar_up.numEntries())
+    Nsig_D0bar_up = RooRealVar("Nsig_D0bar_up", "Nsig D0bar up", 0.95*Binned_D0bar_up.numEntries(), 0.9*Binned_D0bar_up.numEntries(), Binned_D0bar_up.numEntries())
+    Nbkg_D0bar_up = RooRealVar("Nbkg_D0bar_up", "Nbkg D0bar up", 0.05*Binned_D0bar_up.numEntries(), 0, 0.1*Binned_D0bar_up.numEntries())
     # Generate model for D0bar MagUp
     model_D0bar_up = RooAddPdf("model_D0bar_up", "model D0bar up", [signal_D0bar_up, background], [Nsig_D0bar_up, Nbkg_D0bar_up])
     simultaneous_pdf.addPdf(model_D0bar_up, "Binned_D0bar_up_sample")
@@ -203,8 +203,8 @@ if binned:
     binned_sample.defineType("Binned_D0bar_down_sample")
     signal_D0bar_down = RooAddPdf("signal_D0bar_down", "signal D0bar down", RooArgList(gaussian, crystal), RooArgList(frac_D0bar_down))
     # Generate normalization variables for D0bar MagDown
-    Nsig_D0bar_down = RooRealVar("Nsig_D0bar_down", "Nsig D0bar down", 0.9*Binned_D0bar_down.numEntries(), 0, Binned_D0bar_down.numEntries())
-    Nbkg_D0bar_down = RooRealVar("Nbkg_D0bar_down", "Nbkg D0bar down", 0.1*Binned_D0bar_down.numEntries(), 0, Binned_D0bar_down.numEntries())
+    Nsig_D0bar_down = RooRealVar("Nsig_D0bar_down", "Nsig D0bar down", 0.95*Binned_D0bar_down.numEntries(), 0.9*Binned_D0bar_down.numEntries(), Binned_D0bar_down.numEntries())
+    Nbkg_D0bar_down = RooRealVar("Nbkg_D0bar_down", "Nbkg D0bar down", 0.05*Binned_D0bar_down.numEntries(), 0, 0.1*Binned_D0bar_down.numEntries())
     # Generate model for D0bar MagDown
     model_D0bar_down = RooAddPdf("model_D0bar_down", "model D0bar down", [signal_D0bar_down, background], [Nsig_D0bar_down, Nbkg_D0bar_down])
     simultaneous_pdf.addPdf(model_D0bar_down, "Binned_D0bar_down_sample")
