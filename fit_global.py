@@ -127,7 +127,7 @@ gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 # Model CrystalBall
 Csig = RooRealVar("Csig", "Csig", 5.63, 0, 20)
 aL = RooRealVar("aL", "aL", 2.2, -10, 10)
-nL = RooRealVar("nL", "nL", 4, -10, 10)
+nL = RooRealVar("nL", "nL", 4, -10, 20)
 aR = RooRealVar("aR", "aR", -5.73, -10, 10)
 nR = RooRealVar("nR", "nR", 3.1, -10, 10)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
@@ -138,9 +138,9 @@ background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Model Signal
 frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.748, 0, 1)
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.5, 0.7, 0.75)
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.5, 0.7, 0.75)
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.5, 0.7, 0.75)
+frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 748, 0, 1)
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.748, 0, 1)
+frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.748, 0, 1)
 
 if binned:
     # Creating the histograms for both polarities for D0 and D0bar by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
