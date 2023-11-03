@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pylab as plt
 from pylab import cm
-from utils import plot
+from utils2 import plot
 import argparse
 import os
 
