@@ -121,13 +121,13 @@ D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
 
 # Model Gaussian
 mean = RooRealVar("mean", "mean", 1865, 1860, 1870)
-sigma = RooRealVar("sigma", "sigma", 8.54, 5, 15)
+sigma = RooRealVar("sigma", "sigma", 8.52, 5, 15)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
 Csig = RooRealVar("Csig", "Csig", 6.25, 5, 15)
 aL = RooRealVar("aL", "aL", 2.04, -10, 10)
-nL = RooRealVar("nL", "nL", 22, 18, 35)
+nL = RooRealVar("nL", "nL", 35, 18, 100)
 aR = RooRealVar("aR", "aR", 4.84, -10, 10)
 nR = RooRealVar("nR", "nR", 29.9, 20, 30)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
