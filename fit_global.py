@@ -120,20 +120,20 @@ ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
 D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
 
 # Model Gaussian
-mean = RooRealVar("mean", "mean", 1866, 1860, 1870)
-sigma = RooRealVar("sigma", "sigma", 4.9, 5, 15)
+mean = RooRealVar("mean", "mean", 1865, 1860, 1870)
+sigma = RooRealVar("sigma", "sigma", 8.54, 5, 15)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
-Csig = RooRealVar("Csig", "Csig", 8.14, 5, 15)
-aL = RooRealVar("aL", "aL", 1.72, -10, 10)
-nL = RooRealVar("nL", "nL", 16, 10, 20)
-aR = RooRealVar("aR", "aR", 2.3, -10, 10)
-nR = RooRealVar("nR", "nR", 28, 20, 30)
+Csig = RooRealVar("Csig", "Csig", 6.25, 5, 15)
+aL = RooRealVar("aL", "aL", 2.04, -10, 10)
+nL = RooRealVar("nL", "nL", 20, 18, 22)
+aR = RooRealVar("aR", "aR", 4.79, -10, 10)
+nR = RooRealVar("nR", "nR", 29.7, 20, 30)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Exponential Background
-a0 = RooRealVar("a0", "a0", -0.0072, -1, 0)
+a0 = RooRealVar("a0", "a0", -0.007, -1, 0)
 background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Model Signal
