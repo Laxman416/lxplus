@@ -129,7 +129,7 @@ Csig = RooRealVar("Csig", "Csig", 6.23, 5, 15)
 aL = RooRealVar("aL", "aL", 3.59, -10, 10)
 nL = RooRealVar("nL", "nL", 8.29, 8, 10)
 aR = RooRealVar("aR", "aR", 9.0, -10, 10)
-nR = RooRealVar("nR", "nR", 42.3, 20, 50)
+nR = RooRealVar("nR", "nR", 35, 20, 50)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Exponential Background
