@@ -82,9 +82,9 @@ args = parse_arguments()
 fit_params = {}
 fit_PDFs = {}
 # Bin Parameters
-numbins = 200
-lower_boundary = 1800
-upper_boundary = 1900
+numbins = 500
+lower_boundary = 1820
+upper_boundary = 1910
 
 if args.binned_fit=="y" or args.binned_fit=="Y":
     binned = True
@@ -120,27 +120,28 @@ ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
 D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
 
 # Model Gaussian
-mean = RooRealVar("mean", "mean", 1865.5,1860,1870)
-sigma = RooRealVar("sigma", "sigma", 8,0,10)
+mean = RooRealVar("mean", "mean", 1866, 1860, 1870)
+sigma = RooRealVar("sigma", "sigma", 8.36, 0, 40)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
-Csig = RooRealVar("Csig", "Csig", 6,0,10)
-aL = RooRealVar("aL", "aL", 2.478,0,10)
-nL = RooRealVar("nL", "nL", 9.9,0,15)
-aR = RooRealVar("aR", "aR", 8,0,15)
-nR = RooRealVar("nR", "nR", 25,20,30)
+Csig = RooRealVar("Csig", "Csig", 5.63, 0, 20)
+aL = RooRealVar("aL", "aL", 3.51, -10, 10)
+nL = RooRealVar("nL", "nL", 0.92, 0, 6)
+aR = RooRealVar("aR", "aR", -6.73, -10, 10)
+nR = RooRealVar("nR", "nR", 4.3, 1, 5)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Exponential Background
-a0 = RooRealVar("a0", "a0", -0.007,-1, 1)
+a0 = RooRealVar("a0", "a0", -0.0073, -1, 0)
 background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Model Signal
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.6,0.3,0.8)
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.6,0.3,0.8)
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.6,0.3,0.8)
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.6,0.3,0.8)
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.748, 0, 1)
+frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.5, 0.7, 0.75)
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.5, 0.7, 0.75)
+frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.5, 0.7, 0.75)
+
 
 if binned:
     # Creating the histograms for both polarities for D0 and D0bar by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
