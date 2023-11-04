@@ -120,27 +120,27 @@ ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
 D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
 
 # Model Gaussian
-mean = RooRealVar("mean", "mean", 1865.5)
-sigma = RooRealVar("sigma", "sigma", 6.31413)
+mean = RooRealVar("mean", "mean", 1865.5,1860,1870)
+sigma = RooRealVar("sigma", "sigma", 8,0,10)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
-Csig = RooRealVar("Csig", "Csig", 9.97499)
-aL = RooRealVar("aL", "aL", 1.7521)
-nL = RooRealVar("nL", "nL", 10)
-aR = RooRealVar("aR", "aR", 2.28482)
-nR = RooRealVar("nR", "nR", 10)
+Csig = RooRealVar("Csig", "Csig", 6,0,10)
+aL = RooRealVar("aL", "aL", 2.478,0,10)
+nL = RooRealVar("nL", "nL", 9.9,0,15)
+aR = RooRealVar("aR", "aR", 8,0,15)
+nR = RooRealVar("nR", "nR", 4,0,15)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Exponential Background
-a0 = RooRealVar("a0", "a0", -0.00966581)
+a0 = RooRealVar("a0", "a0", -0.007,-0.01, 0)
 background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Model Signal
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.478981)
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.478981)
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.478981)
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.478981)
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.6,0.3,0.8)
+frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.6,0.3,0.8)
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.6,0.3,0.8)
+frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.6,0.3,0.8)
 
 if binned:
     # Creating the histograms for both polarities for D0 and D0bar by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
