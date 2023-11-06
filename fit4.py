@@ -339,11 +339,11 @@ def gauss_gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.po
     
     #gaussian_1
     Gmu18 = RooRealVar("Gmu18", "Gmu18", 1865, 1835, 1875)
-    Gsig18 = RooRealVar("Gsig18", "Gsig18", 6.42, 0, 100)
+    Gsig18 = RooRealVar("Gsig18", "Gsig18", 10, 2, 100)
     Gauss18 = RooGaussian("Gauss18", "Gaussian", x, Gmu18, Gsig18)
 
     #gaussian_2
-    Gsig18_2 = RooRealVar("Gsig18_2", "Gsig18_1", 6.42, 0, 100)
+    Gsig18_2 = RooRealVar("Gsig18_2", "Gsig18_1", 4, 0, 100)
     Gauss18_2 = RooGaussian("Gauss18_2", "Gaussian_1", x, Gmu18, Gsig18_2)
 
     #Crystal Ball 1 parameters
