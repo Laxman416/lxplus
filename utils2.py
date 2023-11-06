@@ -182,23 +182,35 @@ def plot(
         pull.GetXaxis().SetTitle("Distance from fit [#sigma]")
         pull.GetYaxis().SetTitle("Entries")
         pull.Draw('same')
+
+
+
         pull_mean = pull.GetMean()
         pull_std = pull.GetStdDev()
+        pull_mean_error = pull.GetMeanError()
+        pull_std_error = pull.GetStdDevError()
         float_pull_mean = float(pull_mean)
         float_pull_std = float(pull_std)
+        float_pull_mean_error = float(pull_mean_error)
+        float_pull_std_error = float(pull_std_error)
+        rounded_pull_mean = round(float_pull_mean, 4)
+        rounded_pull_std = round(float_pull_std, 4)
+        rounded_pull_mean_error = round(float_pull_mean_error, 4)
+        rounded_pull_std_error = round(float_pull_std_error, 4)
+
 
         gaussian_fit = R.TF1("gaussian_fit", "gaus", -5, 5)
         pull.Fit(gaussian_fit)
         gaussian_fit.SetLineColor(4)   
 
-        pull_mean3 = gaussian_fit.GetParameter(1)
+        pull_mean3 = gaussian_fit.GetParameter(1) #From Gaussian
         pull_std3 = gaussian_fit.GetParameter(2)
-        rounded_pull_mean3 = round(pull_mean3, 4)
-        rounded_pull_std3 = round(pull_std3, 4)
-
-        # Display the fit results (mean and standard deviation)
-        print("Pull Mean: {:.4f}".format(pull_mean3))
-        print("Pull Std Dev: {:.4f}".format(pull_std3))
+        pull_mean_error3 = gaussian_fit.GetParError(1)
+        pull_std_error3 = gaussian_fit.GetParError(2)
+        rounded_pull_mean3 = round(pull_mean3, 3)
+        rounded_pull_std3 = round(pull_std3, 3)
+        rounded_pull_mean_error3 = round(pull_mean_error3, 3)
+        rounded_pull_std_error3 = round(pull_std_error3, 3)
 
         gaussian_fit.Draw('same')
 
@@ -212,8 +224,7 @@ def plot(
         legend2.SetTextSize(0.045)
         max_length = 3 
         
-        rounded_pull_mean = round(float_pull_mean, 4)
-        rounded_pull_std = round(float_pull_std, 4)
+
         legend2.SetTextSize(0.04)
         legend2.AddEntry(data.GetName(), data.GetTitle(), "l")
         legend2.AddEntry(gaussian_fit, "Gaussian Fit", "l")
@@ -221,10 +232,10 @@ def plot(
         latex = R.TLatex()
         latex.SetNDC()
         latex.SetTextSize(0.04)
-        latex.DrawLatex(0.7 ,0.77 , 'pull mean: ' + str(rounded_pull_mean))
-        latex.DrawLatex(0.7 ,0.73 , 'pull \sigma: ' + str(rounded_pull_std))
-        latex.DrawLatex(0.7 ,0.69 , 'pull mean: ' + str(rounded_pull_mean3))
-        latex.DrawLatex(0.7 ,0.65 , 'pull \sigma: ' + str(rounded_pull_std3))
+        latex.DrawLatex(0.7 ,0.77 , 'pull mean: ' + str(rounded_pull_mean) + '\pm' + str(rounded_pull_mean_error))
+        latex.DrawLatex(0.7 ,0.73 , 'pull \sigma: ' + str(rounded_pull_std) + '\pm' + str(rounded_pull_std_error))
+        latex.DrawLatex(0.7 ,0.69 , 'pull mean: ' + str(rounded_pull_mean3) + '\pm' + str(rounded_pull_mean_error3))
+        latex.DrawLatex(0.7 ,0.65 , 'pull \sigma: ' + str(rounded_pull_std3) + '\pm' + str(rounded_pull_std_error3))
     
         y = []
         x = []

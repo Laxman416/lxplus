@@ -150,8 +150,8 @@ def gauss_crystal_chebychev(x,data,ttree,meson=options.meson,polarity=options.po
 
         errs = np.sqrt(np.diag(cov))
 
-        print(f"mu = {params[1]} +/- {errs[1]}")
-        print(f"sig = {params[2]} +/- {errs[2]}")
+        print(f"mu scipy= {params[1]} +/- {errs[1]}")
+        print(f"sig scipy= {params[2]} +/- {errs[2]}")
         return
 
     elif binned=='y':
@@ -219,8 +219,8 @@ def gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polarity
 
         errs = np.sqrt(np.diag(cov))
 
-        print(f"mu = {params[1]} +/- {errs[1]}")
-        print(f"sig = {params[2]} +/- {errs[2]}")
+        print(f"mu scipy = {params[1]} +/- {errs[1]}")
+        print(f"sig scipy= {params[2]} +/- {errs[2]}")
     elif binned=='y':
         print()
     return
@@ -276,8 +276,8 @@ def gauss_johnson_exp(x,data,ttree,meson=options.meson,polarity=options.polarity
 
         errs = np.sqrt(np.diag(cov))
 
-        print(f"mu = {params[1]} +/- {errs[1]}")
-        print(f"sig = {params[2]} +/- {errs[2]}")
+        print(f"mu scipy= {params[1]} +/- {errs[1]}")
+        print(f"sig scipy= {params[2]} +/- {errs[2]}")
     elif binned=='y':
         print()
     return
@@ -350,8 +350,8 @@ def crystal_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polari
 
         errs = np.sqrt(np.diag(cov))
 
-        print(f"mu = {params[1]} +/- {errs[1]}")
-        print(f"sig = {params[2]} +/- {errs[2]}")
+        print(f"mu scipy= {params[1]} +/- {errs[1]}")
+        print(f"sig scipy= {params[2]} +/- {errs[2]}")
     elif binned=='y':
         print()
     return
@@ -417,8 +417,8 @@ def gauss_gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.po
 
         errs = np.sqrt(np.diag(cov))
 
-        print(f"mu = {params[1]} +/- {errs[1]}")
-        print(f"sig = {params[2]} +/- {errs[2]}")
+        print(f"mu scipy = {params[1]} +/- {errs[1]}")
+        print(f"sig scipy = {params[2]} +/- {errs[2]}")
 
     elif binned=='y':
         print()
