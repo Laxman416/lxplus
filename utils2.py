@@ -1,6 +1,10 @@
 import ROOT as R
 from lhcbstyle import LHCbStyle
 from ROOT import gROOT, RooGaussian
+from scipy.optimize import curve_fit
+
+def gaussian(x, A, mu, sig):
+    return A * np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
 
 def plot(
     observable: R.RooRealVar,
