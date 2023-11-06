@@ -1,12 +1,12 @@
 """
 fit_global.py
 
-This code is used to perform a global fit on the selected data. In order to do so a simulatenous fit is done on the four datasets (with different mesons and polarities). This simulatenous fit keeps all variables constant across the four fits except for the normalization constants which are allowed to vary independently. The model used consists of a Crystal Ball function and a Gaussian distribution to model the signal and an Exponential decay to model the background.
+This code is used to perform a global fit on the selected data. In order to do so a simulatenous fit is done on the four datasets (with different mesons and polarities). This simulatenous fit keeps all variables constant across the four fits except for the normalisation constants which are allowed to vary independently. The model used consists of a Crystal Ball function and a Gaussian distribution to model the signal and an Exponential decay to model the background.
 The year of interest and size of the data to be analysed must be specified using the required flags --year --size. It is necessary to specify if the fit should be performed on the binned data or the unbinned data using the flag --binned_fit. There is a flag --path, which is not required. This one is used to specify the directory where the input data is located, and where the output file should be written. By default it is set to be the current working directory.
 It outputs the value of the constants shared in the simultaneous fit to a text file. This code is heavily inspired by Marc Oriol Pérez (marc.oriolperez@student.manchester.ac.uk), however it has been redesigned so that the binned fit is succesfully performed.
 
 Author: Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)
-Last edited: 27th October 2023
+Last edited: 5th November 2023
 """
 
 import ROOT
@@ -79,8 +79,6 @@ def parse_arguments():
 
 # - - - - - - - MAIN BODY - - - - - - - #
 args = parse_arguments()
-fit_params = {}
-fit_PDFs = {}
 # Bin Parameters
 numbins = 10000
 lower_boundary = 1820
@@ -121,8 +119,12 @@ D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
 
 # Model Gaussian
 mean = RooRealVar("mean", "mean", 1865, 1860, 1870)
-sigma = RooRealVar("sigma", "sigma", 8.58, 5, 15)
+sigma = RooRealVar("sigma", "sigma", 10, 5, 15)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
+
+# Model Gaussian 2
+sigma2 = RooRealVar("sigma", "sigma", 4, 0, 10)
+gaussian2 = RooGaussian("gauss", "gauss", D0_M, mean, sigma2)
 
 # Model CrystalBall
 Csig = RooRealVar("Csig", "Csig", 6.23, 5, 15)
@@ -136,11 +138,19 @@ crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR
 a0 = RooRealVar("a0", "a0", -0.0073, -1, 0)
 background = RooExponential("exponential", "exponential", D0_M, a0)
 
-# Model Signal
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.59, 0.4, 0.6)
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.59, 0.4, 0.6)
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.59, 0.4, 0.6)
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.59, 0.4, 0.6)
+# Model Signal. For N PDFs need N-1 fractions 
+# DO MagUp
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0, 0.5, 1)
+frac_D0_up2 = RooRealVar("frac_D0_up2", "frac_D0_up2", 0, 0.5, 1)
+# D0 MagDown
+frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0, 0.5, 1)
+frac_D0_down2 = RooRealVar("frac_D0_down2", "frac_D0_down2", 0, 0.5, 1)
+# D0bar MagUp
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0, 0.5, 1)
+frac_D0bar_up2 = RooRealVar("frac_D0bar_up2", "frac_D0bar_up2", 0, 0.5, 1)
+# D0bar MagDown
+frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0, 0.5, 1)
+frac_D0bar_down2 = RooRealVar("frac_D0bar_down2", "frac_D0bar_down2", 0, 0.5, 1)
 
 if binned:
     # Creating the histograms for both polarities for D0 and D0bar by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
@@ -171,7 +181,7 @@ if binned:
 
     # Model Signal for D0 MagUp
     binned_sample.defineType("Binned_D0_up_sample")
-    signal_D0_up = RooAddPdf("signal_D0_up", "signal D0 up", RooArgList(gaussian, crystal), RooArgList(frac_D0_up))
+    signal_D0_up = RooAddPdf("signal_D0_up", "signal D0 up", RooArgList(gaussian, gaussian2, crystal), RooArgList(frac_D0_up, frac_D0_up2))
     # Generate normalization variables for D0 MagUp
     Nsig_D0_up = RooRealVar("Nsig_D0_up", "Nsig D0 up", 0.95*Binned_D0_up.numEntries(), 0.9*Binned_D0bar_up.numEntries(), Binned_D0_up.numEntries())
     Nbkg_D0_up = RooRealVar("Nbkg_D0_up", "Nbkg D0 up", 0.05*Binned_D0_up.numEntries(), 0, 0.1*Binned_D0_up.numEntries())
@@ -181,7 +191,7 @@ if binned:
 
     # Model Signal for D0 MagDown
     binned_sample.defineType("Binned_D0_down_sample")
-    signal_D0_down = RooAddPdf("signal_D0_down", "signal D0 down", RooArgList(gaussian, crystal), RooArgList(frac_D0_down))
+    signal_D0_down = RooAddPdf("signal_D0_down", "signal D0 down", RooArgList(gaussian, gaussian2, crystal), RooArgList(frac_D0_down, frac_D0_down2))
     # Generate normalization variables for D0 MagDown
     Nsig_D0_down = RooRealVar("Nsig_D0_down", "Nsig D0 down", 0.95*Binned_D0_down.numEntries(), 0.9*Binned_D0bar_up.numEntries(), Binned_D0_down.numEntries())
     Nbkg_D0_down = RooRealVar("Nbkg_D0_down", "Nbkg D0 down", 0.05*Binned_D0_down.numEntries(), 0, 0.1*Binned_D0_down.numEntries())
@@ -191,7 +201,7 @@ if binned:
 
     # Model Signal for D0bar MagUp
     binned_sample.defineType("Binned_D0bar_up_sample")
-    signal_D0bar_up = RooAddPdf("signal_D0bar_up", "signal D0bar up", RooArgList(gaussian, crystal), RooArgList(frac_D0bar_up))
+    signal_D0bar_up = RooAddPdf("signal_D0bar_up", "signal D0bar up", RooArgList(gaussian, gaussian2, crystal), RooArgList(frac_D0bar_up, frac_D0bar_up2))
     # Generate normalization variables for D0bar MagUp
     Nsig_D0bar_up = RooRealVar("Nsig_D0bar_up", "Nsig D0bar up", 0.95*Binned_D0bar_up.numEntries(), 0.9*Binned_D0bar_up.numEntries(), Binned_D0bar_up.numEntries())
     Nbkg_D0bar_up = RooRealVar("Nbkg_D0bar_up", "Nbkg D0bar up", 0.05*Binned_D0bar_up.numEntries(), 0, 0.1*Binned_D0bar_up.numEntries())
@@ -201,7 +211,7 @@ if binned:
 
     # Model Signal for D0bar MagDown
     binned_sample.defineType("Binned_D0bar_down_sample")
-    signal_D0bar_down = RooAddPdf("signal_D0bar_down", "signal D0bar down", RooArgList(gaussian, crystal), RooArgList(frac_D0bar_down))
+    signal_D0bar_down = RooAddPdf("signal_D0bar_down", "signal D0bar down", RooArgList(gaussian, gaussian2, crystal), RooArgList(frac_D0bar_down, frac_D0bar_down2))
     # Generate normalization variables for D0bar MagDown
     Nsig_D0bar_down = RooRealVar("Nsig_D0bar_down", "Nsig D0bar down", 0.95*Binned_D0bar_down.numEntries(), 0.9*Binned_D0bar_up.numEntries(), Binned_D0bar_down.numEntries())
     Nbkg_D0bar_down = RooRealVar("Nbkg_D0bar_down", "Nbkg D0bar down", 0.05*Binned_D0bar_down.numEntries(), 0, 0.1*Binned_D0bar_down.numEntries())
@@ -266,6 +276,6 @@ else:
 fitResult.Print()
 
 # Get results
-parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV(), frac_D0_down.getValV(), frac_D0_up.getValV(), frac_D0bar_down.getValV(), frac_D0bar_up.getValV(), Nsig_D0_down.getValV(), Nbkg_D0_down.getValV(), Nsig_D0_up.getValV(), Nbkg_D0_up.getValV(), Nsig_D0bar_down.getValV(), Nbkg_D0bar_down.getValV(), Nsig_D0bar_up.getValV(), Nbkg_D0bar_up.getValV()])
+parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV(), frac_D0_down.getValV(), frac_D0_up.getValV(), frac_D0bar_down.getValV(), frac_D0bar_up.getValV(), Nsig_D0_down.getValV(), Nbkg_D0_down.getValV(), Nsig_D0_up.getValV(), Nbkg_D0_up.getValV(), Nsig_D0bar_down.getValV(), Nbkg_D0bar_down.getValV(), Nsig_D0bar_up.getValV(), Nbkg_D0bar_up.getValV(), sigma2.getValV(), frac_D0_down2.getValV(), frac_D0_up2.getValV(), frac_D0bar_down2.getValV(), frac_D0bar_up2.getValV()])
 np.savetxt(f"{args.path}/fit_parameters.txt", parameters, delimiter=',')
 print("My program took", time.time() - start_time, "to run")
