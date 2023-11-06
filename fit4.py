@@ -8,6 +8,7 @@ from pylab import cm
 from utils2 import plot
 import argparse
 import os
+import numpy
 
 # -- parsing -- #
 #new comment
