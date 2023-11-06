@@ -363,8 +363,8 @@ def gauss_gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.po
     Nbkg18 = RooRealVar("Nbkg18", "Nbkg18", 0.05*ttree.GetEntries(), 0, ttree.GetEntries())
 
     
-    frac18 = RooRealVar("frac18", "frac18", 0.567, 0.3, 0.7)
-    frac18_1 = RooRealVar("frac18", "frac18", 0.567, 0.3, 0.7)
+    frac18 = RooRealVar("frac18", "frac18", 0.3, 0, 1)
+    frac18_1 = RooRealVar("frac18", "frac18", 0.34, 0, 1)
 
     if binned=='n':
         signal = RooAddPdf("signal", "signal", RooArgList(Gauss18, Gauss18_2, Crystal18_1), RooArgList(frac18,frac18_1))
