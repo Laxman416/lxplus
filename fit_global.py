@@ -123,7 +123,7 @@ sigma = RooRealVar("sigma", "sigma", 10, 5, 15)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model Gaussian 2
-sigma2 = RooRealVar("sigma", "sigma", 4, 0, 10)
+sigma2 = RooRealVar("sigma2", "sigma2", 4, 0, 10)
 gaussian2 = RooGaussian("gauss2", "gauss2", D0_M, mean, sigma2)
 
 # Model CrystalBall
