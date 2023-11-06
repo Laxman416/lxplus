@@ -220,7 +220,13 @@ def plot(
         latex.DrawLatex(0.7 ,0.69 , 'pull mean: ' + str(rounded_pull_mean3))
         latex.DrawLatex(0.7 ,0.65 , 'pull \sigma: ' + str(rounded_pull_std3))
     
+        y = []
+        x = []
+        for i in range(pull.GetNbinsX()):
+            y.append(pull.GetBinContent(i))
+            x.append(pull.GetBinCenter(i))
 
+        params, cov, *_ = curve_fit(gaussian, x, y, p0=[max(x),0,1], bounds=([0,-np.inf,0],[np.inf,np.inf,np.inf]))
 
         pull_canvas.Show()
 
@@ -234,4 +240,4 @@ def plot(
         red_chi2 = fit_frame.chiSquare(model["total"].GetName(), data.GetName(), nparams - 1)
         print(f"Reduced chi-squared for {nbins} bins and {nparams} fit parameters: {red_chi2}")
 
-        return red_chi2, pull_mean, pull_std
+        return red_chi2, pull_mean, pull_std, params, cov
