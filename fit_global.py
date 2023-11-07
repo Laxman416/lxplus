@@ -1,12 +1,12 @@
 """
 fit_global.py
 
-This code is used to perform a global fit on the selected data. In order to do so a simulatenous fit is done on the four datasets (with different mesons and polarities). This simulatenous fit keeps all variables constant across the four fits except for the normalization constants which are allowed to vary independently. The model used consists of a Crystal Ball function and a Gaussian distribution to model the signal and an Exponential decay to model the background.
+This code is used to perform a global fit on the selected data. In order to do so a simulatenous fit is done on the four datasets (with different mesons and polarities). This simulatenous fit keeps all variables constant across the four fits except for the normalisation constants which are allowed to vary independently. The model used consists of a Crystal Ball function and a Gaussian distribution to model the signal and an Exponential decay to model the background.
 The year of interest and size of the data to be analysed must be specified using the required flags --year --size. It is necessary to specify if the fit should be performed on the binned data or the unbinned data using the flag --binned_fit. There is a flag --path, which is not required. This one is used to specify the directory where the input data is located, and where the output file should be written. By default it is set to be the current working directory.
 It outputs the value of the constants shared in the simultaneous fit to a text file. This code is heavily inspired by Marc Oriol Pérez (marc.oriolperez@student.manchester.ac.uk), however it has been redesigned so that the binned fit is succesfully performed.
 
 Author: Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)
-Last edited: 27th October 2023
+Last edited: 5th November 2023
 """
 
 import ROOT
@@ -79,10 +79,8 @@ def parse_arguments():
 
 # - - - - - - - MAIN BODY - - - - - - - #
 args = parse_arguments()
-fit_params = {}
-fit_PDFs = {}
 # Bin Parameters
-numbins = 500
+numbins = 100
 lower_boundary = 1820
 upper_boundary = 1910
 
@@ -91,7 +89,6 @@ if args.binned_fit=="y" or args.binned_fit=="Y":
 else:
     binned = False
 ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR) # mute RooFit warnings
-ROOT.gROOT.SetBatch(True)
 
 # Selects invariant mass (D0_MM) of DO for MagUp
 ttree_D0_up = TChain("D02Kpi_Tuple/DecayTree")
@@ -120,28 +117,41 @@ ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
 D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
 
 # Model Gaussian
-mean = RooRealVar("mean", "mean", 1866, 1860, 1870)
-sigma = RooRealVar("sigma", "sigma", 8.36, 0, 40)
+mean = RooRealVar("mean", "mean", 1865.3, 1860, 1870)
+sigma = RooRealVar("sigma", "sigma", 6.48, 0, 15)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
-Csig = RooRealVar("Csig", "Csig", 5.63, 0, 20)
-aL = RooRealVar("aL", "aL", 3.51, 0, 10)
-nL = RooRealVar("nL", "nL", 3, 0, 20)
-aR = RooRealVar("aR", "aR", -6.73, -10, 10)
-nR = RooRealVar("nR", "nR", 4.3, 1, 15)
+Csig = RooRealVar("Csig", "Csig", 9.92, 0, 20)
+aL = RooRealVar("aL", "aL", 1.75, -10, 10)
+nL = RooRealVar("nL", "nL", 21.3, 27, 40)
+aR = RooRealVar("aR", "aR", 5.55, -10, 10)
+nR = RooRealVar("nR", "nR", -2.94, -10, 10)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Exponential Background
-a0 = RooRealVar("a0", "a0", -0.0073, -1, 1)
+a0 = RooRealVar("a0", "a0", -0.0079, -1, 0)
 background = RooExponential("exponential", "exponential", D0_M, a0)
 
-# Model Signal
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.748, 0, 1)
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.5, 0.7, 0.75)
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.5, 0.7, 0.75)
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.5, 0.7, 0.75)
+# Ratio of signal intensities between each model. For N PDFs need N-1 fractions 
+# DO MagUp
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.54, 0, 1)
+# D0 MagDown
+frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.556, 0, 1)
+# D0bar MagUp
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.562, 0, 1)
+# D0bar MagDown
+frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.556, 0, 1)
 
+# Generate normalisation variables
+Nsig_D0_up = ROOT.RooRealVar("Nsig_D0_up", "Nsig_D0_up", 0.95*ttree_D0_up.GetEntries(), 0, ttree_D0_up.GetEntries())
+Nsig_D0bar_up = ROOT.RooRealVar("Nsig_D0bar_up", "Nsig_D0bar_up", 0.95*ttree_D0bar_up.GetEntries(), 0, ttree_D0bar_up.GetEntries())
+Nbkg_D0_up = ROOT.RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", 0.05*ttree_D0_up.GetEntries(), 0, ttree_D0_up.GetEntries())
+Nbkg_D0bar_up = ROOT.RooRealVar("Nbkg_D0bar_up", "Nbkg_D0bar_up", 0.05*ttree_D0bar_up.GetEntries(), 0, ttree_D0bar_up.GetEntries())
+Nsig_D0_down = ROOT.RooRealVar("Nsig_D0_down", "Nsig_D0_down", 0.95*ttree_D0_down.GetEntries(), 0, ttree_D0_down.GetEntries())
+Nsig_D0bar_down = ROOT.RooRealVar("Nsig_D0bar_down", "Nsig_D0bar_down", 0.95*ttree_D0bar_down.GetEntries(), 0, ttree_D0bar_down.GetEntries())
+Nbkg_D0_down = ROOT.RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", 0.05*ttree_D0_down.GetEntries(), 0, ttree_D0_down.GetEntries())
+Nbkg_D0bar_down = ROOT.RooRealVar("Nbkg_D0bar_down", "Nbkg_D0bar_down", 0.05*ttree_D0bar_down.GetEntries(), 0, ttree_D0bar_down.GetEntries())
 
 if binned:
     # Creating the histograms for both polarities for D0 and D0bar by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
@@ -173,19 +183,13 @@ if binned:
     # Model Signal for D0 MagUp
     binned_sample.defineType("Binned_D0_up_sample")
     signal_D0_up = RooAddPdf("signal_D0_up", "signal D0 up", RooArgList(gaussian, crystal), RooArgList(frac_D0_up))
-    # Generate normalization variables for D0 MagUp
-    Nsig_D0_up = RooRealVar("Nsig_D0_up", "Nsig D0 up", 0.95*Binned_D0_up.numEntries(), 0.9*Binned_D0_up.numEntries(), Binned_D0_up.numEntries())
-    Nbkg_D0_up = RooRealVar("Nbkg_D0_up", "Nbkg D0 up", 0.05*Binned_D0_up.numEntries(), 0, 0.1*Binned_D0_up.numEntries())
     # Generate model for D0 MagUp
     model_D0_up = RooAddPdf("model_D0_up", "model D0 up", [signal_D0_up, background], [Nsig_D0_up, Nbkg_D0_up])
     simultaneous_pdf.addPdf(model_D0_up, "Binned_D0_up_sample")
-
+    
     # Model Signal for D0 MagDown
     binned_sample.defineType("Binned_D0_down_sample")
     signal_D0_down = RooAddPdf("signal_D0_down", "signal D0 down", RooArgList(gaussian, crystal), RooArgList(frac_D0_down))
-    # Generate normalization variables for D0 MagDown
-    Nsig_D0_down = RooRealVar("Nsig_D0_down", "Nsig D0 down", 0.95*Binned_D0_down.numEntries(), 0.9*Binned_D0_down.numEntries(), Binned_D0_down.numEntries())
-    Nbkg_D0_down = RooRealVar("Nbkg_D0_down", "Nbkg D0 down", 0.05*Binned_D0_down.numEntries(), 0, 0.1*Binned_D0_down.numEntries())
     # Generate model for D0 MagDown
     model_D0_down = RooAddPdf("model_D0_down", "model D0 down", [signal_D0_down, background], [Nsig_D0_down, Nbkg_D0_down])
     simultaneous_pdf.addPdf(model_D0_down, "Binned_D0_down_sample")
@@ -193,9 +197,6 @@ if binned:
     # Model Signal for D0bar MagUp
     binned_sample.defineType("Binned_D0bar_up_sample")
     signal_D0bar_up = RooAddPdf("signal_D0bar_up", "signal D0bar up", RooArgList(gaussian, crystal), RooArgList(frac_D0bar_up))
-    # Generate normalization variables for D0bar MagUp
-    Nsig_D0bar_up = RooRealVar("Nsig_D0bar_up", "Nsig D0bar up", 0.95*Binned_D0bar_up.numEntries(), 0.9*Binned_D0bar_up.numEntries(), Binned_D0bar_up.numEntries())
-    Nbkg_D0bar_up = RooRealVar("Nbkg_D0bar_up", "Nbkg D0bar up", 0.05*Binned_D0bar_up.numEntries(), 0, 0.1*Binned_D0bar_up.numEntries())
     # Generate model for D0bar MagUp
     model_D0bar_up = RooAddPdf("model_D0bar_up", "model D0bar up", [signal_D0bar_up, background], [Nsig_D0bar_up, Nbkg_D0bar_up])
     simultaneous_pdf.addPdf(model_D0bar_up, "Binned_D0bar_up_sample")
@@ -203,9 +204,6 @@ if binned:
     # Model Signal for D0bar MagDown
     binned_sample.defineType("Binned_D0bar_down_sample")
     signal_D0bar_down = RooAddPdf("signal_D0bar_down", "signal D0bar down", RooArgList(gaussian, crystal), RooArgList(frac_D0bar_down))
-    # Generate normalization variables for D0bar MagDown
-    Nsig_D0bar_down = RooRealVar("Nsig_D0bar_down", "Nsig D0bar down", 0.95*Binned_D0bar_down.numEntries(), 0.9*Binned_D0bar_down.numEntries(), Binned_D0bar_down.numEntries())
-    Nbkg_D0bar_down = RooRealVar("Nbkg_D0bar_down", "Nbkg D0bar down", 0.05*Binned_D0bar_down.numEntries(), 0, 0.1*Binned_D0bar_down.numEntries())
     # Generate model for D0bar MagDown
     model_D0bar_down = RooAddPdf("model_D0bar_down", "model D0bar down", [signal_D0bar_down, background], [Nsig_D0bar_down, Nbkg_D0bar_down])
     simultaneous_pdf.addPdf(model_D0bar_down, "Binned_D0bar_down_sample")
@@ -215,7 +213,7 @@ if binned:
     simultaneous_data = RooDataHist("simultaneous_data", "simultaneous data", RooArgList(D0_M), ROOT.RooFit.Index(binned_sample), *imports)
 
     # Performs the simultaneous fit
-    fitResult = simultaneous_pdf.fitTo(simultaneous_data, PrintLevel=-1, Save=True, Extended=True)
+    fitResult = simultaneous_pdf.fitTo(simultaneous_data, Save=True, Extended=True)
 else:
     # Creates unbinned data containers for all the meson/polarity combinations
     data_D0_up = RooDataSet("data_D0_up", "Data_D0_up", ttree_D0_up, RooArgSet(D0_M))
@@ -267,6 +265,6 @@ else:
 fitResult.Print()
 
 # Get results
-parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV(), frac_D0_down.getValV(), frac_D0_up.getValV(), frac_D0bar_down.getValV(), frac_D0bar_up.getValV(), Nsig_D0_down.getValV(), Nbkg_D0_down.getValV(), Nsig_D0_up.getValV(),Nbkg_D0_up.getValV(),Nsig_D0bar_down.getValV(),Nbkg_D0bar_down.getValV(), Nsig_D0bar_up.getValV(),Nbkg_D0bar_up.getValV()])
+parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV(), frac_D0_down.getValV(), frac_D0_up.getValV(), frac_D0bar_down.getValV(), frac_D0bar_up.getValV(), Nsig_D0_down.getValV(), Nbkg_D0_down.getValV(), Nsig_D0_up.getValV(), Nbkg_D0_up.getValV(), Nsig_D0bar_down.getValV(), Nbkg_D0bar_down.getValV(), Nsig_D0bar_up.getValV(), Nbkg_D0bar_up.getValV()])
 np.savetxt(f"{args.path}/fit_parameters.txt", parameters, delimiter=',')
 print("My program took", time.time() - start_time, "to run")

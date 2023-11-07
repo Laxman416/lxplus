@@ -1,11 +1,13 @@
 """
 model_fitting.py
 
-This code is used to fit the data in one of the bims. It then returns the relevant plots of the best fit to the data and a .txt file containing the values and errors on the normalization constant of both signal and background, the mean and standard deviation of the pull distribution and the reduced chi squared value. It can both fit the data using a binned approach or an unbinned one. The model used consists of a Gaussian function and a Crystal Ball function for the signal, and a Chevychev polynomial for the background. Some of the parameters are fixed to be the same as the best-fit values obtained during the global fit in order to obtain better convergence.
-The year of interest, size of the data, meson of interest and polarity to be analysed must be specified using the required flags --year --size --meson --polarity. It is also required to specify the bin to be analyzed using the flag --bin, and if the fit should be done on the binned data or the unbinned data using the flag --binned_fit. There also are the flags --input --parameteers_path and --path, which are not required. These are used to specify the directory where the input data is located, where the global best-fit parameters can be found and where the output should be written, respectively. By default it is set to be the current working directory.
+This code us used to plot the signal Gaussian and Crystal Ball model and Exponential background model using the best fit parameters generated from fit_global.py. The code allows for a binned or unbinned fit depending on the --binned_fit parser, if the unbinned fit is requested then the plot function is called from utils.py.
+It then returns the relevant plots of the best fit to the data and a .txt file containing the values and errors on the normalization constant of both signal and background, the mean and standard deviation of the pull distribution and the reduced chi squared value.
+The year of interest, size of the data, meson of interest and polarity to be analysed must be specified using the required flags --year --size --meson --polarity. It is also required to specify if the fit should be done on the binned data or the unbinned data using the flag --binned_fit. There also are the flags --input --parameteers_path and --path, which are not required. These are used to specify the directory where the input data is located, where the global best-fit parameters can be found and where the output should be written, respectively. By default it is set to be the current working directory.
+This code is heavily inspired by Marc Oriol Pérez, however it has been adapted to correctly plot a binned fit.
 
-Author: Marc Oriol Pérez (marc.oriolperez@student.manchester.ac.uk)
-Last edited: 16th September 2023
+Author: Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)
+Last edited: 5th November 2023
 """
 
 # - - - - - - IMPORT STATEMENTS - - - - - - #
@@ -118,7 +120,8 @@ def parse_arguments():
 # - - - - - - - MAIN BODY - - - - - - - #
 
 options = parse_arguments()
-numbins = 500
+# Bin parameters
+numbins = 100
 lower_boundary = 1820
 upper_boundary = 1910
 
@@ -138,7 +141,7 @@ ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
 D0_M = RooRealVar("D0_MM", r"D0 mass / [MeVc^{-2}]", lower_boundary, upper_boundary) # D0_MM - invariant mass
 
-# Define variables for signal model
+# Define variables for signal model, using the best fit parameters generated from fit_global.py
 mu = RooRealVar("mu", "mu", parameters[0])
 Gsig = RooRealVar("sigma", "sigma", parameters[1])
 Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
@@ -155,23 +158,27 @@ a = RooRealVar("a0", "a0", parameters[7])
 background = RooExponential("Exponential", "Exponential", D0_M, a)
 
 if options.meson == "D0":
+    # D0 MagDown
     if options.polarity == "down":
         frac = RooRealVar("frac_D0_down", "frac_D0_down", parameters[8])
-        Nsig = RooRealVar("Nsig", "Nsig", parameters[12])
-        Nbkg = RooRealVar("Nbkg", "Nbkg", parameters[13])  
+        Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[12])
+        Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[13])
+    # D0 MagUp
     elif options.polarity == "up":
         frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[9])
-        Nsig = RooRealVar("Nsig", "Nsig", parameters[14])
-        Nbkg = RooRealVar("Nbkg", "Nbkg", parameters[15])  
+        Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[14])
+        Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[15])
 elif options.meson == "D0bar":
+    # D0bar MagDown
     if options.polarity == "down":
         frac = RooRealVar("frac_D0bar_down", "frac_D0bar_down", parameters[10])
-        Nsig = RooRealVar("Nsig", "Nsig", parameters[16])
-        Nbkg = RooRealVar("Nbkg", "Nbkg", parameters[17])  
+        Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[16])
+        Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[17])
+    # D0bar MagUp
     elif options.polarity == "up":
         frac = RooRealVar("frac_D0bar_up", "frac_D0bar_up", parameters[11])
-        Nsig = RooRealVar("Nsig", "Nsig", parameters[18])
-        Nbkg = RooRealVar("Nbkg", "Nbkg", parameters[19])  
+        Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[18])
+        Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[19])
 
 # Create model
 signal = RooAddPdf("signal", "signal", RooArgList(Gauss, Crystal), RooArgList(frac))
@@ -265,10 +272,6 @@ if binned:
         fit_pad = ROOT.TPad("fit_pad", "fit pad", 0, 0.2, 1.0, 1.0)
         fit_pad.Draw()
         fit_pad.cd()
-        ROOT.gPad.SetLeftMargin(0.15)
-        # Draw the plot on a canvas
-        frame.GetYaxis().SetTitleOffset(1.4)
-        # frame.GetYaxis().SetMaxDigits(len(str(int(plotted_data.GetMaximum()/1000)))+1)  # TODO : a better fix than this?
         frame.Draw()
         
         frame.GetXaxis().SetLabelSize(0)
@@ -280,17 +283,18 @@ if binned:
         # plot_type + total + signals + backgrounds + data
         nlines = 1 + 1 + len(model["signals"]) + len(model["backgrounds"]) + 1
         xwidth = 0.4
-        ywidth = 0.03 * nlines
+        ywidth = 0.04 * nlines
         legend = ROOT.TLegend(
-            0.6, 0.89 - ywidth, 0.6 + xwidth, 0.89, "#bf{#it{LHCb Unofficial}}"
+            0.18, 0.89 - ywidth, 0.18 + xwidth, 0.89, "#bf{#it{Plot}}"
         )
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
+        legend.SetTextSize(label_size*0.33)
         for key, val in legend_entries.items():
             legend.AddEntry(key, val["title"], val["style"])
         legend.Draw("same")
 
-
+        # Plots the pull distribution, where bad pulls (>5 sigma away from the fit) are made to be red
         pull_frame = D0_M.frame(ROOT.RooFit.Title(" "))
         pull_TH1 = ROOT.TH1D("pull_TH1", "pull_TH1", numbins, mD0_bins)
         bad_pull_TH1 = ROOT.TH1D("bad_pull_TH1", "bad_pull_TH1", numbins, mD0_bins)
@@ -315,11 +319,11 @@ if binned:
 
         c.cd(0)
         pull_pad = ROOT.TPad("pull_pad", "pull pad", 0.0, 0.0, 1.0, 0.31)
-        pull_pad.SetBottomMargin(0.2)
+        pull_pad.SetBottomMargin(0.4)
         pull_pad.Draw()
         pull_pad.cd()
 
-
+        # Defines the axes specifications of the pull distribution plot
         pull_frame.GetXaxis().SetLabelSize(label_size)
         pull_frame.GetXaxis().SetTitleSize(title_size)
         pull_frame.GetXaxis().SetTitleOffset(1)
@@ -343,6 +347,7 @@ if binned:
         three.Draw("same")
         nthree.Draw("same")
 
+    # Saves the model
     c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.root")
     c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.C")
     c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.pdf")
@@ -351,7 +356,7 @@ if binned:
 else:
     unbinned_data = RooDataSet("data", "Data", ttree, RooArgSet(D0_M))
     model["total"].fitTo(unbinned_data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-    # Generate plots
+    # Generate plots from the plot function in utils.py
     chi2, pull_mean, pull_std = plot(D0_M, unbinned_data, model, nbins=numbins, setlogy=False, save_to=f'{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}', plot_type=f"20{options.year} Mag{(options.polarity).title()}", meson=options.meson)
     # Write out results
     file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
