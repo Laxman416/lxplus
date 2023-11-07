@@ -146,7 +146,6 @@ mu = RooRealVar("mu", "mu", parameters[0])
 Gsig = RooRealVar("sigma", "sigma", parameters[1])
 Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
 
-mu = RooRealVar("mu", "mu", parameters[0])
 Gsig2 = RooRealVar("sigma2", "sigma2", parameters[20])
 Gauss2 = RooGaussian("Gauss2", "Gaussian2", D0_M, mu, Gsig2)
 
