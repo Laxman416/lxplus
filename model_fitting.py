@@ -146,9 +146,6 @@ mu = RooRealVar("mu", "mu", parameters[0])
 Gsig = RooRealVar("sigma", "sigma", parameters[1])
 Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
 
-Gsig2 = RooRealVar("sigma2", "sigma2", parameters[20])
-Gauss2 = RooGaussian("Gauss2", "Gaussian2", D0_M, mu, Gsig2)
-
 Csig = RooRealVar("Csig", "Csig", parameters[2])
 aL = RooRealVar("aL", "aL", parameters[3])
 nL = RooRealVar("nL", "nL", parameters[4])
@@ -164,36 +161,31 @@ if options.meson == "D0":
     # D0 MagDown
     if options.polarity == "down":
         frac = RooRealVar("frac_D0_down", "frac_D0_down", parameters[8])
-        frac2 = RooRealVar("frac_D0_down", "frac_D0_down", parameters[21])
         Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[12])
         Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[13])
     # D0 MagUp
     elif options.polarity == "up":
         frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[9])
-        frac2 = RooRealVar("frac_D0_up2", "frac_D0_up2", parameters[22])
         Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[14])
         Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[15])
 elif options.meson == "D0bar":
     # D0bar MagDown
     if options.polarity == "down":
         frac = RooRealVar("frac_D0bar_down", "frac_D0bar_down", parameters[10])
-        frac2 = RooRealVar("frac_D0bar_down2", "frac_D0bar_down2", parameters[23])
         Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[16])
         Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[17])
     # D0bar MagUp
     elif options.polarity == "up":
         frac = RooRealVar("frac_D0bar_up", "frac_D0bar_up", parameters[11])
-        frac2 = RooRealVar("frac_D0bar_up2", "frac_D0bar_up2", parameters[24])
         Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[18])
         Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[19])
 
 # Create model
-signal = RooAddPdf("signal", "signal", RooArgList(Gauss, Gauss2, Crystal), RooArgList(frac, frac2))
+signal = RooAddPdf("signal", "signal", RooArgList(Gauss, Crystal), RooArgList(frac))
 model = {
     "total": RooAddPdf("total", "Total", RooArgList(signal, background), RooArgList(Nsig, Nbkg)), # extended likelihood
     "signals": {
         Gauss.GetName(): Gauss.GetTitle(),
-        Gauss2.GetName(): Gauss2.GetTitle(),
         Crystal.GetName(): Crystal.GetTitle(),
     },
     "backgrounds": {
