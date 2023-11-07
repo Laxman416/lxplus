@@ -118,30 +118,30 @@ D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
 
 # Model Gaussian
 mean = RooRealVar("mean", "mean", 1865, 1860, 1870)
-sigma = RooRealVar("sigma", "sigma", 6.32, 0, 15)
+sigma = RooRealVar("sigma", "sigma", 6.43, 0, 15)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
-Csig = RooRealVar("Csig", "Csig", 9.71, 0, 15)
-aL = RooRealVar("aL", "aL", 1.65, -10, 10)
-nL = RooRealVar("nL", "nL", 20.1, -10, 30)
-aR = RooRealVar("aR", "aR", 12.7, -10, 20)
+Csig = RooRealVar("Csig", "Csig", 10.0, 0, 15)
+aL = RooRealVar("aL", "aL", 1.63, -10, 10)
+nL = RooRealVar("nL", "nL", 29.9, -10, 30)
+aR = RooRealVar("aR", "aR", 5.59, -10, 20)
 nR = RooRealVar("nR", "nR", -8.9, -10, 20)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Exponential Background
-a0 = RooRealVar("a0", "a0", -0.0095, -1, 0)
+a0 = RooRealVar("a0", "a0", -0.0078, -1, 0)
 background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Ratio of signal intensities between each model. For N PDFs need N-1 fractions 
 # DO MagUp
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.54, 0, 1)
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.56, 0, 1)
 # D0 MagDown
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.54, 0, 1)
+frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.56, 0, 1)
 # D0bar MagUp
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.54, 0, 1)
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.56, 0, 1)
 # D0bar MagDown
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.54, 0, 1)
+frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.56, 0, 1)
 
 # Generate normalization variables
 Nsig_D0_up = ROOT.RooRealVar("Nsig_D0_up", "Nsig_D0_up", 0.95*ttree_D0_up.GetEntries(), 0, ttree_D0_up.GetEntries())
