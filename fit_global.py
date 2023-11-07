@@ -118,19 +118,19 @@ D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
 
 # Model Gaussian
 mean = RooRealVar("mean", "mean", 1865.3, 1860, 1870)
-sigma = RooRealVar("sigma", "sigma", 6.46, 0, 15)
+sigma = RooRealVar("sigma", "sigma", 6.43, 0, 15)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
-Csig = RooRealVar("Csig", "Csig", 9.89, 0, 15)
-aL = RooRealVar("aL", "aL", 1.78, -10, 10)
+Csig = RooRealVar("Csig", "Csig", 10.002, 0, 15)
+aL = RooRealVar("aL", "aL", 1.62, -10, 10)
 nL = RooRealVar("nL", "nL", 35.5, -10, 40)
-aR = RooRealVar("aR", "aR", 6.50, -10, 20)
-nR = RooRealVar("nR", "nR", -10.9, -11, 10)
+aR = RooRealVar("aR", "aR", 6.51, -10, 20)
+nR = RooRealVar("nR", "nR", -10.32, -11, 10)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Exponential Background
-a0 = RooRealVar("a0", "a0", -0.0079, -1, 0)
+a0 = RooRealVar("a0", "a0", -0.007881, -1, 0)
 background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Ratio of signal intensities between each model. For N PDFs need N-1 fractions 
