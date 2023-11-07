@@ -118,32 +118,32 @@ D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
 
 # Model Gaussian
 mean = RooRealVar("mean", "mean", 1865.3, 1860, 1870)
-sigma = RooRealVar("sigma", "sigma", 6.42, 0, 15)
+sigma = RooRealVar("sigma", "sigma", 6.46, 0, 15)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
-Csig = RooRealVar("Csig", "Csig", 9.99, 0, 15)
-aL = RooRealVar("aL", "aL", 1.66, -10, 10)
-nL = RooRealVar("nL", "nL", 30, -10, 40)
-aR = RooRealVar("aR", "aR", 5.60, -10, 20)
-nR = RooRealVar("nR", "nR", -8.9, -11, 10)
+Csig = RooRealVar("Csig", "Csig", 9.89, 0, 15)
+aL = RooRealVar("aL", "aL", 1.78, -10, 10)
+nL = RooRealVar("nL", "nL", 35.5, -10, 40)
+aR = RooRealVar("aR", "aR", 6.50, -10, 20)
+nR = RooRealVar("nR", "nR", -10.9, -11, 10)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Exponential Background
-a0 = RooRealVar("a0", "a0", -0.0078, -1, 0)
+a0 = RooRealVar("a0", "a0", -0.0079, -1, 0)
 background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Ratio of signal intensities between each model. For N PDFs need N-1 fractions 
 # DO MagUp
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.553, 0, 1)
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.552, 0, 1)
 # D0 MagDown
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.553, 0, 1)
+frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.556, 0, 1)
 # D0bar MagUp
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.558, 0, 1)
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.562, 0, 1)
 # D0bar MagDown
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.558, 0, 1)
+frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.556, 0, 1)
 
-# Generate normalization variables
+# Generate normalisation variables
 Nsig_D0_up = ROOT.RooRealVar("Nsig_D0_up", "Nsig_D0_up", 0.95*ttree_D0_up.GetEntries(), 0, ttree_D0_up.GetEntries())
 Nsig_D0bar_up = ROOT.RooRealVar("Nsig_D0bar_up", "Nsig_D0bar_up", 0.95*ttree_D0bar_up.GetEntries(), 0, ttree_D0bar_up.GetEntries())
 Nbkg_D0_up = ROOT.RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", 0.05*ttree_D0_up.GetEntries(), 0, ttree_D0_up.GetEntries())
