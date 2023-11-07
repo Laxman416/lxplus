@@ -89,7 +89,6 @@ if args.binned_fit=="y" or args.binned_fit=="Y":
 else:
     binned = False
 ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR) # mute RooFit warnings
-ROOT.gROOT.SetBatch(True)
 
 # Selects invariant mass (D0_MM) of DO for MagUp
 ttree_D0_up = TChain("D02Kpi_Tuple/DecayTree")
@@ -152,6 +151,16 @@ frac_D0bar_up2 = RooRealVar("frac_D0bar_up2", "frac_D0bar_up2", 0.6, 0, 1)
 frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.3, 0, 1)
 frac_D0bar_down2 = RooRealVar("frac_D0bar_down2", "frac_D0bar_down2", 0.6, 0, 1)
 
+# Generate normalization variables
+Nsig_D0_up = ROOT.RooRealVar("Nsig_D0_up", "Nsig_D0_up", 0.95*ttree_D0_up.GetEntries(), 0, ttree_D0_up.GetEntries())
+Nsig_D0bar_up = ROOT.RooRealVar("Nsig_D0bar_up", "Nsig_D0bar_up", 0.95*ttree_D0bar_up.GetEntries(), 0, ttree_D0bar_up.GetEntries())
+Nbkg_D0_up = ROOT.RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", 0.05*ttree_D0_up.GetEntries(), 0, ttree_D0_up.GetEntries())
+Nbkg_D0bar_up = ROOT.RooRealVar("Nbkg_D0bar_up", "Nbkg_D0bar_up", 0.05*ttree_D0bar_up.GetEntries(), 0, ttree_D0bar_up.GetEntries())
+Nsig_D0_down = ROOT.RooRealVar("Nsig_D0_down", "Nsig_D0_down", 0.95*ttree_D0_down.GetEntries(), 0, ttree_D0_down.GetEntries())
+Nsig_D0bar_down = ROOT.RooRealVar("Nsig_D0bar_down", "Nsig_D0bar_down", 0.95*ttree_D0bar_down.GetEntries(), 0, ttree_D0bar_down.GetEntries())
+Nbkg_D0_down = ROOT.RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", 0.05*ttree_D0_down.GetEntries(), 0, ttree_D0_down.GetEntries())
+Nbkg_D0bar_down = ROOT.RooRealVar("Nbkg_D0bar_down", "Nbkg_D0bar_down", 0.05*ttree_D0bar_down.GetEntries(), 0, ttree_D0bar_down.GetEntries())
+
 if binned:
     # Creating the histograms for both polarities for D0 and D0bar by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
     # TTree.Draw plots a histogram with name D0_Up_Hist and given bin parameters and saves it to memory using: >>
@@ -183,8 +192,8 @@ if binned:
     binned_sample.defineType("Binned_D0_up_sample")
     signal_D0_up = RooAddPdf("signal_D0_up", "signal D0 up", RooArgList(gaussian, gaussian2, crystal), RooArgList(frac_D0_up, frac_D0_up2))
     # Generate normalization variables for D0 MagUp
-    Nsig_D0_up = RooRealVar("Nsig_D0_up", "Nsig D0 up", 0.95*Binned_D0_up.numEntries(), 0, Binned_D0_up.numEntries())
-    Nbkg_D0_up = RooRealVar("Nbkg_D0_up", "Nbkg D0 up", 0.05*Binned_D0_up.numEntries(), 0, Binned_D0_up.numEntries())
+    # Nsig_D0_up = RooRealVar("Nsig_D0_up", "Nsig D0 up", 10000, 0, 1000000)
+    # Nbkg_D0_up = RooRealVar("Nbkg_D0_up", "Nbkg D0 up", 500, 0, 1000000)
     # Generate model for D0 MagUp
     model_D0_up = RooAddPdf("model_D0_up", "model D0 up", [signal_D0_up, background], [Nsig_D0_up, Nbkg_D0_up])
     simultaneous_pdf.addPdf(model_D0_up, "Binned_D0_up_sample")
@@ -193,8 +202,8 @@ if binned:
     binned_sample.defineType("Binned_D0_down_sample")
     signal_D0_down = RooAddPdf("signal_D0_down", "signal D0 down", RooArgList(gaussian, gaussian2, crystal), RooArgList(frac_D0_down, frac_D0_down2))
     # Generate normalization variables for D0 MagDown
-    Nsig_D0_down = RooRealVar("Nsig_D0_down", "Nsig D0 down", 0.95*Binned_D0_down.numEntries(), 0, Binned_D0_down.numEntries())
-    Nbkg_D0_down = RooRealVar("Nbkg_D0_down", "Nbkg D0 down", 0.05*Binned_D0_down.numEntries(), 0, Binned_D0_down.numEntries())
+    # Nsig_D0_down = RooRealVar("Nsig_D0_down", "Nsig D0 down", 10000, 0, 1000000)
+    # Nbkg_D0_down = RooRealVar("Nbkg_D0_down", "Nbkg D0 down", 500, 0, 1000000)
     # Generate model for D0 MagDown
     model_D0_down = RooAddPdf("model_D0_down", "model D0 down", [signal_D0_down, background], [Nsig_D0_down, Nbkg_D0_down])
     simultaneous_pdf.addPdf(model_D0_down, "Binned_D0_down_sample")
@@ -203,8 +212,8 @@ if binned:
     binned_sample.defineType("Binned_D0bar_up_sample")
     signal_D0bar_up = RooAddPdf("signal_D0bar_up", "signal D0bar up", RooArgList(gaussian, gaussian2, crystal), RooArgList(frac_D0bar_up, frac_D0bar_up2))
     # Generate normalization variables for D0bar MagUp
-    Nsig_D0bar_up = RooRealVar("Nsig_D0bar_up", "Nsig D0bar up", 0.95*Binned_D0bar_up.numEntries(), 0, Binned_D0bar_up.numEntries())
-    Nbkg_D0bar_up = RooRealVar("Nbkg_D0bar_up", "Nbkg D0bar up", 0.05*Binned_D0bar_up.numEntries(), 0, Binned_D0bar_up.numEntries())
+    # Nsig_D0bar_up = RooRealVar("Nsig_D0bar_up", "Nsig D0bar up", 0.95*Binned_D0bar_up.numEntries(), 0, Binned_D0bar_up.numEntries())
+    # Nbkg_D0bar_up = RooRealVar("Nbkg_D0bar_up", "Nbkg D0bar up", 0.05*Binned_D0bar_up.numEntries(), 0, Binned_D0bar_up.numEntries())
     # Generate model for D0bar MagUp
     model_D0bar_up = RooAddPdf("model_D0bar_up", "model D0bar up", [signal_D0bar_up, background], [Nsig_D0bar_up, Nbkg_D0bar_up])
     simultaneous_pdf.addPdf(model_D0bar_up, "Binned_D0bar_up_sample")
@@ -213,8 +222,8 @@ if binned:
     binned_sample.defineType("Binned_D0bar_down_sample")
     signal_D0bar_down = RooAddPdf("signal_D0bar_down", "signal D0bar down", RooArgList(gaussian, gaussian2, crystal), RooArgList(frac_D0bar_down, frac_D0bar_down2))
     # Generate normalization variables for D0bar MagDown
-    Nsig_D0bar_down = RooRealVar("Nsig_D0bar_down", "Nsig D0bar down", 0.95*Binned_D0bar_down.numEntries(), 0, Binned_D0bar_down.numEntries())
-    Nbkg_D0bar_down = RooRealVar("Nbkg_D0bar_down", "Nbkg D0bar down", 0.05*Binned_D0bar_down.numEntries(), 0, Binned_D0bar_down.numEntries())
+    # Nsig_D0bar_down = RooRealVar("Nsig_D0bar_down", "Nsig D0bar down", 0.95*Binned_D0bar_down.numEntries(), 0, Binned_D0bar_down.numEntries())
+    # Nbkg_D0bar_down = RooRealVar("Nbkg_D0bar_down", "Nbkg D0bar down", 0.05*Binned_D0bar_down.numEntries(), 0, Binned_D0bar_down.numEntries())
     # Generate model for D0bar MagDown
     model_D0bar_down = RooAddPdf("model_D0bar_down", "model D0bar down", [signal_D0bar_down, background], [Nsig_D0bar_down, Nbkg_D0bar_down])
     simultaneous_pdf.addPdf(model_D0bar_down, "Binned_D0bar_down_sample")
