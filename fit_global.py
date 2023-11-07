@@ -140,17 +140,17 @@ background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Ratio of signal intensities between each model. For N PDFs need N-1 fractions 
 # DO MagUp
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0, 0.3, 1)
-frac_D0_up2 = RooRealVar("frac_D0_up2", "frac_D0_up2", 0, 0.4, 1)
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.3, 0, 1)
+frac_D0_up2 = RooRealVar("frac_D0_up2", "frac_D0_up2", 0.6, 0, 1)
 # D0 MagDown
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0, 0.3, 1)
-frac_D0_down2 = RooRealVar("frac_D0_down2", "frac_D0_down2", 0, 0.4, 1)
+frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.3, 0, 1)
+frac_D0_down2 = RooRealVar("frac_D0_down2", "frac_D0_down2", 0.6, 0, 1)
 # D0bar MagUp
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0, 0.3, 1)
-frac_D0bar_up2 = RooRealVar("frac_D0bar_up2", "frac_D0bar_up2", 0, 0.4, 1)
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.3, 0, 1)
+frac_D0bar_up2 = RooRealVar("frac_D0bar_up2", "frac_D0bar_up2", 0.6, 0, 1)
 # D0bar MagDown
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0, 0.3, 1)
-frac_D0bar_down2 = RooRealVar("frac_D0bar_down2", "frac_D0bar_down2", 0, 0.4, 1)
+frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.3, 0, 1)
+frac_D0bar_down2 = RooRealVar("frac_D0bar_down2", "frac_D0bar_down2", 0.6, 0, 1)
 
 if binned:
     # Creating the histograms for both polarities for D0 and D0bar by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
