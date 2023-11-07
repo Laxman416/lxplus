@@ -16,7 +16,7 @@ def plot(
     nbins: int = 50,
     nparams: int = 0,
     setlogy: bool = False,
-    save_to: str = "fit",
+    save_to: str = "",
     plot_type: str = "",
     meson: str = '',
 ) -> float:
