@@ -154,14 +154,14 @@ def gauss_crystal_chebychev(x,data,ttree,meson_name,plot_type_name,meson=options
             }
         }
         model_14["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_14, nbins=100, setlogy=False, save_to= f"{path}/fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
+        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_14, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
         Nsig = Nsig14.getValV()
         Nsig_err = Nsig14.getError()
         Nbkg = Nbkg14.getValV()
         Nbkg_err = Nbkg14.getError()
         
         #Saving file
-        file = open(f"{path}/tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
+        file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
         text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
         file.write(text)
         file.close
@@ -223,14 +223,14 @@ def gauss_crystal_exp(x,data,ttree,meson_name,plot_type_name,meson=options.meson
             }
         }
         model_15["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_15, nbins=100, setlogy=False, save_to= f"{path}/fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
+        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_15, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
         Nsig = Nsig15.getValV()
         Nsig_err = Nsig15.getError()
         Nbkg = Nbkg15.getValV()
         Nbkg_err = Nbkg15.getError()
 
         #Saving File
-        file = open(f"{path}/tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
+        file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
         text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
         file.write(text)
         file.close
@@ -280,14 +280,14 @@ def gauss_johnson_exp(x,data,ttree,meson_name,plot_type_name,meson=options.meson
             }
         }
         model_16["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_16, nbins=100, setlogy=False, save_to= f"{path}/fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
+        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_16, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
         Nsig = Nsig16.getValV()
         Nsig_err = Nsig16.getError()
         Nbkg = Nbkg16.getValV()
         Nbkg_err = Nbkg16.getError()
 
         #Saving File
-        file = open(f"{path}/tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
+        file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
         text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
         file.write(text)
         file.close
@@ -354,14 +354,14 @@ def crystal_crystal_exp(x,data,ttree,meson_name,plot_type_name,meson=options.mes
             }
         }
         model_17["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_17, nbins=100, setlogy=False, save_to= f"{path}/fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
+        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_17, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
         Nsig = Nsig17.getValV()
         Nsig_err = Nsig17.getError()
         Nbkg = Nbkg17.getValV()
         Nbkg_err = Nbkg17.getError()
 
         #Saving File
-        file = open(f"{path}/tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
+        file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
         text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
         file.write(text)
         file.close
@@ -421,14 +421,14 @@ def gauss_gauss_crystal_exp(x,data,ttree,meson_name,plot_type_name,meson=options
             }
         }
         model_18["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_18, nbins=100, setlogy=False, save_to= f"{path}/fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
+        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_18, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
         Nsig = Nsig18.getValV()
         Nsig_err = Nsig18.getError()
         Nbkg = Nbkg18.getValV()
         Nbkg_err = Nbkg18.getError()
 
         #Saving File
-        file = open(f"{path}/tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
+        file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
         text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
         file.write(text)
         file.close
