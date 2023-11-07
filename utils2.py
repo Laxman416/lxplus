@@ -138,13 +138,13 @@ def plot(
         pull_pad.Draw()
         pull_pad.cd()
 
-        pull_frame.GetXaxis().SetLabelSize(label_size*0.9)
+        pull_frame.GetXaxis().SetLabelSize(label_size*0.8)
         pull_frame.GetXaxis().SetTitleSize(title_size*0.9)
         pull_frame.GetXaxis().SetTitleOffset(1)
         pull_frame.GetYaxis().SetRangeUser(-5, 5)
         pull_frame.GetYaxis().SetNdivisions(5)
         pull_frame.GetYaxis().SetTitle("Pull [#sigma]")
-        pull_frame.GetYaxis().SetLabelSize(label_size*0.9)
+        pull_frame.GetYaxis().SetLabelSize(label_size*0.8)
         pull_frame.GetYaxis().SetTitleSize(title_size*0.9)
         pull_frame.GetYaxis().SetTitleOffset(0.40)
 
@@ -207,7 +207,7 @@ def plot(
         gaussian_fit.Draw('same')
 
         legend2 = R.TLegend(
-            0.65, 0.80,0.8,0.92, "#bf{#it{"+plot_type+"}}"
+            0.7, 0.78,0.8,0.90, "#bf{#it{"+plot_type+"}}"
         )
 
         legend2.SetFillStyle(0)
@@ -220,8 +220,8 @@ def plot(
         latex = R.TLatex()
         latex.SetNDC()
         latex.SetTextSize(0.04)
-        latex.DrawLatex(0.65 ,0.77 , 'pull mean: ' + str(rounded_pull_mean) + '\pm ' + str(rounded_pull_mean_error))
-        latex.DrawLatex(0.65 ,0.73 , 'pull \sigma: ' + str(rounded_pull_std) + '\pm ' + str(rounded_pull_std_error))
+        latex.DrawLatex(0.7 ,0.75 , 'pull \mu: ' + str(rounded_pull_mean) + '\pm ' + str(rounded_pull_mean_error))
+        latex.DrawLatex(0.7 ,0.71 , 'pull \sigma: ' + str(rounded_pull_std) + '\pm ' + str(rounded_pull_std_error))
 
     
 

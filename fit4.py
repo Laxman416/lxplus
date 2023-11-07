@@ -87,17 +87,17 @@ def dir_path(string):
 if options.year == 16:
     if options.polarity == 'up':
         plot_type_name = '2016 MagUp'
-    if options.polarity == 'up':
+    elif options.polarity == 'down':
         plot_type_name = '2016 MagDown'
 elif options.year == 17:
     if options.polarity == 'up':
         plot_type_name = '2017 MagUp'
-    if options.polarity == 'up':
+    elif options.polarity == 'down':
         plot_type_name = '2017 MagDown'
 elif options.year == 18:
     if options.polarity == 'up':
         plot_type_name = '2018 MagUp'
-    if options.polarity == 'up':
+    elif options.polarity == 'down':
         plot_type_name = '2018 MagDown'
 
 if options.meson == 'D0':
