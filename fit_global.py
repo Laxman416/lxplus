@@ -224,7 +224,7 @@ if binned:
     simultaneous_data = RooDataHist("simultaneous_data", "simultaneous data", RooArgList(D0_M), ROOT.RooFit.Index(binned_sample), *imports)
 
     # Performs the simultaneous fit
-    fitResult = simultaneous_pdf.fitTo(simultaneous_data, PrintLevel=-1, Save=True, Extended=True)
+    fitResult = simultaneous_pdf.fitTo(simultaneous_data, Save=True, Extended=True)
 else:
     # Creates unbinned data containers for all the meson/polarity combinations
     data_D0_up = RooDataSet("data_D0_up", "Data_D0_up", ttree_D0_up, RooArgSet(D0_M))
