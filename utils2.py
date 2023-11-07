@@ -75,7 +75,7 @@ def plot(
         # have to repeat it down here or else the curves disappear...
         data.plotOn(fit_frame, R.RooFit.Name(data.GetName()), R.RooFit.Binning(nbins))
 
-        fit_canvas = R.TCanvas("fit", "fit canvas", 800, 800)
+        fit_canvas = R.TCanvas("fit", "fit canvas", 1000, 1000)
         fit_canvas.Draw()
         fit_pad = R.TPad("fit_pad", "fit pad", 0, 0.2, 1.0, 1.0)
         fit_pad.Draw()
@@ -134,17 +134,17 @@ def plot(
 
         fit_canvas.cd(0)
         pull_pad = R.TPad("pull_pad", "pull pad", 0.0, 0.0, 1.0, 0.31)
-        pull_pad.SetBottomMargin(0.4)
+        pull_pad.SetBottomMargin(0.35)
         pull_pad.Draw()
         pull_pad.cd()
 
-        pull_frame.GetXaxis().SetLabelSize(label_size*0.8)
+        pull_frame.GetXaxis().SetLabelSize(label_size*0.9)
         pull_frame.GetXaxis().SetTitleSize(title_size*0.9)
         pull_frame.GetXaxis().SetTitleOffset(1)
         pull_frame.GetYaxis().SetRangeUser(-5, 5)
         pull_frame.GetYaxis().SetNdivisions(5)
         pull_frame.GetYaxis().SetTitle("Pull [#sigma]")
-        pull_frame.GetYaxis().SetLabelSize(label_size*0.8)
+        pull_frame.GetYaxis().SetLabelSize(label_size*0.9)
         pull_frame.GetYaxis().SetTitleSize(title_size*0.9)
         pull_frame.GetYaxis().SetTitleOffset(0.40)
 
