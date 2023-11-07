@@ -207,12 +207,11 @@ def plot(
         gaussian_fit.Draw('same')
 
         legend2 = R.TLegend(
-            0.7, 0.80,0.8,0.92, "#bf{#it{"+plot_type+"}}"
+            0.65, 0.80,0.8,0.92, "#bf{#it{"+plot_type+"}}"
         )
 
         legend2.SetFillStyle(0)
         legend2.SetBorderSize(0)
-        legend2.SetTextSize(0.045)
 
         legend2.SetTextSize(0.04)
         legend2.AddEntry(data.GetName(), data.GetTitle(), "l")
@@ -221,8 +220,8 @@ def plot(
         latex = R.TLatex()
         latex.SetNDC()
         latex.SetTextSize(0.04)
-        latex.DrawLatex(0.7 ,0.77 , 'pull mean: ' + str(rounded_pull_mean) + '\pm ' + str(rounded_pull_mean_error))
-        latex.DrawLatex(0.7 ,0.73 , 'pull \sigma: ' + str(rounded_pull_std) + '\pm ' + str(rounded_pull_std_error))
+        latex.DrawLatex(0.65 ,0.77 , 'pull mean: ' + str(rounded_pull_mean) + '\pm ' + str(rounded_pull_mean_error))
+        latex.DrawLatex(0.65 ,0.73 , 'pull \sigma: ' + str(rounded_pull_std) + '\pm ' + str(rounded_pull_std_error))
 
     
 
@@ -241,4 +240,4 @@ def plot(
         red_chi2 = fit_frame.chiSquare(model["total"].GetName(), data.GetName(), nparams - 1)
         print(f"Reduced chi-squared for {nbins} bins and {nparams} fit parameters: {red_chi2}")
 
-        return red_chi2, pull_mean, pull_std, params, cov
+        return red_chi2, rounded_pull_mean, rounded_pull_std, params, cov
