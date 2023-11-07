@@ -292,7 +292,7 @@ if binned:
         # plot_type + total + signals + backgrounds + data
         nlines = 1 + 1 + len(model["signals"]) + len(model["backgrounds"]) + 1
         xwidth = 0.4
-        ywidth = 0.06 * nlines
+        ywidth = 0.04 * nlines
         legend = ROOT.TLegend(
             0.18, 0.89 - ywidth, 0.18 + xwidth, 0.89, "#bf{#it{Plot}}"
         )
