@@ -82,13 +82,31 @@ def dir_path(string):
         return string
     else:
         raise NotADirectoryError(string)
-        
 
 
+if options.year == 16:
+    if options.polarity == 'up':
+        plot_type_name = '2016 MagUp'
+    if options.polarity == 'up':
+        plot_type_name = '2016 MagDown'
+elif options.year == 17:
+    if options.polarity == 'up':
+        plot_type_name = '2017 MagUp'
+    if options.polarity == 'up':
+        plot_type_name = '2017 MagDown'
+elif options.year == 18:
+    if options.polarity == 'up':
+        plot_type_name = '2018 MagUp'
+    if options.polarity == 'up':
+        plot_type_name = '2018 MagDown'
+
+if options.meson == 'D0':
+    meson_name = 'D0'
+elif options.meson == 'D0bar':
+    meson_name = 'D0bar'
 
 
-
-def gauss_crystal_chebychev(x,data,ttree,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model,binned=options.binned):
+def gauss_crystal_chebychev(x,data,ttree,meson_name,plot_type_name,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model,binned=options.binned):
     """Model 14:
     Signal - gauss and crystall ball function
     Background - chebychev
@@ -136,7 +154,7 @@ def gauss_crystal_chebychev(x,data,ttree,meson=options.meson,polarity=options.po
             }
         }
         model_14["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_14, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}")
+        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_14, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
         Nsig = Nsig14.getValV()
         Nsig_err = Nsig14.getError()
         Nbkg = Nbkg14.getValV()
@@ -157,7 +175,7 @@ def gauss_crystal_chebychev(x,data,ttree,meson=options.meson,polarity=options.po
     elif binned=='y':
         print()
 
-def gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model,binned=options.binned):
+def gauss_crystal_exp(x,data,ttree,meson_name,plot_type_name,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model,binned=options.binned):
     """Model 15:
     Signal - gauss and crystall ball function
     Background - exponential
@@ -205,7 +223,7 @@ def gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polarity
             }
         }
         model_15["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_15, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}")
+        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_15, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
         Nsig = Nsig15.getValV()
         Nsig_err = Nsig15.getError()
         Nbkg = Nbkg15.getValV()
@@ -225,7 +243,7 @@ def gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polarity
         print()
     return
 
-def gauss_johnson_exp(x,data,ttree,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model,binned=options.binned):
+def gauss_johnson_exp(x,data,ttree,meson_name,plot_type_name,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model,binned=options.binned):
 
     #gaussian
     Gmu16 = RooRealVar("Gmu16", "Gmu16", 1865, 1835, 1875)
@@ -262,7 +280,7 @@ def gauss_johnson_exp(x,data,ttree,meson=options.meson,polarity=options.polarity
             }
         }
         model_16["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_16, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}")
+        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_16, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
         Nsig = Nsig16.getValV()
         Nsig_err = Nsig16.getError()
         Nbkg = Nbkg16.getValV()
@@ -284,7 +302,7 @@ def gauss_johnson_exp(x,data,ttree,meson=options.meson,polarity=options.polarity
 
 
 
-def crystal_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model,binned=options.binned):
+def crystal_crystal_exp(x,data,ttree,meson_name,plot_type_name,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model,binned=options.binned):
     """Model 15:
     Signal - gauss and crystall ball function
     Background - exponential
@@ -336,7 +354,7 @@ def crystal_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polari
             }
         }
         model_17["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_17, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}")
+        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_17, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
         Nsig = Nsig17.getValV()
         Nsig_err = Nsig17.getError()
         Nbkg = Nbkg17.getValV()
@@ -357,7 +375,7 @@ def crystal_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polari
     return
 
 
-def gauss_gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model,binned=options.binned):
+def gauss_gauss_crystal_exp(x,data,ttree,meson_name,plot_type_name,meson=options.meson,polarity=options.polarity,year=options.year,size=options.size,model=options.model,binned=options.binned):
     
     #gaussian_1
     Gmu18 = RooRealVar("Gmu18", "Gmu18", 1865, 1835, 1875)
@@ -403,7 +421,7 @@ def gauss_gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.po
             }
         }
         model_18["total"].fitTo(data, RooFit.Save(), RooFit.Extended(1), RooFit.Minos(0))
-        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_18, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}")
+        chi2, pull_mean, pull_std, params, cov = plot(x, data, model_18, nbins=100, setlogy=False, save_to= f"fit_model{model}_{meson}_{polarity}_{year}_{size}", plot_type = plot_type_name, meson = meson_name)
         Nsig = Nsig18.getValV()
         Nsig_err = Nsig18.getError()
         Nbkg = Nbkg18.getValV()
@@ -430,15 +448,15 @@ def gauss_gauss_crystal_exp(x,data,ttree,meson=options.meson,polarity=options.po
 
 
 if options.model==14:
-    gauss_crystal_chebychev(x,data,ttree)
+    gauss_crystal_chebychev(x,data,ttree,meson_name,plot_type_name)
 elif options.model==15:
-    gauss_crystal_exp(x,data,ttree)
+    gauss_crystal_exp(x,data,ttree,meson_name,plot_type_name)
 elif options.model==16:
-    gauss_johnson_exp(x,data,ttree)
+    gauss_johnson_exp(x,data,ttree,meson_name,plot_type_name)
 elif options.model==17:
-    crystal_crystal_exp(x,data,ttree)
+    crystal_crystal_exp(x,data,ttree,meson_name,plot_type_name)
 elif options.model==18:
-    gauss_gauss_crystal_exp(x,data,ttree)
+    gauss_gauss_crystal_exp(x,data,ttree,meson_name,plot_type_name)
 
 
 

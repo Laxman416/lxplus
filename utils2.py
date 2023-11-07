@@ -3,7 +3,8 @@ from lhcbstyle import LHCbStyle
 from ROOT import gROOT, RooGaussian
 from scipy.optimize import curve_fit
 import numpy as np
-import numpy
+import matplotlib.pyplot as plt
+
 
 def gaussian(x, A, mu, sig):
     return A * np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
@@ -16,8 +17,8 @@ def plot(
     nparams: int = 0,
     setlogy: bool = False,
     save_to: str = "fit",
-    plot_type: str = "LHCb Simulation",
-    meson: str = None,
+    plot_type: str = "",
+    meson: str = '',
 ) -> float:
     # everything below is now in LHCb sytle
     with LHCbStyle():
@@ -165,10 +166,8 @@ def plot(
         text = R.TPaveText(0.7, 0.8, 0.9, 0.9)
         if meson == "D0":
             text.AddText(0, 1, "#it{D^{0} #rightarrow K^{-}#pi^{+}}")
-            meson_name = 'D0'
         elif meson == "D0bar":
             text.AddText(0, 1, "#it{#bar{D}^{0} #rightarrow K^{+}#pi^{-}}")
-            meson_name = 'D0bar'
         text.SetTextSize(label_size*0.3)
         text.SetFillStyle(0)
         text.SetBorderSize(0)
@@ -185,45 +184,35 @@ def plot(
 
 
 
-        pull_mean = pull.GetMean()
-        pull_std = pull.GetStdDev()
-        pull_mean_error = pull.GetMeanError()
-        pull_std_error = pull.GetStdDevError()
-        float_pull_mean = float(pull_mean)
-        float_pull_std = float(pull_std)
-        float_pull_mean_error = float(pull_mean_error)
-        float_pull_std_error = float(pull_std_error)
-        rounded_pull_mean = round(float_pull_mean, 4)
-        rounded_pull_std = round(float_pull_std, 4)
-        rounded_pull_mean_error = round(float_pull_mean_error, 4)
-        rounded_pull_std_error = round(float_pull_std_error, 4)
+        #Putting Bincentres and Content into Lists
+        y = []
+        x = []
+        for i in range(pull.GetNbinsX()):
+            y.append(pull.GetBinContent(i))
+            x.append(pull.GetBinCenter(i))
+
+        #Using curve_fit to find Paramters
+        params, cov, *_ = curve_fit(gaussian, x, y, p0=[max(x),0,1], bounds=([0,-np.inf,0],[np.inf,np.inf,np.inf]))
+        errs = np.sqrt(np.diag(cov))
+        
+        rounded_pull_mean = round(params[1],2)
+        rounded_pull_std = round(params[2],2)
+        rounded_pull_mean_error = round(errs[1], 2)
+        rounded_pull_std_error = round(errs[2], 2)
 
 
         gaussian_fit = R.TF1("gaussian_fit", "gaus", -5, 5)
-        pull.Fit(gaussian_fit)
-        gaussian_fit.SetLineColor(4)   
-
-        pull_mean3 = gaussian_fit.GetParameter(1) #From Gaussian
-        pull_std3 = gaussian_fit.GetParameter(2)
-        pull_mean_error3 = gaussian_fit.GetParError(1)
-        pull_std_error3 = gaussian_fit.GetParError(2)
-        rounded_pull_mean3 = round(pull_mean3, 3)
-        rounded_pull_std3 = round(pull_std3, 3)
-        rounded_pull_mean_error3 = round(pull_mean_error3, 3)
-        rounded_pull_std_error3 = round(pull_std_error3, 3)
-
+        gaussian_fit.SetLineColor(4)
+        gaussian_fit.SetParameters(params[0],params[1],params[2])
         gaussian_fit.Draw('same')
 
-        Legend = 'Legend'
         legend2 = R.TLegend(
-            0.7, 0.80,0.8,0.92, "#bf{#it{"+Legend+"}}"
+            0.7, 0.80,0.8,0.92, "#bf{#it{"+plot_type+"}}"
         )
 
         legend2.SetFillStyle(0)
         legend2.SetBorderSize(0)
         legend2.SetTextSize(0.045)
-        max_length = 3 
-        
 
         legend2.SetTextSize(0.04)
         legend2.AddEntry(data.GetName(), data.GetTitle(), "l")
@@ -232,20 +221,15 @@ def plot(
         latex = R.TLatex()
         latex.SetNDC()
         latex.SetTextSize(0.04)
-        latex.DrawLatex(0.7 ,0.77 , 'pull mean: ' + str(rounded_pull_mean) + '\pm' + str(rounded_pull_mean_error))
-        latex.DrawLatex(0.7 ,0.73 , 'pull \sigma: ' + str(rounded_pull_std) + '\pm' + str(rounded_pull_std_error))
-        latex.DrawLatex(0.7 ,0.69 , 'pull mean: ' + str(rounded_pull_mean3) + '\pm' + str(rounded_pull_mean_error3))
-        latex.DrawLatex(0.7 ,0.65 , 'pull \sigma: ' + str(rounded_pull_std3) + '\pm' + str(rounded_pull_std_error3))
-    
-        y = []
-        x = []
-        for i in range(pull.GetNbinsX()):
-            y.append(pull.GetBinContent(i))
-            x.append(pull.GetBinCenter(i))
+        latex.DrawLatex(0.7 ,0.77 , 'pull mean: ' + str(rounded_pull_mean) + '\pm ' + str(rounded_pull_mean_error))
+        latex.DrawLatex(0.7 ,0.73 , 'pull \sigma: ' + str(rounded_pull_std) + '\pm ' + str(rounded_pull_std_error))
 
-        params, cov, *_ = curve_fit(gaussian, x, y, p0=[max(x),0,1], bounds=([0,-np.inf,0],[np.inf,np.inf,np.inf]))
+    
+
 
         pull_canvas.Show()
+
+
 
 
         if save_to is not None:
