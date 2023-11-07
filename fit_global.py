@@ -124,9 +124,9 @@ gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 # Model CrystalBall
 Csig = RooRealVar("Csig", "Csig", 9.92, 0, 20)
 aL = RooRealVar("aL", "aL", 1.75, -10, 10)
-nL = RooRealVar("nL", "nL", 21.3, 27, 40)
-aR = RooRealVar("aR", "aR", 44, 25, 60)
-nR = RooRealVar("nR", "nR", 30, 0, 50)
+nL = RooRealVar("nL", "nL", 40, 27, 50)
+aR = RooRealVar("aR", "aR", 5, 0, 40)
+nR = RooRealVar("nR", "nR", 10, 0, 20)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Exponential Background
