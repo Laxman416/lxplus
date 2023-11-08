@@ -239,6 +239,7 @@ def gauss_crystal_exp(x,data,ttree,meson_name,plot_type_name,meson=options.meson
 
         print(f"mu scipy = {params[1]} +/- {errs[1]}")
         print(f"sig scipy= {params[2]} +/- {errs[2]}")
+        print(f"N scipy = {params[0]}")
     elif binned=='y':
         print()
     return
