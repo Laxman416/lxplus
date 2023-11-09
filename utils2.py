@@ -220,8 +220,8 @@ def plot(
         latex = R.TLatex()
         latex.SetNDC()
         latex.SetTextSize(0.04)
-        latex.DrawLatex(0.7 ,0.75 , 'pull \mu: ' + str(rounded_pull_mean) + '\pm ' + str(rounded_pull_mean_error))
-        latex.DrawLatex(0.7 ,0.71 , 'pull \sigma: ' + str(rounded_pull_std) + '\pm ' + str(rounded_pull_std_error))
+        latex.DrawLatex(0.7 ,0.75 , 'pull \mu: ' + str(rounded_pull_mean) + ' \pm ' + str(rounded_pull_mean_error))
+        latex.DrawLatex(0.7 ,0.71 , 'pull \sigma: ' + str(rounded_pull_std) + ' \pm ' + str(rounded_pull_std_error))
 
     
 
