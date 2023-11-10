@@ -15,7 +15,7 @@ import random
 import os
 import argparse
 import numpy as np
-
+import re
 
 # - - - - - - - FUNCTIONS - - - - - - - #
 
@@ -59,6 +59,14 @@ def parse_arguments():
     )
     parser.add_argument(
         "--input",
+        type=int,
+        choices=[15],
+        required=True,
+        help="flag to set the path where the input data should be found"
+    )
+    
+    parser.add_argument(
+        "--inmodelput",
         type=dir_path,
         required=False,
         default=os.getcwd(),
@@ -77,22 +85,22 @@ def dir_path(string):
     else:
         raise NotADirectoryError(string)
         
-def read_from_file(meson, polarity, bin_num):
+def read_from_file(meson, polarity):
     '''
     Opens a .txt files and reads the values of the signal normalization constant and its uncertainty.
     
     Returns these two values.
     '''
-    with open(f'{options.input}/{bin_num}/yields_{meson}_{polarity}_{options.year}_{options.size}_bin{bin_num}.txt') as f:
-        for line in f:
-            currentline = line.split(",")
-            Nsig = float(currentline[0])
-            Nsig_err = float(currentline[1])
+    with open(f'{options.input}/tightcuts_{options.model}_{meson}_{polarity}_{options.year}_{options.size}.txt') as f:
+        file_content = f.read()
+        list_file_content = re.findall(r'[\d.]+', file_content)
+        Nsig = float(list_file_content[0])
+        Nsig_err = float(list_file_content[1])
         f.close()
             
     return Nsig, Nsig_err
 
-def get_yield(bin_num):
+def get_yield():
     '''
     Gets all the normalization yields, and their uncertainties, necessary to calculate the raw asymmetries.
     This takes into account both D0 and D0bar and both magnet polarities.
@@ -100,10 +108,10 @@ def get_yield(bin_num):
     Returns all the signal normalization constants, together with their uncertainties.
     '''
     
-    yield_D0_up = read_from_file("D0", "up", bin_num)
-    yield_D0bar_up = read_from_file("D0bar", "up", bin_num)
-    yield_D0_down = read_from_file("D0", "down", bin_num)
-    yield_D0bar_down = read_from_file("D0bar", "down", bin_num)
+    yield_D0_up = read_from_file("D0", "up")
+    yield_D0bar_up = read_from_file("D0bar", "up")
+    yield_D0_down = read_from_file("D0", "down")
+    yield_D0bar_down = read_from_file("D0bar", "down")
     
     return yield_D0_up[0], yield_D0_up[1], yield_D0bar_up[0], yield_D0bar_up[1], yield_D0_down[0], yield_D0_down[1], yield_D0bar_down[0], yield_D0bar_down[1]
 
@@ -123,7 +131,7 @@ def calculate_raw_asymmetry(norm_D0, norm_D0bar, bin_width, N_D0_err, N_D0bar_er
           
     return 100*A, 100*A_err
 
-def output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num):
+def output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err):
     '''
     This function takes as arguments all the necessary values and outputs them to the screen in a nicely formatted way.
     It also outputs them to a .txt file, written in the directory established by the user.
@@ -133,28 +141,25 @@ def output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_d
     print('The MagDown raw asymmetry is: (', round(A_raw_down, 3), '+/-', round(A_raw_down_err, 3), ') %')
     
     asymmetry = str(round(A_raw, 3)) + ' +/- ' + str(round(A_raw_err, 3)) + ' (stat) +/- '
-    print(f'The 20{options.year} raw asymmetry of bin {bin_num} is:', asymmetry)
+    print(f'The 20{options.year} raw asymmetry of bin is:', asymmetry)
     
     array = np.array([A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err])
-    np.savetxt(f"{options.path}/asymmetries_{options.year}_{options.size}_bin{bin_num}.txt", array, delimiter=',')
+    np.savetxt(f"{options.path}/asymmetries_{options.year}_{options.size}.txt", array, delimiter=',')
     
     
 # - - - - - - - MAIN CODE - - - - - - - #
 
 options = parse_arguments()
 
-for j in range(0,10):
-    for i in range (0,10):
-        bin_num = str(j)+str(i)
-        # get normalization yield from desired model 
-        N_D0_up, N_D0_up_err, N_D0bar_up, N_D0bar_up_err, N_D0_down, N_D0_down_err, N_D0bar_down, N_D0bar_down_err = get_yield(bin_num)
 
-        # get raw asymmetries for main model
-        A_raw_up, A_raw_up_err = calculate_raw_asymmetry(N_D0_up, N_D0bar_up, 1, N_D0_up_err, N_D0bar_up_err)
-        A_raw_down, A_raw_down_err = calculate_raw_asymmetry(N_D0_down, N_D0bar_down, 1, N_D0_down_err, N_D0bar_down_err)
-        A_raw = (A_raw_up + A_raw_down) / 2
-        A_raw_err = ((A_raw_up_err**2 + A_raw_down_err**2)**0.5) /2
+# get normalization yield from desired model 
+N_D0_up, N_D0_up_err, N_D0bar_up, N_D0bar_up_err, N_D0_down, N_D0_down_err, N_D0bar_down, N_D0bar_down_err = get_yield()
 
-        # output results
-        output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num)
-        
+# get raw asymmetries for main model
+A_raw_up, A_raw_up_err = calculate_raw_asymmetry(N_D0_up, N_D0bar_up, 1, N_D0_up_err, N_D0bar_up_err)
+A_raw_down, A_raw_down_err = calculate_raw_asymmetry(N_D0_down, N_D0bar_down, 1, N_D0_down_err, N_D0bar_down_err)
+A_raw = (A_raw_up + A_raw_down) / 2
+A_raw_err = ((A_raw_up_err**2 + A_raw_down_err**2)**0.5) /2
+
+# output results
+output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err)

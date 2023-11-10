@@ -231,7 +231,7 @@ def gauss_crystal_exp(x,data,ttree,meson_name,plot_type_name,meson=options.meson
 
         #Saving File
         file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
-        text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
+        text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + ', N_bkg: ' + str(Nbkg) + ', N_bkg_err: ' + str(Nbkg_err)
         file.write(text)
         file.close
 
@@ -289,7 +289,7 @@ def gauss_johnson_exp(x,data,ttree,meson_name,plot_type_name,meson=options.meson
 
         #Saving File
         file = open(f"tightcuts_{model}_{meson}_{polarity}_{year}_{size}.txt", "w")
-        text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + 'N_bkg: ' + str(Nbkg) + 'N_bkg_err: ' + str(Nbkg_err)
+        text = 'N_sig: ' + str(Nsig) + ', N_sig_err: ' + str(Nsig_err) + ', Chi2: ' + str(chi2) + ', pull mean: ' + str(pull_mean) + ', pull std dev: ' + str(pull_std) + ', N_bkg: ' + str(Nbkg) + ', N_bkg_err: ' + str(Nbkg_err)
         file.write(text)
         file.close
 
