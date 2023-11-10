@@ -60,7 +60,7 @@ def parse_arguments():
     parser.add_argument(
         "--model",
         type=int,
-        choices=[15],
+        choices=[15,17],
         required=True,
         help="flag to set the path where the input data should be found"
     )
