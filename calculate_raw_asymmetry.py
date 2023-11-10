@@ -58,7 +58,7 @@ def parse_arguments():
         help="flag to set the path where the output files should be written to"
     )
     parser.add_argument(
-        "--input",
+        "--model",
         type=int,
         choices=[15],
         required=True,
@@ -66,7 +66,7 @@ def parse_arguments():
     )
     
     parser.add_argument(
-        "--inmodelput",
+        "--input",
         type=dir_path,
         required=False,
         default=os.getcwd(),
