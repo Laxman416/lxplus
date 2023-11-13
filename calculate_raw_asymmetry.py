@@ -19,63 +19,46 @@ import re
 
 # - - - - - - - FUNCTIONS - - - - - - - #
 
-def parse_arguments():
-    '''
-    Parses the arguments needed along the code. Arguments:
-    
-    --year  Used to specify the year at which the data was taken the user is interested in.
-            The argument must be one of: [16, 17, 18]. These referr to 2016, 2017 & 2018, respectively.
-    --size  Used to specify the amount of events the user is interested in analysing.
-            The argument must be one of: [large, small, medium, 1-8]. The integers specify the number of root
-            files to be read in. Large is equivalent to 8. Medium is equivalent to 4. Small takes 200000 events.
-    --path  Used to specify the directory in which the output files should be written. It is not required,
-            in the case it is not specified, the default path is the current working directory.
-    --input     Used to specify the directory in which the input data should be found. It is not required,
-                in the case it is not specified, the default path is the current working directory. 
-    
-    Returns the parsed arguments.
-    '''
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--year",
-        type=int,
-        choices=[16,17,18],
-        required=True,
-        help="flag to set the data taking year."
-    )
-    parser.add_argument(
-        "--size",
-        type=str,
-        choices=["large", "medium", "small", "1", "2", "3", "4", "5", "6", "7", "8"],
-        required=True,
-        help="flag to set the data taking year."
-    )
-    parser.add_argument(
-        "--path",
-        type=dir_path,
-        required=False,
-        default=os.getcwd(),
-        help="flag to set the path where the output files should be written to"
-    )
-    parser.add_argument(
-        "--model",
-        type=int,
-        choices=[15,17],
-        required=True,
-        help="flag to set the path where the input data should be found"
-    )
-    
-    parser.add_argument(
-        "--input",
-        type=dir_path,
-        required=False,
-        default=os.getcwd(),
-        help="flag to set the path where the input data should be found"
-    )
-    
-    return parser.parse_args()
 
-options = parse_arguments()
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--year",
+    type=int,
+    choices=[16,17,18],
+    required=True,
+    help="flag to set the data taking year."
+)
+parser.add_argument(
+    "--size",
+    type=str,
+    choices=["large", "medium", "small", "1", "2", "3", "4", "5", "6", "7", "8"],
+    required=True,
+    help="flag to set the data taking year."
+)
+parser.add_argument(
+    "--path",
+    type=dir_path,
+    required=False,
+    default=os.getcwd(),
+    help="flag to set the path where the output files should be written to"
+)
+parser.add_argument(
+    "--model",
+    type=int,
+    choices=[15,17],
+    required=True,
+    help="flag to set the path where the input data should be found"
+)
+
+parser.add_argument(
+    "--input",
+    type=dir_path,
+    required=False,
+    default=os.getcwd(),
+    help="flag to set the path where the input data should be found"
+)
+
+options = parser.parse_args()
 
 def dir_path(string):
     '''
