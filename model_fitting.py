@@ -114,6 +114,13 @@ def parse_arguments():
         required=True,
         help="flag to set whether a binned or an unbinned should be performed (y/n)"
     )
+    parser.add_argument(
+        "--global_local",
+        type=str,
+        choices=["y", "Y", "n", "N"],
+        required=True,
+        help="flag to set whether a local fit should be performed (y/n)"
+    )
     
     return parser.parse_args()
 
