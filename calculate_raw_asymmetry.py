@@ -216,7 +216,7 @@ def output_results_prod(A_det_up, A_det_up_err, A_det_down, A_det_down_err,A_pro
         print('The MagDown prod asymmetry is: (', round(A_prod_down, 2), '+/-', round(A_prod_down_err, 2), ') %')
 
         prod_asymmetry = str(round(A_prod, 3)) + ' +/- ' + str(round(A_prod_err, 3)) + ' (stat) +/- '
-        print(f'The 20{options.year} raw asymmetry of bin is:', prod_asymmetry)
+        print(f'The 20{options.year} prod asymmetry of bin is:', prod_asymmetry)
 
         array = np.array([A_prod, A_prod_err, A_prod_up, A_prod_up_err, A_prod_down, A_prod_down_err])
         np.savetxt(f"{options.path}/prod_asymmetries_{options.year}_{options.size}.txt", array, delimiter=',')
