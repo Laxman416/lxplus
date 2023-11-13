@@ -248,5 +248,5 @@ A_raw_err = ((A_raw_up_err**2 + A_raw_down_err**2)**0.5) /2
 
 # output results
 output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err)
-A_det_up, A_det_up_err, A_det_down, A_det_down_err,A_prod_up,A_prod_down, A_prod,A_prod_up_err, A_prod_down_err, A_prod_err = calculate_prod_asymmetry(A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err)
+A_det_up, A_det_up_err, A_det_down, A_det_down_err,A_prod_up,A_prod_down, A_prod,A_prod_up_err, A_prod_down_err, A_prod_err = calculate_prod_asymmetry(A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, year = options.year)
 output_results_prod(A_det_up, A_det_up_err, A_det_down, A_det_down_err,A_prod_up,A_prod_down, A_prod, A_prod_up_err, A_prod_down_err, A_prod_err)
