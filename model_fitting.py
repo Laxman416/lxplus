@@ -372,8 +372,7 @@ if binned:
         nthree.Draw("same")
 
     # Saves the model
-
-        print(f"Saving plots to {save_to}_ANA.root")
+        print("Saving plots")
         if global_local:
             c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}_fit_ANA.pdf")
             file = open(f"{options.path}/{bin_num}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
