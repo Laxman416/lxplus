@@ -28,6 +28,7 @@ fi
 if [[ "$selected" != "n" ]]; then
     mkdir $directory
     mkdir $directory"/selected_data"
+fi
 mkdir $directory"/binned_data"
 mkdir $directory"/binned_data/binning_scheme"
 mkdir $directory"/model_fitting"
@@ -58,7 +59,7 @@ if [[ "$selected" != "n" ]]; then
         python multiple_candidates.py --year $year --size $size --polarity $polar --path $directory"/selected_data"
     done
     echo "Multiple candidates have been removed"
-
+fi
 
 python fit_global.py --year $year --size $size --path $directory"/model_fitting/global" --binned_fit $binned --input $directory"/selected_data"
 python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/global" --input $directory"/selected_data" --parameters_path $directory"/model_fitting/global" --global_local 'n' --binned_fit $binned
