@@ -146,8 +146,93 @@ def output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_d
     array = np.array([A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err])
     np.savetxt(f"{options.path}/asymmetries_{options.year}_{options.size}.txt", array, delimiter=',')
     
+def calculate_prod_asymmetry(A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err):
+    if options.year == "16":
+        A_kspi_up = -0.87534228056
+        A_kspi_err_up = 0.265077797764
+
+        A_kpipi_up = -1.35398359189
+        A_kpipi_err_up = 0.13115828851
+
+        A_kspi_down = -0.355750007642
+        A_kspi_err_down = 0.247579432594
+
+        A_kpipi_down = -0.637694362926
+        A_kpipi_err_down = 0.123796822258
+
+    elif options.year == "17":
+        A_kspi_up = -0.654235263918
+        A_kspi_err_up = 0.273509295656
+
+        A_kpipi_up = -1.38335612668
+        A_kpipi_err_up = 0.121595927374
+
+        A_kspi_down = -0.126746550532
+        A_kspi_err_down = 0.269402552773
+
+        A_kpipi_down = -1.02345488078
+        A_kpipi_err_down = 0.127466759335
+
+    elif options.year == "18":
+        A_kspi_up = -0.942058542057
+        A_kspi_err_up = 0.270644276803
+
+        A_kpipi_up = -1.5471233568
+        A_kpipi_err_up = 0.131391285254
+
+        A_kspi_down = -0.277769785338
+        A_kspi_err_down = 0.288008079473
+
+        A_kpipi_down = -1.27619403857
+        A_kpipi_err_down = 0.129960950228
+
+
+
+
+    # production asymmetry for K0 found from a paper
+
+    A_k0 = 0.054
+    A_k0_err = 0.014
     
+    # detector asymmetry is the same for both models
+
+    A_det_up = A_kpipi_up - A_kspi_up - A_k0
+    A_det_up_err = np.sqrt(((A_kpipi_err_up)**2+(A_kspi_err_up)**2+(A_k0_err)**2))
+
+
+
+    A_det_down = A_kpipi_down - A_kspi_down - A_k0
+    A_det_down_err =  np.sqrt(((A_kpipi_err_down)**2+(A_kspi_err_down)**2+(A_k0_err)**2))
+
+
+
+    A_prod_up = A_raw_up - A_det_up
+    A_prod_down = A_raw_down - A_det_down
+
+    A_prod = (A_prod_up + A_prod_down) / 2
+
+    
+    A_prod_up_err = (A_raw_up_err**2 + A_det_up_err**2)**(0.5)
+    A_prod_down_err = (A_raw_down_err**2 + A_det_down_err**2)**(0.5)
+    A_prod_err = ((p_err_up**2+p_err_down**2)**(0.5))/2
+
+    return A_det_up, A_det_up_err, A_det_down, A_det_down_err,A_prod_up,A_prod_down, A_prod, A_prod_up_err, A_prod_down_err, A_prod_err
 # - - - - - - - MAIN CODE - - - - - - - #
+
+def output_results_prod(A_det_up, A_det_up_err, A_det_down, A_det_down_err,A_prod_up,A_prod_down, A_prod, A_prod_up_err, A_prod_down_err, A_prod_err):
+        print('The MagUp detector asymmetry is: (', round(A_det_up, 2), '+/-', round(A_det_up_err, 2), ') %')
+        print('The MagDown detector asymmetry is: (', round(A_det_down, 2), '+/-', round(A_det_down_err, 2), ') %')
+
+        print('The MagUp prod asymmetry is: (', round(A_prod_up, 2), '+/-', round(A_prod_up_err, 2), ') %')
+        print('The MagDown prod asymmetry is: (', round(A_prod_down, 2), '+/-', round(A_prod_down_err, 2), ') %')
+
+        prod_asymmetry = str(round(A_prod, 3)) + ' +/- ' + str(round(A_prod_err, 3)) + ' (stat) +/- '
+        print(f'The 20{options.year} raw asymmetry of bin is:', prod_asymmetry)
+
+        array = np.array([A_prod, A_prod_err, A_prod_up, A_prod_up_err, A_prod_down, A_prod_down_err])
+        np.savetxt(f"{options.path}/prod_asymmetries_{options.year}_{options.size}.txt", array, delimiter=',')
+        
+
 
 options = parse_arguments()
 
@@ -163,3 +248,5 @@ A_raw_err = ((A_raw_up_err**2 + A_raw_down_err**2)**0.5) /2
 
 # output results
 output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err)
+A_det_up, A_det_up_err, A_det_down, A_det_down_err,A_prod_up,A_prod_down, A_prod,A_prod_up_err, A_prod_down_err, A_prod_err = calculate_prod_asymmetry(A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err)
+output_results_prod(A_det_up, A_det_up_err, A_det_down, A_det_down_err,A_prod_up,A_prod_down, A_prod, A_prod_up_err, A_prod_down_err, A_prod_err)
