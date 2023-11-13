@@ -99,3 +99,5 @@ python analyse_chisquared.py --year $year --size $size --path $directory"/raw_as
 python calculate_raw_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry" --input $directory"/model_fitting/local"
 
 python analyse_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry" --input $directory"/raw_asymmetry_outcome/raw_asymmetry" --raw "y"
+
+exit
