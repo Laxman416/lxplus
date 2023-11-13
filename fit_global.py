@@ -1,12 +1,12 @@
 """
 fit_global.py
 
-This code is used to perform a global fit on the selected data. In order to do so a simulatenous fit is done on the four datasets (with different mesons and polarities). This simulatenous fit keeps all variables constant across the four fits except for the normalization constants which are allowed to vary independently. The model used consists of a Crystal Ball function and a Gaussian distribution to model the signal and a Chebychev polynomial to model the background.
+This code is used to perform a global fit on the selected data. In order to do so a simulatenous fit is done on the four datasets (with different mesons and polarities). This simulatenous fit keeps all variables constant across the four fits except for the normalisation constants which are allowed to vary independently. The model used consists of a Crystal Ball function and a Gaussian distribution to model the signal and an Exponential decay to model the background.
 The year of interest and size of the data to be analysed must be specified using the required flags --year --size. It is necessary to specify if the fit should be performed on the binned data or the unbinned data using the flag --binned_fit. There is a flag --path, which is not required. This one is used to specify the directory where the input data is located, and where the output file should be written. By default it is set to be the current working directory.
 It outputs the value of the constants shared in the simultaneous fit to a text file. This code is heavily inspired by Marc Oriol Pérez (marc.oriolperez@student.manchester.ac.uk), however it has been redesigned so that the binned fit is succesfully performed.
 
 Author: Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)
-Last edited: 27th October 2023
+Last edited: 5th November 2023
 """
 
 import ROOT
@@ -14,7 +14,7 @@ import numpy as np
 import uproot
 import argparse
 import os
-from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooChebychev, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist
+from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist, RooExponential
 import time 
 start_time = time.time()
 def dir_path(string):
@@ -74,53 +74,43 @@ def parse_arguments():
         required=True,
         help="flag to set whether a binned or an unbinned should be performed (y/n)"
     )
-    parser.add_argument(
-        "--input",
-        type=dir_path,
-        required=False,
-        default=os.getcwd(),
-        help="flag to set the path where the input files should be read"
-    )
     
     return parser.parse_args()
 
 # - - - - - - - MAIN BODY - - - - - - - #
 args = parse_arguments()
-fit_params = {}
-fit_PDFs = {}
 # Bin Parameters
 numbins = 100
-lower_boundary = 1800
-upper_boundary = 1900
+lower_boundary = 1820
+upper_boundary = 1910
 
 if args.binned_fit=="y" or args.binned_fit=="Y":
     binned = True
 else:
     binned = False
 ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR) # mute RooFit warnings
-ROOT.gROOT.SetBatch(True)
 
 # Selects invariant mass (D0_MM) of DO for MagUp
 ttree_D0_up = TChain("D02Kpi_Tuple/DecayTree")
-ttree_D0_up.Add(f"{args.input}/D0_up_data_{args.year}_{args.size}_clean.root")
+ttree_D0_up.Add(f"{args.path}/D0_up_data_{args.year}_{args.size}_clean.root")
 ttree_D0_up.SetBranchStatus("*", 0)
 ttree_D0_up.SetBranchStatus("D0_MM", 1)
 
 # Selects invariant mass (D0_MM) of DO for MagDown
 ttree_D0_down = TChain("D02Kpi_Tuple/DecayTree")
-ttree_D0_down.Add(f"{args.input}/D0_down_data_{args.year}_{args.size}_clean.root")
+ttree_D0_down.Add(f"{args.path}/D0_down_data_{args.year}_{args.size}_clean.root")
 ttree_D0_down.SetBranchStatus("*", 0)
 ttree_D0_down.SetBranchStatus("D0_MM", 1)
 
 # Selects invariant mass (D0_MM) of DObar for MagDown
 ttree_D0bar_up = TChain("D02Kpi_Tuple/DecayTree")
-ttree_D0bar_up.Add(f"{args.input}/D0bar_up_data_{args.year}_{args.size}_clean.root")
+ttree_D0bar_up.Add(f"{args.path}/D0bar_up_data_{args.year}_{args.size}_clean.root")
 ttree_D0bar_up.SetBranchStatus("*", 0)
 ttree_D0bar_up.SetBranchStatus("D0_MM", 1)
 
 # Selects invariant mass (D0_MM) of DObar for MagDown
 ttree_D0bar_down = TChain("D02Kpi_Tuple/DecayTree")
-ttree_D0bar_down.Add(f"{args.input}/D0bar_down_data_{args.year}_{args.size}_clean.root")
+ttree_D0bar_down.Add(f"{args.path}/D0bar_down_data_{args.year}_{args.size}_clean.root")
 ttree_D0bar_down.SetBranchStatus("*", 0)
 ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
 
