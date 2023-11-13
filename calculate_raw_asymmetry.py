@@ -194,15 +194,15 @@ def calculate_prod_asymmetry(A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err,
 
 
 
-    A_prod_up_local = A_raw_up - A_det_up
-    A_prod_down_local = A_raw_down - A_det_down
+    A_prod_up_local = A_raw_up - A_det_up_local
+    A_prod_down_local = A_raw_down - A_det_down_local
 
-    A_prod_local = (A_prod_up + A_prod_down) / 2
+    A_prod_local = (A_prod_up_local + A_prod_down_local) / 2
 
     
-    A_prod_up_err_local = (A_raw_up_err**2 + A_det_up_err**2)**(0.5)
-    A_prod_down_err_local = (A_raw_down_err**2 + A_det_down_err**2)**(0.5)
-    A_prod_err_local = ((p_err_up**2+p_err_down**2)**(0.5))/2
+    A_prod_up_err_local = (A_raw_up_err**2 + A_det_up_err_local**2)**(0.5)
+    A_prod_down_err_local = (A_raw_down_err**2 + A_det_down_err_local**2)**(0.5)
+    A_prod_err_local = ((A_prod_up_err_local**2+A_prod_down_err_local**2)**(0.5))/2
 
     return A_det_up_local, A_det_up_err_local, A_det_down_local, A_det_down_err_local,A_prod_up_local,A_prod_down_local, A_prod_local, A_prod_up_err_local, A_prod_down_err_local, A_prod_err_local#
 
