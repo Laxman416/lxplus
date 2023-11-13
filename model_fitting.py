@@ -116,7 +116,7 @@ def parse_arguments():
         "--bin",
         type=str,
         choices=["y", "Y", "n", "N"],
-        required=True,
+        required=False,
         help="flag to set whether a binned or an unbinned should be performed (y/n)"
     )
 

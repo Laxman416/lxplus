@@ -85,7 +85,7 @@ do
         for ind in {0..99}
         do
             index=$( printf '%02d' $ind)
-            python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/local/"$index --input $directory"/binned_data" --parameters_path $directory"/model_fitting/global" --bin $index --binned_fit $binned
+            python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/local/"$index --input $directory"/binned_data" --parameters_path $directory"/model_fitting/global" --bin $index --binned_fit $binned --global_local 'y'
         done
     done
 done
