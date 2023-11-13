@@ -61,7 +61,7 @@ if [[ "$selected" = "n" ]]; then
     echo "Multiple candidates have been removed"
 fi
 
-if [[ "$selected" = "n" ]]; then
+if [[ "$selected" = "y" ]]; then
     echo "Skipping selection of events and multiple candidates"
 fi
 python fit_global.py --year $year --size $size --path $directory"/model_fitting/global" --binned_fit $binned --input $directory"/selected_data"
