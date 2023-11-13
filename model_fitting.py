@@ -365,10 +365,19 @@ if binned:
         nthree.Draw("same")
 
     # Saves the model
-    c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.root")
-    c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.C")
-    c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.pdf")
-    c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.jpg")
+        print("Saving plots")
+        if global_local:
+            c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}_fit_ANA.pdf")
+            file = open(f"{options.path}/{bin_num}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
+            text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError())
+            file.write(text)
+            file.close
+        else:
+            c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_fit_ANA.pdf")  
+            file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
+            text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError())
+            file.write(text)
+            file.close
 
 else:
     unbinned_data = RooDataSet("data", "Data", ttree, RooArgSet(D0_M))
