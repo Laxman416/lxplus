@@ -122,7 +122,7 @@ ttree_D0bar_down.Add(f"{args.input}/D0bar_down_data_{args.year}_{args.size}_clea
 ttree_D0bar_down.SetBranchStatus("*", 0)
 ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
 
-D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
+D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1820, 1910)
 
 # Model Gaussian
 mean = RooRealVar("mean", "mean", 1865.3, 1860, 1870)
