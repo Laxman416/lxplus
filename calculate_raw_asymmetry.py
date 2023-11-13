@@ -134,7 +134,8 @@ def output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_d
     return
     
 def calculate_prod_asymmetry(A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, year = options.year):
-    if year == "16":
+    
+    if year == 16:
         A_kspi_up = -0.87534228056
         A_kspi_err_up = 0.265077797764
 
@@ -147,7 +148,7 @@ def calculate_prod_asymmetry(A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err,
         A_kpipi_down = -0.637694362926
         A_kpipi_err_down = 0.123796822258
 
-    elif year == "17":
+    elif year == 17:
         A_kspi_up = -0.654235263918
         A_kspi_err_up = 0.273509295656
 
@@ -160,7 +161,7 @@ def calculate_prod_asymmetry(A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err,
         A_kpipi_down = -1.02345488078
         A_kpipi_err_down = 0.127466759335
 
-    elif year == "18":
+    elif year == 18:
         A_kspi_up = -0.942058542057
         A_kspi_err_up = 0.270644276803
 
