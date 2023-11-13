@@ -15,7 +15,7 @@ import argparse
 import os
 from utils import plot
 import numpy as np
-from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooChebychev, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist
+from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooExponential, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist
 
 # - - - - - - - FUNCTIONS - - - - - - - #
 def dir_path(string):
