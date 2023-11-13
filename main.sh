@@ -25,7 +25,7 @@ fi
 # Create necessary directories to store output
 
 
-if [[ "$selected" != "n" ]]; then
+if [[ "$selected" = "n" ]]; then
     mkdir $directory
     mkdir $directory"/selected_data"
 fi
@@ -49,7 +49,7 @@ echo
 
 
 # Run the code
-if [[ "$selected" != "n" ]]; then
+if [[ "$selected" = "n" ]]; then
     python selection_of_events.py --year $year --size $size --path $directory"/selected_data"
 
     echo
