@@ -24,8 +24,9 @@ fi
 
 # Create necessary directories to store output
 
-mkdir $directory
+
 if [[ "$selected" != "n" ]]; then
+    mkdir $directory
     mkdir $directory"/selected_data"
 mkdir $directory"/binned_data"
 mkdir $directory"/binned_data/binning_scheme"
