@@ -52,7 +52,7 @@ parser.add_argument(
 
 parser.add_argument(
     "--input",
-    type=dir_path,
+    type=dir_path(),
     required=False,
     default=os.getcwd(),
     help="flag to set the path where the input data should be found"
