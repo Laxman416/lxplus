@@ -74,6 +74,13 @@ def parse_arguments():
         required=True,
         help="flag to set whether a binned or an unbinned should be performed (y/n)"
     )
+    parser.add_argument(
+        "--input",
+        type=dir_path,
+        required=False,
+        default=os.getcwd(),
+        help="flag to set the path where the input files should be read"
+    )
     
     return parser.parse_args()
 
@@ -95,25 +102,25 @@ ROOT.gROOT.SetBatch(True)
 
 # Selects invariant mass (D0_MM) of DO for MagUp
 ttree_D0_up = TChain("D02Kpi_Tuple/DecayTree")
-ttree_D0_up.Add(f"{args.path}/D0_up_data_{args.year}_{args.size}_clean.root")
+ttree_D0_up.Add(f"{args.input}/D0_up_data_{args.year}_{args.size}_clean.root")
 ttree_D0_up.SetBranchStatus("*", 0)
 ttree_D0_up.SetBranchStatus("D0_MM", 1)
 
 # Selects invariant mass (D0_MM) of DO for MagDown
 ttree_D0_down = TChain("D02Kpi_Tuple/DecayTree")
-ttree_D0_down.Add(f"{args.path}/D0_down_data_{args.year}_{args.size}_clean.root")
+ttree_D0_down.Add(f"{args.input}/D0_down_data_{args.year}_{args.size}_clean.root")
 ttree_D0_down.SetBranchStatus("*", 0)
 ttree_D0_down.SetBranchStatus("D0_MM", 1)
 
 # Selects invariant mass (D0_MM) of DObar for MagDown
 ttree_D0bar_up = TChain("D02Kpi_Tuple/DecayTree")
-ttree_D0bar_up.Add(f"{args.path}/D0bar_up_data_{args.year}_{args.size}_clean.root")
+ttree_D0bar_up.Add(f"{args.input}/D0bar_up_data_{args.year}_{args.size}_clean.root")
 ttree_D0bar_up.SetBranchStatus("*", 0)
 ttree_D0bar_up.SetBranchStatus("D0_MM", 1)
 
 # Selects invariant mass (D0_MM) of DObar for MagDown
 ttree_D0bar_down = TChain("D02Kpi_Tuple/DecayTree")
-ttree_D0bar_down.Add(f"{args.path}/D0bar_down_data_{args.year}_{args.size}_clean.root")
+ttree_D0bar_down.Add(f"{args.input}/D0bar_down_data_{args.year}_{args.size}_clean.root")
 ttree_D0bar_down.SetBranchStatus("*", 0)
 ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
 

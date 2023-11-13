@@ -7,6 +7,7 @@ directory=$1
 year=$2
 size=$3
 binned=$4
+selected=$5
 
 if [[ "$binned" != "y" ]]; then
     if [[ "$binned" != "Y" ]]; then
@@ -24,7 +25,8 @@ fi
 # Create necessary directories to store output
 
 mkdir $directory
-mkdir $directory"/selected_data"
+if [[ "$selected" != "n" ]]; then
+    mkdir $directory"/selected_data"
 mkdir $directory"/binned_data"
 mkdir $directory"/binned_data/binning_scheme"
 mkdir $directory"/model_fitting"
@@ -45,19 +47,20 @@ echo
 
 
 # Run the code
+if [[ "$selected" != "n" ]]; then
+    python selection_of_events.py --year $year --size $size --path $directory"/selected_data"
 
-python selection_of_events.py --year $year --size $size --path $directory"/selected_data"
+    echo
+    for polar in up down
+    do
 
-echo
-for polar in up down
-do
-
-    python multiple_candidates.py --year $year --size $size --polarity $polar --path $directory"/selected_data"
-done
-echo "Multiple candidates have been removed"
+        python multiple_candidates.py --year $year --size $size --polarity $polar --path $directory"/selected_data"
+    done
+    echo "Multiple candidates have been removed"
 
 
-python fit_global.py --year $year --size $size --path $directory"/model_fitting/global" --binned_fit $binned
+python fit_global.py --year $year --size $size --path $directory"/model_fitting/global" --binned_fit $binned --input $directory"/selected_data"
+python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/global" --input $directory"/selected_data" --parameters_path $directory"/model_fitting/global" --global_local 'n' --binned_fit $binned
 
 echo "The global fit has been completed"
 echo
