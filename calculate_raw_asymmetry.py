@@ -196,27 +196,27 @@ def calculate_prod_asymmetry(A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err)
     
     # detector asymmetry is the same for both models
 
-    A_det_up = A_kpipi_up - A_kspi_up - A_k0
-    A_det_up_err = np.sqrt(((A_kpipi_err_up)**2+(A_kspi_err_up)**2+(A_k0_err)**2))
+    A_det_up_local = A_kpipi_up - A_kspi_up - A_k0
+    A_det_up_err_local = np.sqrt(((A_kpipi_err_up)**2+(A_kspi_err_up)**2+(A_k0_err)**2))
 
 
 
-    A_det_down = A_kpipi_down - A_kspi_down - A_k0
-    A_det_down_err =  np.sqrt(((A_kpipi_err_down)**2+(A_kspi_err_down)**2+(A_k0_err)**2))
+    A_det_down_local = A_kpipi_down - A_kspi_down - A_k0
+    A_det_down_err_local =  np.sqrt(((A_kpipi_err_down)**2+(A_kspi_err_down)**2+(A_k0_err)**2))
 
 
 
-    A_prod_up = A_raw_up - A_det_up
-    A_prod_down = A_raw_down - A_det_down
+    A_prod_up_local = A_raw_up - A_det_up
+    A_prod_down_local = A_raw_down - A_det_down
 
-    A_prod = (A_prod_up + A_prod_down) / 2
+    A_prod_local = (A_prod_up + A_prod_down) / 2
 
     
-    A_prod_up_err = (A_raw_up_err**2 + A_det_up_err**2)**(0.5)
-    A_prod_down_err = (A_raw_down_err**2 + A_det_down_err**2)**(0.5)
-    A_prod_err = ((p_err_up**2+p_err_down**2)**(0.5))/2
+    A_prod_up_err_local = (A_raw_up_err**2 + A_det_up_err**2)**(0.5)
+    A_prod_down_err_local = (A_raw_down_err**2 + A_det_down_err**2)**(0.5)
+    A_prod_err_local = ((p_err_up**2+p_err_down**2)**(0.5))/2
 
-    return A_det_up, A_det_up_err, A_det_down, A_det_down_err,A_prod_up,A_prod_down, A_prod, A_prod_up_err, A_prod_down_err, A_prod_err
+    return A_det_up_local, A_det_up_err_local, A_det_down_local, A_det_down_err_local,A_prod_up_local,A_prod_down_local, A_prod_local, A_prod_up_err_local, A_prod_down_err_local, A_prod_err_local
 # - - - - - - - MAIN CODE - - - - - - - #
 
 def output_results_prod(A_det_up, A_det_up_err, A_det_down, A_det_down_err,A_prod_up,A_prod_down, A_prod, A_prod_up_err, A_prod_down_err, A_prod_err):
