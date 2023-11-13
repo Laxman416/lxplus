@@ -75,6 +75,8 @@ def parse_arguments():
     
     return parser.parse_args()
 
+options = parse_arguments()
+
 def dir_path(string):
     '''
     Checks if a given string is the path to a directory.
@@ -238,7 +240,7 @@ def output_results_prod(A_det_up, A_det_up_err, A_det_down, A_det_down_err,A_pro
         return
 
 
-options = parse_arguments()
+
 
 
 # get normalization yield from desired model 
