@@ -65,7 +65,13 @@ if [[ "$selected" = "y" ]]; then
     echo "Skipping selection of events and multiple candidates"
 fi
 python fit_global.py --year $year --size $size --path $directory"/model_fitting/global" --binned_fit $binned --input $directory"/selected_data"
-python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/global" --input $directory"/selected_data" --parameters_path $directory"/model_fitting/global" --global_local 'n' --binned_fit $binned
+for meson in D0 D0bar
+do 
+    for polar in up down 
+    do    
+        python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/global" --input $directory"/selected_data" --parameters_path $directory"/model_fitting/global" --global_local 'n' --binned_fit $binned
+    done
+done
 
 echo "The global fit has been completed"
 echo
