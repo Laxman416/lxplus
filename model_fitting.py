@@ -125,6 +125,11 @@ numbins = 100
 lower_boundary = 1820
 upper_boundary = 1910
 
+if options.global_local=="y" or options.global_local=="Y":
+    global_local = True
+else:
+    global_local = False
+
 if options.binned_fit=="y" or options.binned_fit=="Y":
     binned = True
 else:
@@ -135,7 +140,12 @@ parameters = np.loadtxt(f"{options.parameters_path}/fit_parameters.txt", delimit
 
 # Read data
 ttree = TChain("D02Kpi_Tuple/DecayTree")
-ttree.Add(f"{options.input}/{options.meson}_{options.polarity}_data_{options.year}_{options.size}_clean.root")
+if global_local:
+    ttree.Add(f"{options.input}/{options.meson}_{options.polarity}_data_{options.year}_{options.size}_bin{options.bin}.root")
+else:
+    ttree.Add(f"{options.input}/{options.meson}_{options.polarity}_data_{options.year}_{options.size}_clean.root")
+
+
 
 ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
