@@ -125,30 +125,6 @@ ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
 D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
 
 # Model Gaussian
-mean = RooRealVar("mean", "mean", 1865, 1850, 1880)
-sigma = RooRealVar("sigma", "sigma", 6.59, 0, 100)
-gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
-
-# Model CrystalBall
-Cmu = RooRealVar("Cmu", "Cmu", 1865.07, 1855, 1875)
-Csig = RooRealVar("Csig", "Csig", 10.65, 0, 100)
-aL = RooRealVar("aL", "aL", 1.77, -10, 10)
-nL = RooRealVar("nL", "nL", 9.5, -10, 10)
-aR = RooRealVar("aR", "aR", 3.73, -10, 10)
-nR = RooRealVar("nR", "nR", 4.34, -10, 10)
-crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, Cmu, Csig, aL, nL, aR, nR)
-
-# Model Chebychev Background
-a0 = RooRealVar("a0", "a0", -0.4, -5, 5)
-background = RooChebychev("chebyshev", "chebyshev", D0_M, RooArgList(a0))
-
-# Model Signal
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.567, 0, 1)
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.567, 0, 1)
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.567, 0, 1)
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.567, 0, 1)
-
-# Model Gaussian
 mean = RooRealVar("mean", "mean", 1865.3, 1860, 1870)
 sigma = RooRealVar("sigma", "sigma", 6.48, 0, 15)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
