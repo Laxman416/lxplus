@@ -17,6 +17,7 @@ from utils import plot
 import numpy as np
 from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooExponential, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist
 from lhcbstyle import LHCbStyle 
+import gc
 # - - - - - - - FUNCTIONS - - - - - - - #
 def dir_path(string):
     '''
@@ -405,4 +406,5 @@ else:
 
 
 print(ttree.GetEntries())
+gc.collect()
 exit()
