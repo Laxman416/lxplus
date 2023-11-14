@@ -117,7 +117,7 @@ ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
 D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1820, 1910)
 
 # Model Gaussian
-mean = RooRealVar("mean", "mean", 1865.23)
+mean = RooRealVar("mean", "mean", 1865.23,1664,1666)
 sigma = RooRealVar("sigma", "sigma", 6.32717)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
