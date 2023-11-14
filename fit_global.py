@@ -135,7 +135,7 @@ background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Ratio of signal intensities between each model. For N PDFs need N-1 fractions 
 # DO MagUp
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.5, 0, 1)
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.5, 0.5, 1)
 # D0 MagDown
 frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.556, 0, 1)
 # D0bar MagUp
