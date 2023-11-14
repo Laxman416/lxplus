@@ -204,7 +204,7 @@ if binned:
         # Creating Binned container sets using RooDataHist
         Binned_data = RooDataHist("Binned_data", "Binned Data Set", RooArgList(D0_M), ROOT.RooFit.Import(D0_Hist))
 
-        result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True), ROOT.RooFit.Range("LEFT,RIGHT"))
+        result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
 
         mD0 = 1864.84
         mD0_range = (mD0-44.84, mD0+45.16)
