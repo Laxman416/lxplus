@@ -372,7 +372,7 @@ if binned:
         nthree.Draw("same")
 
     # Saves the model
-        """ print("Saving plots")
+        print("Saving plots")
         if global_local:
             c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}_fit_ANA.pdf")
             file = open(f"{options.path}/{bin_num}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
@@ -384,7 +384,7 @@ if binned:
             file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
             text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError())
             file.write(text)
-            file.close  """
+            file.close
         
   
 
