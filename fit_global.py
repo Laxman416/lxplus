@@ -80,7 +80,7 @@ def parse_arguments():
 # - - - - - - - MAIN BODY - - - - - - - #
 args = parse_arguments()
 # Bin Parameters
-numbins = 100
+numbins = 500
 lower_boundary = 1820
 upper_boundary = 1910
 
@@ -114,34 +114,34 @@ ttree_D0bar_down.Add(f"{args.path}/D0bar_down_data_{args.year}_{args.size}_clean
 ttree_D0bar_down.SetBranchStatus("*", 0)
 ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
 
-D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
+D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1820, 1910)
 
 # Model Gaussian
-mean = RooRealVar("mean", "mean", 1865.3, 1860, 1870)
-sigma = RooRealVar("sigma", "sigma", 6.48, 0, 10)
+mean = RooRealVar("mean", "mean", 1865.4)
+sigma = RooRealVar("sigma", "sigma", 6.2378)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
-Csig = RooRealVar("Csig", "Csig", 10, 5, 15)
-aL = RooRealVar("aL", "aL", 1.75, 0, 5)
-nL = RooRealVar("nL", "nL", 40, 35, 45)
-aR = RooRealVar("aR", "aR", 5, 2, 8)
-nR = RooRealVar("nR", "nR", 5.2, 2, 8)
+Csig = RooRealVar("Csig", "Csig", 10.174)
+aL = RooRealVar("aL", "aL", 1.7469)
+nL = RooRealVar("nL", "nL", 8.3311)
+aR = RooRealVar("aR", "aR", 5.5713)
+nR = RooRealVar("nR", "nR", -0.30581)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Exponential Background
-a0 = RooRealVar("a0", "a0", -0.0079, -1, 0)
+a0 = RooRealVar("a0", "a0", -0.002825)
 background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Ratio of signal intensities between each model. For N PDFs need N-1 fractions 
 # DO MagUp
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.54, 0, 1)
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.61165)
 # D0 MagDown
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.556, 0, 1)
+frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.60979)
 # D0bar MagUp
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.562, 0, 1)
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.61348)
 # D0bar MagDown
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.556, 0, 1)
+frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.61486)
 
 # Generate normalisation variables
 Nsig_D0_up = ROOT.RooRealVar("Nsig_D0_up", "Nsig_D0_up", 0.95*ttree_D0_up.GetEntries(), 0, ttree_D0_up.GetEntries())
