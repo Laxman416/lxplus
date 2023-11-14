@@ -269,4 +269,5 @@ parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getVa
 np.savetxt(f"{args.path}/fit_parameters.txt", parameters, delimiter=',')
 print("My program took", time.time() - start_time, "to run")
 
-print(len(D0_M))
+data_D0_up = RooDataSet("data_D0_up", "Data_D0_up", ttree_D0_up, RooArgSet(D0_M))
+print(len(data_D0_up))
