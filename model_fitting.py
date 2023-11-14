@@ -128,7 +128,7 @@ def parse_arguments():
 
 options = parse_arguments()
 # Bin parameters
-numbins = 50
+numbins = 100
 lower_boundary = 1820
 upper_boundary = 1910
 
