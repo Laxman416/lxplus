@@ -80,7 +80,7 @@ def parse_arguments():
 # - - - - - - - MAIN BODY - - - - - - - #
 args = parse_arguments()
 # Bin Parameters
-numbins = 100
+numbins = 6186925/2
 lower_boundary = 1820
 upper_boundary = 1910
 
@@ -95,9 +95,6 @@ ttree_D0_up = TChain("D02Kpi_Tuple/DecayTree")
 ttree_D0_up.Add(f"{args.path}/D0_up_data_{args.year}_{args.size}_clean.root")
 ttree_D0_up.SetBranchStatus("*", 0)
 ttree_D0_up.SetBranchStatus("D0_MM", 1)
-
-print(ttree_D0_up.GetEntries())
-exit
 
 # Selects invariant mass (D0_MM) of DO for MagDown
 ttree_D0_down = TChain("D02Kpi_Tuple/DecayTree")
