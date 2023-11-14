@@ -365,10 +365,10 @@ if binned:
         nthree.Draw("same")
 
     # Saves the model
-    """c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.root")
+    c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.root")
     c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.C")
     c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.pdf")
-    c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.jpg")"""
+    c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}/D0_fit_ANA.jpg")
 
 else:
     unbinned_data = RooDataSet("data", "Data", ttree, RooArgSet(D0_M))
