@@ -23,15 +23,16 @@ def parse_arguments():
     '''
     Parses the arguments needed along the code. Arguments:
     
-    --year  Used to specify the year at which the data was taken the user is interested in.
-            The argument must be one of: [16, 17, 18]. These referr to 2016, 2017 & 2018, respectively.
-    --size  Used to specify the amount of events the user is interested in analysing.
-            The argument must be one of: [large, small, medium, 1-8]. The integers specify the number of root
-            files to be read in. Large is equivalent to 8. Medium is equivalent to 4. Small takes 200000 events.
-    --path  Used to specify the directory in which the output files should be written. It is not required,
-            in the case it is not specified, the default path is the current working directory.
+    --year      Used to specify the year at which the data was taken the user is interested in.
+                The argument must be one of: [16, 17, 18]. These referr to 2016, 2017 & 2018, respectively.
+    --size      Used to specify the amount of events the user is interested in analysing.
+                The argument must be one of: [large, small, medium, 1-8]. The integers specify the number of root
+                files to be read in. Large is equivalent to 8. Medium is equivalent to 4. Small takes 200000 events.
+    --path      Used to specify the directory in which the output files should be written. It is not required,
+                in the case it is not specified, the default path is the current working directory.
     --input     Used to specify the directory in which the input data should be found. It is not required,
                 in the case it is not specified, the default path is the current working directory. 
+    --seedval   Used to set a set a seed for the blinding.
     
     Returns the parsed arguments.
     '''
@@ -64,7 +65,13 @@ def parse_arguments():
         default=os.getcwd(),
         help="flag to set the path where the input data should be found"
     )
-    
+    parser.add_argument(
+    "--seedval",
+    type=int,
+    required=False,
+    default=12,
+    help="input any number or word to set a seed for the blinding."
+)
     return parser.parse_args()
 
 def dir_path(string):
@@ -89,7 +96,7 @@ def read_from_file(meson, polarity, bin_num):
             Nsig = float(currentline[0])
             Nsig_err = float(currentline[1])
         f.close()
-            
+
     return Nsig, Nsig_err
 
 def get_yield(bin_num):
@@ -123,7 +130,7 @@ def calculate_raw_asymmetry(norm_D0, norm_D0bar, bin_width, N_D0_err, N_D0bar_er
           
     return 100*A, 100*A_err
 
-def output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num):
+def output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num, random_factor, pseudo_constant):
     '''
     This function takes as arguments all the necessary values and outputs them to the screen in a nicely formatted way.
     It also outputs them to a .txt file, written in the directory established by the user.
@@ -135,10 +142,26 @@ def output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_d
     asymmetry = str(round(A_raw, 3)) + ' +/- ' + str(round(A_raw_err, 3)) + ' (stat) +/- '
     print(f'The 20{options.year} raw asymmetry of bin {bin_num} is:', asymmetry)
     
-    array = np.array([A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err])
+    array = np.array([A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, random_factor, pseudo_constant])
     np.savetxt(f"{options.path}/asymmetries_{options.year}_{options.size}_bin{bin_num}.txt", array, delimiter=',')
+
+def blind(A_raw, A_raw_error):
+    ''' 
+    This function blinds the values of the raw asymmetry in order to prevent bias experimenter's bias, the unintended biasing of a result in a particular direction.
+    A raw is randomly multiplied by 1 or -1 then a pseudo-random constant is added. The pseudo-random constant is randomly chosen from within 3 standard deviations of a standard Gaussian distribution.
+    The blinded result is reproudicble because the randomness is seeded.
+    '''
+    factorchoice = [-1, 1]
+    factor = np.random.choice(factorchoice)
+    np.random.seed(options.seedval)
+    # Draw random samples from a normal (Gaussian) distribution, with a mean of 0, std of 1 and then the sample is within 3std of the mean.
+    constant = np.random.normal(0, 3*A_raw_error, 1)[0]
+    Ablind = factor * A_raw + constant
     
+    print('The blinded raw asymmetry is ', round(Ablind*100, 2))
     
+    return 100*Ablind, 100*A_raw_error, factor, constant
+
 # - - - - - - - MAIN CODE - - - - - - - #
 
 options = parse_arguments()
@@ -155,6 +178,11 @@ for j in range(0,10):
         A_raw = (A_raw_up + A_raw_down) / 2
         A_raw_err = ((A_raw_up_err**2 + A_raw_down_err**2)**0.5) /2
 
+if blind
+        A_raw_blind, A_raw_error, random_factor, pseudo_constant = blind(A_raw, A_raw_err)
+        else
+        A_raw, A_raw_err
+
         # output results
-        output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num)
+        output_results(A_raw_blind, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num, random_factor, pseudo_constant)
         
