@@ -116,7 +116,6 @@ def parse_arguments():
     parser.add_argument(
         "--bin",
         type=str,
-        choices=["y", "Y", "n", "N"],
         required=False,
         help="flag to set whether a binned or an unbinned should be performed (y/n)"
     )
@@ -151,7 +150,7 @@ else:
 # Read data
 ttree = TChain("D02Kpi_Tuple/DecayTree")
 if global_local:
-    ttree.Add(f"{options.input}/{options.meson}_{options.polarity}_data_{options.year}_{options.size}_bin{options.bin}.root")
+    ttree.Add(f"{options.input}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}.root")
 else:
     ttree.Add(f"{options.input}/{options.meson}_{options.polarity}_data_{options.year}_{options.size}_clean.root")
 
@@ -376,14 +375,14 @@ if binned:
         print("Saving plots")
         if global_local:
             c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}_fit_ANA.pdf")
-            file = open(f"{options.path}/{bin_num}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
+            file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w+")
             text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError())
             file.write(text)
             file.close()
         else:
             c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_fit_ANA.pdf")
             print('1') 
-            file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
+            file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w+")
             print('2')
             text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError())
             print('3')
@@ -399,7 +398,7 @@ else:
     # Generate plots from the plot function in utils.py
     chi2, pull_mean, pull_std = plot(D0_M, unbinned_data, model, nbins=numbins, setlogy=False, save_to=f'{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}', plot_type=f"20{options.year} Mag{(options.polarity).title()}", meson=options.meson)
     # Write out results
-    file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
+    file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w+")
     text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError()) + ', ' + str(chi2) + ', ' + str(pull_mean) + ', ' + str(pull_std)
     file.write(text)
     file.close()
