@@ -206,9 +206,9 @@ if binned:
 
         result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
 
-        mD0 = 1864.84
-        mD0_range = (mD0-44.84, mD0+45.16)
-        mD0_bins = np.linspace(*mD0_range, numbins+1)
+        #mD0 = 1864.84
+        #mD0_range = (mD0-44.84, mD0+45.16)
+        #mD0_bins = np.linspace(*mD0_range, numbins+1)
 
         frame = D0_M.frame(RooFit.Name(""))
         legend_entries = dict()
@@ -266,6 +266,12 @@ if binned:
         legend_entries[D0_Hist.GetName()] = {"title": D0_Hist.GetTitle(), "style": "PE"}
 
 
+        nbins = D0_Hist.GetNbinsX()
+        mD0_bins = []
+        for i in range(1, nbins+1):
+            mD0_bins.append(D0_Hist.GetBinLowEdge(i))
+        mD0_bins.append(D0_Hist.GetBinLowEdge(numbins) + D0_Hist.GetBinWidth(numbins))
+        mD0_bins = np.array(mD0_bins, dtype=float)
         frame.SetYTitle(f"Entries MeV/c^{{2}})")
 
         c = ROOT.TCanvas("fit", "fit", 900, 800)
