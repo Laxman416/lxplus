@@ -80,7 +80,7 @@ def parse_arguments():
 # - - - - - - - MAIN BODY - - - - - - - #
 args = parse_arguments()
 # Bin Parameters
-numbins = 6186925/2
+numbins = 3093463
 lower_boundary = 1820
 upper_boundary = 1910
 
