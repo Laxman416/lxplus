@@ -96,6 +96,9 @@ ttree_D0_up.Add(f"{args.path}/D0_up_data_{args.year}_{args.size}_clean.root")
 ttree_D0_up.SetBranchStatus("*", 0)
 ttree_D0_up.SetBranchStatus("D0_MM", 1)
 
+print(ttree_D0_up.GetEntries())
+exit
+
 # Selects invariant mass (D0_MM) of DO for MagDown
 ttree_D0_down = TChain("D02Kpi_Tuple/DecayTree")
 ttree_D0_down.Add(f"{args.path}/D0_down_data_{args.year}_{args.size}_clean.root")
@@ -269,5 +272,4 @@ parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getVa
 np.savetxt(f"{args.path}/fit_parameters.txt", parameters, delimiter=',')
 print("My program took", time.time() - start_time, "to run")
 
-data_D0_up = RooDataSet("data_D0_up", "Data_D0_up", ttree_D0_up, RooArgSet(D0_M))
-print(len(data_D0_up))
+
