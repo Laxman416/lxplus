@@ -378,7 +378,7 @@ if binned:
             file = open(f"{options.path}/{bin_num}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
             text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError())
             file.write(text)
-            file.close
+            file.close()
         else:
             c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_fit_ANA.pdf")
             print('1') 
@@ -388,7 +388,7 @@ if binned:
             print('3')
             file.write(text)
             print('4')
-            file.close
+            file.close()
         
   
 
@@ -401,7 +401,7 @@ else:
     file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w")
     text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError()) + ', ' + str(chi2) + ', ' + str(pull_mean) + ', ' + str(pull_std)
     file.write(text)
-    file.close
+    file.close()
 
 
 print(ttree.GetEntries())
