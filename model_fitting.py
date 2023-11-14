@@ -163,7 +163,7 @@ parameters = np.loadtxt(f"{options.parameters_path}/fit_parameters.txt", delimit
 
 ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
-D0_M = RooRealVar("D0_MM", "D0 mass / [MeV]", 1810, 1910) # D0_MM - invariant mass
+D0_M = RooRealVar("D0_MM", "D0 mass / [MeV]", 1820, 1910) # D0_MM - invariant mass
 
 # Define variables for signal model, using the best fit parameters generated from fit_global.py
 mu = RooRealVar("mu", "mu", parameters[0])
