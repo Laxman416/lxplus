@@ -124,13 +124,13 @@ gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 # Model CrystalBall
 Csig = RooRealVar("Csig", "Csig", 9.85, 0, 20)
 aL = RooRealVar("aL", "aL", 1.62, -10, 10)
-nL = RooRealVar("nL", "nL", 47.4, -10, 50)
+nL = RooRealVar("nL", "nL", 16, -10, 50)
 aR = RooRealVar("aR", "aR", 2.41, -10, 10)
-nR = RooRealVar("nR", "nR", 20, -10, 40)
+nR = RooRealVar("nR", "nR", 28, -10, 40)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Exponential Background
-a0 = RooRealVar("a0", "a0", -0.009, -1, 0)
+a0 = RooRealVar("a0", "a0", -0.007, -1, 0)
 background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Ratio of signal intensities between each model. For N PDFs need N-1 fractions 
