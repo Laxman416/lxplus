@@ -133,14 +133,20 @@ def parse_arguments():
 # - - - - - - - MAIN BODY - - - - - - - #
 
 options = parse_arguments()
-numbins = 100
+numbins = 150
 lower_boundary = 1820
 upper_boundary = 1910
+meson = options.meson
+polarity = options.polarity
+polarity = polarity[0].upper() + polarity[1:]
 
 if options.global_local=="y" or options.global_local=="Y":
     global_local = True
+    plot_type = f"20{options.year} Mag{polarity} Bin{options.bin}"
 else:
     global_local = False
+    plot_type = f"20{options.year} Mag{polarity}"
+
 
 if options.binned_fit=="y" or options.binned_fit=="Y":
     binned = True
@@ -165,44 +171,80 @@ ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
 D0_M = RooRealVar("D0_MM", "D0 mass / [MeV]", 1820, 1910) # D0_MM - invariant mass
 
-# Define variables for signal model, using the best fit parameters generated from fit_global.py
-mu = RooRealVar("mu", "mu", parameters[0])
-Gsig = RooRealVar("sigma", "sigma", parameters[1])
-Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
+if global_local:
+    # Define variables for signal model, using the best fit parameters generated from fit_global.py
+    mu = RooRealVar("mu", "mu", parameters[0])
+    Gsig = RooRealVar("sigma", "sigma", parameters[1])
+    Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
 
-Csig = RooRealVar("Csig", "Csig", parameters[2])
-aL = RooRealVar("aL", "aL", parameters[3])
-nL = RooRealVar("nL", "nL", parameters[4])
-aR = RooRealVar("aR", "aR", parameters[5])
-nR = RooRealVar("nR", "nR", parameters[6])
-Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mu, Csig, aL, nL, aR, nR)
+    Csig = RooRealVar("Csig", "Csig", parameters[2])
+    aL = RooRealVar("aL", "aL", parameters[3])
+    nL = RooRealVar("nL", "nL", parameters[4])
+    aR = RooRealVar("aR", "aR", parameters[5])
+    nR = RooRealVar("nR", "nR", parameters[6])
+    Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mu, Csig, aL, nL, aR, nR)
 
-# Model Exponential Background
-a = RooRealVar("a0", "a0", parameters[7])
-background = RooExponential("Exponential", "Exponential", D0_M, a)
+    # Model Exponential Background
+    a = RooRealVar("a0", "a0", parameters[7])
+    background = RooExponential("Exponential", "Exponential", D0_M, a)
 
-if options.meson == "D0":
-    # D0 MagDown
-    if options.polarity == "down":
-        frac = RooRealVar("frac_D0_down", "frac_D0_down", parameters[8])
-        Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[12])
-        Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[13])
-    # D0 MagUp
-    elif options.polarity == "up":
-        frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[9])
-        Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[14])
-        Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[15])
-elif options.meson == "D0bar":
-    # D0bar MagDown
-    if options.polarity == "down":
-        frac = RooRealVar("frac_D0bar_down", "frac_D0bar_down", parameters[10])
-        Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[16])
-        Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[17])
-    # D0bar MagUp
-    elif options.polarity == "up":
-        frac = RooRealVar("frac_D0bar_up", "frac_D0bar_up", parameters[11])
-        Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[18])
-        Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[19])
+    if options.meson == "D0":
+        # D0 MagDown
+        if options.polarity == "down":
+            frac = RooRealVar("frac_D0_down", "frac_D0_down", parameters[8])
+        # D0 MagUp
+        elif options.polarity == "up":
+            frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[9])
+    elif options.meson == "D0bar":
+        # D0bar MagDown
+        if options.polarity == "down":
+            frac = RooRealVar("frac_D0bar_down", "frac_D0bar_down", parameters[10])
+        # D0bar MagUp
+        elif options.polarity == "up":
+            frac = RooRealVar("frac_D0bar_up", "frac_D0bar_up", parameters[11])
+
+    Nsig = RooRealVar("Nsig", "Nsig", 0.95*ttree.GetEntries(), 0, ttree.GetEntries())
+    Nbkg = RooRealVar("Nbkg", "Nbkg", 0.05*ttree.GetEntries(), 0, ttree.GetEntries())
+
+else:
+    # Define variables for signal model, using the best fit parameters generated from fit_global.py
+    mu = RooRealVar("mu", "mu", parameters[0])
+    Gsig = RooRealVar("sigma", "sigma", parameters[1])
+    Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
+
+    Csig = RooRealVar("Csig", "Csig", parameters[2])
+    aL = RooRealVar("aL", "aL", parameters[3])
+    nL = RooRealVar("nL", "nL", parameters[4])
+    aR = RooRealVar("aR", "aR", parameters[5])
+    nR = RooRealVar("nR", "nR", parameters[6])
+    Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mu, Csig, aL, nL, aR, nR)
+
+    # Model Exponential Background
+    a = RooRealVar("a0", "a0", parameters[7])
+    background = RooExponential("Exponential", "Exponential", D0_M, a)
+
+    if options.meson == "D0":
+        # D0 MagDown
+        if options.polarity == "down":
+            frac = RooRealVar("frac_D0_down", "frac_D0_down", parameters[8])
+            Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[12])
+            Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[13])
+        # D0 MagUp
+        elif options.polarity == "up":
+            frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[9])
+            Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[14])
+            Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[15])
+    elif options.meson == "D0bar":
+        # D0bar MagDown
+        if options.polarity == "down":
+            frac = RooRealVar("frac_D0bar_down", "frac_D0bar_down", parameters[10])
+            Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[16])
+            Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[17])
+        # D0bar MagUp
+        elif options.polarity == "up":
+            frac = RooRealVar("frac_D0bar_up", "frac_D0bar_up", parameters[11])
+            Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[18])
+            Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[19])
 
 # Create model
 signal = RooAddPdf("signal", "signal", RooArgList(Gauss, Crystal), RooArgList(frac))
@@ -230,9 +272,6 @@ if binned:
 
         result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
 
-        mD0 = 1864.84
-        mD0_range = (lower_boundary, upper_boundary)
-        mD0_bins = np.linspace(*mD0_range, numbins+1)
 
         frame = D0_M.frame(RooFit.Name(""))
         legend_entries = dict()
@@ -283,14 +322,23 @@ if binned:
             i += 1
         
         # plot data points on top again
-        Binned_data.plotOn(frame, ROOT.RooFit.Name("remove_me_B"))
+        Binned_data.plotOn(frame, ROOT.RooFit.Name("remove_me_B"), ROOT.RooFit.MarkerColor(ROOT.kBlack))
         frame.remove("remove_me_A")
-        frame.remove("remove_me_B")
-        frame.addTH1(D0_Hist, "PE")
-        legend_entries[D0_Hist.GetName()] = {"title": D0_Hist.GetTitle(), "style": "PE"}
+        #frame.remove("remove_me_B")
+        frame.addTH1(D0_Hist, "pe", (ROOT.kBlack))
+        legend_entries[D0_Hist.GetName()] = {"title": D0_Hist.GetTitle(), "style": "pe"}
 
 
-        frame.SetYTitle(f"Entries MeV/c^{{2}})")
+        numbins = D0_Hist.GetNbinsX()
+        mD0_bins = []
+        for i in range(1, numbins+1):
+            mD0_bins.append(D0_Hist.GetBinLowEdge(i))
+        mD0_bins.append(D0_Hist.GetBinLowEdge(numbins) + D0_Hist.GetBinWidth(numbins))
+        mD0_bins = np.array(mD0_bins, dtype=float)
+        frame.SetYTitle(f"Entries")
+        frame.GetYaxis().SetTitleOffset(1.03)
+
+
 
         c = ROOT.TCanvas("fit", "fit", 900, 800)
         fit_pad = ROOT.TPad("fit_pad", "fit pad", 0, 0.2, 1.0, 1.0)
@@ -308,8 +356,19 @@ if binned:
         nlines = 1 + 1 + len(model["signals"]) + len(model["backgrounds"]) + 1
         xwidth = 0.4
         ywidth = 0.04 * nlines
+
+        latex = ROOT.TLatex()
+        latex.SetNDC()
+        if meson == "D0":
+            latex.DrawLatex(0.7, 0.8, "#it{D^{0} #rightarrow K^{-}#pi^{+}}")
+        elif meson == "D0bar":
+            latex.DrawLatex(0.7, 0.8, "#it{#bar{D}^{0} #rightarrow K^{+}#pi^{-}}")
+
+        # Draw the text on the canvas
+        latex.Draw('same')
+
         legend = ROOT.TLegend(
-            0.18, 0.89 - ywidth, 0.18 + xwidth, 0.89, "#bf{#it{Plot}}"
+            0.18, 0.89 - ywidth - 0.05, 0.18 + xwidth, 0.89, "#bf{#it{"+plot_type+"}}"
         )
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
@@ -317,6 +376,8 @@ if binned:
         for key, val in legend_entries.items():
             legend.AddEntry(key, val["title"], val["style"])
         legend.Draw("same")
+
+        
 
         # Plots the pull distribution, where bad pulls (>5 sigma away from the fit) are made to be red
         pull_frame = D0_M.frame(ROOT.RooFit.Title(" "))
@@ -371,11 +432,13 @@ if binned:
         three.Draw("same")
         nthree.Draw("same")
 
-    # Saves the model
+        # nparams = model["total"].getParameters(Binned_data).selectByAttrib("Constant", False).getSize()
+        # chi2 = frame.chiSquare(model["total"].GetName(), 'Binned Data Set', nparams - 1)
+
         print("Saving plots")
         if global_local:
             c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}_fit_ANA.pdf")
-            file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w+")
+            file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}.txt", "w+")
             text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError())
             file.write(text)
             file.close()

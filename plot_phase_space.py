@@ -18,6 +18,8 @@ import uproot
 import matplotlib.pyplot as plt
 import matplotlib.cm
 from matplotlib.colors import ListedColormap
+from matplotlib import colormaps
+import awkward as ak
 
 # - - - - - - - FUNCTIONS - - - - - - - #
 
@@ -116,22 +118,25 @@ data = uproot.concatenate(f"{args.input}/{args.polarity}_data_{args.year}_{args.
 
 bins = np.loadtxt(f"{args.bin_path}/{args.year}_{args.size}_bins.txt", delimiter=',')
 bins[0] = bins[0]/1000
-viridis = matplotlib.cm.get_cmap('YlOrRd')
+viridis = colormaps['YlOrRd']
 newcolors = viridis(np.linspace(0, 1, 25))
 newcmp = ListedColormap(newcolors)
 
 pT = data["D0_PT"]/1000
 eta = data["D0_ETA"]
+pT_flat = ak.to_numpy(pT).flatten()
+eta_flat = ak.to_numpy(eta).flatten()
 
 # First histogram
 fig = plt.figure()
 ax = fig.add_subplot(111)
-h2d = ax.hist2d(pT, eta, bins=200, cmap=newcmp)
+h2d = ax.hist2d(np.true_divide(pT_flat,1), np.true_divide(eta_flat,1), bins=200, cmap=newcmp)
 ax.set_xlabel(r'$p_{T}$ [GeV/c]')
 ax.set_ylabel(r'$\eta$')
 ax.set_title(r'$p_{T}$ vs $\eta$')
 fig.colorbar(h2d[3], ax=ax, label='Events')
 plt.savefig(f'{args.path}/2D_histogram_no_bins_extended_{args.meson}_{args.polarity}_{args.year}_{args.size}.pdf')
+
 
 # Second histogram
 mask = np.ones(len(data["D0_PT"]))
@@ -140,13 +145,13 @@ data = data[mask]
 pT = data["D0_PT"]/1000
 eta = data["D0_ETA"]
 
-viridis = matplotlib.cm.get_cmap('YlOrRd')
-newcolors = viridis(np.linspace(0, 1, 10))
+viridis = colormaps['YlOrRd']
+newcolors = viridis(np.linspace(0, 1, 25))
 newcmp = ListedColormap(newcolors)
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-h2d = ax.hist2d(pT, eta, bins=200, cmap=newcmp)
+h2d = ax.hist2d(np.true_divide(pT_flat,1), np.true_divide(eta_flat,1), bins=200, cmap=newcmp)
 ax.set_xlabel(r'$p_{T}$ [GeV/c]')
 ax.set_ylabel(r'$\eta$')
 ax.set_title(r'$p_{T}$ vs $\eta$')
@@ -156,7 +161,7 @@ plt.savefig(f'{args.path}/2D_histogram_no_bins_{args.meson}_{args.polarity}_{arg
 # Third histogram
 fig = plt.figure()
 ax = fig.add_subplot(111)
-h2d = ax.hist2d(pT, eta, bins=200, cmap=newcmp)
+h2d = ax.hist2d(np.true_divide(pT_flat,1), np.true_divide(eta_flat,1), bins=200, cmap=newcmp)
 ax.set_xlabel(r'$p_{T}$ [GeV/c]')
 ax.set_ylabel(r'$\eta$')
 ax.set_title(r'$p_{T}$ vs $\eta$')

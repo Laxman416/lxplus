@@ -121,7 +121,7 @@ for j in range(0, 10):
         dataset = 0
         for meson in ["D0", "D0bar"]:
             for polarity in ["up", "down"]:
-                yields = np.loadtxt(f"{args.input}/{index}/yields_{meson}_{polarity}_{args.year}_{args.size}_bin{index}.txt", delimiter=',')
+                yields = np.loadtxt(f"{args.input}/{index}/yields_{meson}_{polarity}_{args.year}_{args.size}_bin{options.bin}.txt", delimiter=',')
                 chi2[dataset] = np.append(chi2[dataset], yields[4])
                 dataset += 1
 
