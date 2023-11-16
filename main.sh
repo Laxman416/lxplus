@@ -82,7 +82,7 @@ for meson in D0 D0bar
 do 
     for polar in up down 
     do    
-        # python apply_binning_scheme.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
+        python apply_binning_scheme.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
         python plot_phase_space.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data/binning_scheme" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
         echo "Ploted 2D graph"
     done

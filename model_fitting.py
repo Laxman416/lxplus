@@ -348,6 +348,12 @@ if binned:
         
         frame.GetXaxis().SetLabelSize(0)
         frame.GetXaxis().SetTitleSize(0)
+        if meson == "D0":
+            frame.GetXaxis().SetTitle("#it{D^{0}} mass / [MeV]")
+        elif meson == "D0bar":
+            frame.GetXaxis().SetTitle("#it{#bar{D}^{0} mass / [MeV]")
+
+
         frame.Draw()
         title_size = frame.GetYaxis().GetTitleSize() * 2.5
         label_size = frame.GetYaxis().GetLabelSize() * 2.5
