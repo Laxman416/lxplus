@@ -122,56 +122,9 @@ def get_yield(bin_num):
     yield_D0bar_up = read_from_file("D0bar", "up", bin_num)
     yield_D0_down = read_from_file("D0", "down", bin_num)
     yield_D0bar_down = read_from_file("D0bar", "down", bin_num)
-    
+   
     return yield_D0_up[0], yield_D0_up[1], yield_D0bar_up[0], yield_D0bar_up[1], yield_D0_down[0], yield_D0_down[1], yield_D0bar_down[0], yield_D0bar_down[1]
 
-def calculate_raw_asymmetry(norm_D0, norm_D0bar, bin_width, N_D0_err, N_D0bar_err):
-    '''
-    It takes the normalization yields for D0 and D0bar as arguments and then calculates the raw
-    asymmetries from these. It also propagates the uncertainties.
-    
-    Returns both the asymmetry and its uncertainty as a percentage.
-    '''
-    
-    N_D0 = abs(norm_D0)/abs(bin_width)
-    N_D0bar = abs(norm_D0bar)/abs(bin_width)
-    
-    A = (N_D0 - N_D0bar)/(N_D0 + N_D0bar)
-    A_err = 2*(((N_D0bar**2)*(N_D0_err**2) + (N_D0**2)*(N_D0bar_err**2))**0.5)*((N_D0 + N_D0bar)**(-2))
-          
-    return 100*A, 100*A_err
-
-def output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num):
-    '''
-    This function takes all the necessary values and outputs them to the screen in a nicely formatted way.
-    It also outputs them to a .txt file, written in the directory established by the user.
-    '''
-    
-    print('The MagUp raw asymmetry is: (', round(A_raw_up, 3), '+/-', round(A_raw_up_err, 3), ') %')
-    print('The MagDown raw asymmetry is: (', round(A_raw_down, 3), '+/-', round(A_raw_down_err, 3), ') %')
-    
-    asymmetry = str(round(A_raw, 3)) + ' +/- ' + str(round(A_raw_err, 3)) + ' (stat) +/- '
-    print(f'The 20{options.year} raw asymmetry of bin {bin_num} is:', asymmetry)
-    
-    array = np.array([A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err])
-    np.savetxt(f"{options.path}/asymmetries_{options.year}_{options.size}_bin{bin_num}.txt", array, delimiter=',')
-
-def blind(A_raw, A_raw_error):
-    ''' 
-    This function blinds the values of the raw asymmetry in order to prevent bias experimenter's bias, the unintended biasing of a result in a particular direction.
-    A raw is randomly multiplied by 1 or -1 then a pseudo-random constant is added. The pseudo-random constant is randomly chosen from within 3 standard deviations of a standard Gaussian distribution.
-    The blinded result is reproudicble because the randomness is seeded.
-    '''
-    factorchoice = [-1, 1]
-    factor = np.random.choice(factorchoice)
-    np.random.seed(options.seedval)
-    # Draw random samples from a normal (Gaussian) distribution, with a mean of 0, std of 1 and then the sample is within 3std of the mean.
-    constant = np.random.normal(0, 3*A_raw_error, 1)[0]
-    Ablind = factor * A_raw + constant
-    
-    print('The blinded raw asymmetry is ', round(Ablind*100, 2))
-    
-    return 100*Ablind, 100*A_raw_error
 
 def A_Det():
       # Detector asymmetry for D0(Kpi) = A_raw(D+->K-pi+pi+) - A_raw(D+->Ks0pi+) - A(Ks0)
@@ -231,18 +184,72 @@ def A_Det():
 
         return A_det_up, A_det_down, A_det_down_error, A_det_up_error
 
-def production_asymm(A_raw, A_raw_err, A_det_up, A_det_down, A_det_down_error, A_det_up_error):
-
-        
-
-        # Production asymmetry (A_p is blinded if options.blinded == y or Y)
-        A_p = (A_raw - (A_det_up + A_det_down)/2)
-
-        # Uncertainty on production asymmetry
-        A_p_error = (A_raw_err**2 + (A_det_down_error**2 + A_det_up_error**2)/4)**(0.5)
 
 
-        return A_p, A_p_error
+##################################################
+def calculate_raw_asymmetry(norm_D0, norm_D0bar, bin_width, N_D0_err, N_D0bar_err):
+    '''
+    It takes the normalization yields for D0 and D0bar as arguments and then calculates the raw
+    asymmetries from these. It also propagates the uncertainties.
+    
+    Returns both the asymmetry and its uncertainty as a percentage.
+    '''
+    
+    N_D0 = abs(norm_D0)/abs(bin_width)
+    N_D0bar = abs(norm_D0bar)/abs(bin_width)
+    
+    A = (N_D0 - N_D0bar)/(N_D0 + N_D0bar)
+    A_err = 2*(((N_D0bar**2)*(N_D0_err**2) + (N_D0**2)*(N_D0bar_err**2))**0.5)*((N_D0 + N_D0bar)**(-2))
+          
+    return 100*A, 100*A_err
+
+def output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num):
+    '''
+    This function takes all the necessary values and outputs them to the screen in a nicely formatted way.
+    It also outputs them to a .txt file, written in the directory established by the user.
+    '''
+    
+    asymmetry = str(round(A_raw, 3)) + ' +/- ' + str(round(A_raw_err, 3)) + ' (stat) +/- '
+    print(f'The 20{options.year} raw asymmetry of bin {bin_num} is:', asymmetry)
+    
+    array = np.array([A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err])
+    np.savetxt(f"{options.path}/asymmetries_{options.year}_{options.size}_bin{bin_num}.txt", array, delimiter=',')
+
+def blind(A_raw, A_raw_error, string):
+    ''' 
+    This function blinds the values of the raw asymmetry in order to prevent bias experimenter's bias, the unintended biasing of a result in a particular direction.
+    A raw is randomly multiplied by 1 or -1 then a pseudo-random constant is added. The pseudo-random constant is randomly chosen from within 3 standard deviations of a standard Gaussian distribution.
+    The blinded result is reproudicble because the randomness is seeded.
+    '''
+    factorchoice = [-1, 1]
+    factor = np.random.choice(factorchoice)
+    np.random.seed(options.seedval)
+    # Draw random samples from a normal (Gaussian) distribution, with a mean of 0, std of 1 and then the sample is within 3std of the mean.
+    constant = np.random.normal(0, 3*A_raw_error, 1)[0]
+    Ablind = factor * A_raw + constant
+
+    if string == 'up':
+        print('The blinded Magup raw asymmetry is ', round(Ablind*100, 2))
+    if string == 'down':
+        print('The blinded MagDown raw asymmetry is ', round(Ablind*100, 2))
+    
+    return 100*Ablind
+
+
+def production_asymm(A_raw_up, A_raw_down, A_raw_up_err, A_raw_down_err, A_det_up, A_det_down, A_det_down_err, A_det_up_err):
+    
+    A_prod_up = A_raw_up - A_det_up
+    A_prod_down = A_raw_down - A_det_down
+
+    A_prod = (A_prod_up + A_prod_down) / 2
+
+    
+    A_prod_up_err = (A_raw_up_err**2 + A_det_up_err**2)**(0.5)
+    A_prod_down_err = (A_raw_down_err**2 + A_det_down_err**2)**(0.5)
+    A_prod_err = ((A_prod_up_err**2+A_prod_down_err**2)**(0.5))/2
+
+
+    return A_prod, A_prod_up, A_prod_down, A_prod_up_err, A_prod_down_err, A_prod_err
 
 
 def plot_histogram(val, result, uncertainty, text):
@@ -257,7 +264,7 @@ def plot_histogram(val, result, uncertainty, text):
     ax.set_title(f"{text}Asymmetry Distribution")
     textstr = '\n \n'.join((
         fr'Weighted $ A_{initial} =$',
-        r'${:.3f} \pm {:.3f}$'.format(unblind_integrated[0], unblind_integrated[1])))
+        r'${:.3f} \pm {:.3f}$'.format(result, uncertainty)))
 
     plt.text(-4.5, 30, textstr, horizontalalignment='center', verticalalignment='center', bbox=dict(boxstyle='square,pad=1', fc='w', ec='k', alpha=1))
     fig.savefig(f"{options.path}/1D_asymmetry_distribution_{options.year}_{options.size}.pdf", dpi=600)
@@ -305,49 +312,109 @@ for j in range(0,10):
         # get raw asymmetries for main model
         A_raw_up, A_raw_up_err = calculate_raw_asymmetry(N_D0_up, N_D0bar_up, 1, N_D0_up_err, N_D0bar_up_err)
         A_raw_down, A_raw_down_err = calculate_raw_asymmetry(N_D0_down, N_D0bar_down, 1, N_D0_down_err, N_D0bar_down_err)
-        A_raw = (A_raw_up + A_raw_down) / 2
-        A_raw_err = ((A_raw_up_err**2 + A_raw_down_err**2)**0.5) /27
+        #A_raw = (A_raw_up + A_raw_down) / 2
+        A_raw_err = ((A_raw_up_err**2 + A_raw_down_err**2)**0.5) /2
 
         A_det_up, A_det_down, A_det_down_error, A_det_up_error = A_Det()
-        print('The MagUp detector asymmetry is: (', round(A_det_up, 2), '+/-', round(A_det_up_error, 2), ') %')
-        print('The MagDown detector asymmetry is: (', round(A_det_down, 2), '+/-', round(A_det_down_error, 2), ') %')
+
 
 
         if options.blind == 'y' or options.blind == 'Y':
-            A_unblind = A_raw
+            A_unblind_up = A_raw_up
             # Asymmetry is blinded
-            A_raw, A_raw_err = blind(A_raw, A_raw_err)
+            A_raw_up = blind(A_raw_up, A_raw_up_err, 'up')
+            A_unblind_down = A_raw_down
+            # Asymmetry is blinded
+            A_raw_down = blind(A_raw_down, A_raw_down_err, 'down')
+
+            A_raw = (A_raw_down + A_raw_up) /2
             # output results
             output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num)
-            # Calculates the production asymmetry for the unblinded raw asymmetries
-            A_p_unblinded, A_p_error = production_asymm(A_unblind, A_raw_err, A_det_up, A_det_down, A_det_down_error, A_det_up_error)
+
         else:
             # output results
             output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num)
         
         # Calculates A_det
 
-  
-
-        # Calculates the production asymmetry (this value is either blinded or unblinded depending on options.blinded)
-
-        A_p, A_p_error = production_asymm(A_raw, A_raw_err, A_det_up, A_det_down, A_det_down_error, A_det_up_error)
-
-            
         
 if options.blind == 'y' or options.blind == 'Y':
     # Calculates the integrated production asymmetry for both and unblinded asymmetries
-    blind_integrated = integrated_asym(A_p , A_p_error)
-    print(f"The 20{options.year} blinded integrated production asymmetry is: {blind_integrated[0]} +/- {blind_integrated[1]}")
-    unblind_integrated = integrated_asym(A_p_unblinded, A_p_error)
-    print(f"The 20{options.year} unblinded integrated production asymmetry is: {unblind_integrated[0]} +/- {unblind_integrated[1]}")
+    print("------------------------------")
+    print("------------------------------")
+    print("------------------------------")
 
-    plot_histogram(A_p, unblind_integrated[0], unblind_integrated[1], "Unblinded Production")
-    plot_2Dhistogram(A_p, "Unblinded Production")
+    #A raw blinded and unblinded Up
+    blind_integrated_raw_up = integrated_asym(A_raw_up , A_raw_up_err)
+    unblind_integrated_raw_up = integrated_asym(A_unblind_up, A_raw_up_err)
+    
+    
+
+    #A raw blinded and unblinded Down
+    blind_integrated_raw_down = integrated_asym(A_raw_down , A_raw_down_err)
+    unblind_integrated_raw_down = integrated_asym(A_unblind_down, A_raw_down_err)
+    
+
+    #A raw blinded and unblinded Total
+    A_raw_blinded = (blind_integrated_raw_up[0] + blind_integrated_raw_down[0]) / 2
+    A_raw_unblinded = (unblind_integrated_raw_up[0] + unblind_integrated_raw_down[0])/2
+    A_raw_err = ((A_raw_up_err**2 + A_raw_down_err**2)**0.5) /2
+
+    
+
+
+    # A_prod, A_prod_up, A_prod_down, A_prod_up_err, A_prod_down_err, A_prod_err Blinded and Unblinded
+    blinded_prod = production_asymm(blind_integrated_raw_up[0], blind_integrated_raw_down[0], A_raw_up_err, A_raw_down_err, A_det_up, A_det_down, A_det_down_error, A_det_up_error)
+    Unblinded_prod = production_asymm(unblind_integrated_raw_up[0], unblind_integrated_raw_down[0], A_raw_up_err, A_raw_down_err, A_det_up, A_det_down, A_det_down_error, A_det_up_error)
+
+    print("------------------------------")
+    print("------------------------------")
+    print("------------------------------")
+
+    print('The MagUp detector asymmetry is: (', round(A_det_up, 2), '+/-', round(A_det_up_error, 2), ') %')
+    print('The MagDown detector asymmetry is: (', round(A_det_down, 2), '+/-', round(A_det_down_error, 2), ') %')
+
+    print("------------------------------")
+    print("------------------------------")
+    print("------------------------------")
+
+
+    #print all unblinded
+    print(f"The 20{options.year} unblinded integrated raw MagUp asymmetry is: ", round(unblind_integrated_raw_up[0],3), " +/-", round(A_raw_up_err, 3), ') %')
+    print(f"The 20{options.year} unblinded integrated raw MagDown asymmetry is: ", round(unblind_integrated_raw_down[0],3), " +/-", round(A_raw_down_err, 3), ') %')
+    print(f"The 20{options.year} unblinded integrated total raw asymmetry is: ", round(A_raw_unblinded,3), " +/-", round(A_raw_down_err, 3), ') %')
+    print(f"The 20{options.year} unblinded integrated prod MagUp asymmetry is: ", round(Unblinded_prod[1],3), " +/-", round(Unblinded_prod[3], 3), ') %')
+    print(f"The 20{options.year} unblinded integrated prod MagDown asymmetry is: ", round(Unblinded_prod[2],3), " +/-", round(Unblinded_prod[4], 3), ') %')
+    print(f"The 20{options.year} unblinded integrated total prod asymmetry is: ", round(Unblinded_prod[0],3), " +/-", round(Unblinded_prod[5], 3), ') %')
+
+    print("------------------------------")
+    print("------------------------------")
+    print("------------------------------")
+
+
+    #print all blinded
+    print(f"The 20{options.year} blinded integrated raw MagUp asymmetry is: ", round(blind_integrated_raw_up[0],3), " +/-", round(A_raw_up_err, 3), ') %')
+    print(f"The 20{options.year} blinded integrated raw MagDown asymmetry is: ", round(blind_integrated_raw_down[0],3), " +/-", round(A_raw_down_err, 3), ') %')
+    print(f"The 20{options.year} blinded integrated total raw asymmetry is: ", round(A_raw_blinded,3), " +/-", round(A_raw_down_err, 3), ') %')
+    print(f"The 20{options.year} blinded integrated prod MagUp asymmetry is: ", round(blinded_prod[1],3), " +/-", round(blinded_prod[3], 3), ') %')
+    print(f"The 20{options.year} blinded integrated prod MagDown asymmetry is: ", round(blinded_prod[2],3), " +/-", round(blinded_prod[4], 3), ') %')
+    print(f"The 20{options.year} blinded integrated total prod asymmetry is: ", round(blinded_prod[0],3), " +/-", round(blinded_prod[5], 3), ') %')
+
+
+    print("------------------------------")
+    print("------------------------------")
+    print("------------------------------")
+
+
+
+    plot_histogram(Unblinded_prod[0], Unblinded_prod[0], Unblinded_prod[5], "Unblinded Production")
+    plot_2Dhistogram(Unblinded_prod[0], "Unblinded Production")
 
 else:
-    integrated_asymm = integrated_asym(A_p , A_p_error)
-    print(f"The 20{options.year} integrated production asymmetry is: {integrated_asymm[0]} +/- {integrated_asymm[1]}")
+    integrated_asymm = integrated_asym(Unblinded_prod[0] , A_p_error)
+    print('The MagUp detector asymmetry is: (', round(A_det_up, 2), '+/-', round(A_det_up_error, 2), ') %')
+    print('The MagDown detector asymmetry is: (', round(A_det_down, 2), '+/-', round(A_det_down_error, 2), ') %')
+    print(f"The 20{options.year} integrated production asymmetry is: ", round(integrated_asymm[0],3), " +/-", round(Unblinded_prod[5], 3), ') %')
 
-    plot_histogram(A_p, integrated_asymm[0], integrated_asymm[1], "Production")
-    plot_2Dhistogram(A_p, "Production")
+    plot_histogram(Unblinded_prod[0], integrated_asymm[0], Unblinded_prod[5], "Production")
+    plot_2Dhistogram(Unblinded_prod[0], "Production")

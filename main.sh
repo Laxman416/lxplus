@@ -106,11 +106,9 @@ done
 echo "Local fitting completed"
 echo
 
-# python analyse_chisquared.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/chi_squared" --input $directory"/model_fitting/local"
+python analyse_chisquared.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/chi_squared" --input $directory"/model_fitting/local"
 
-python production_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry" --input $directory"/model_fitting/local" --blind 'y'
-# python calculate_raw_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry" --input $directory"/model_fitting/local"
+python production_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry" --input $directory"/model_fitting/local" --blind 'Y'
 
-# python analyse_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry" --input $directory"/raw_asymmetry_outcome/raw_asymmetry" --raw "y"
 
 exit
