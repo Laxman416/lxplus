@@ -17,7 +17,7 @@ import argparse
 import os
 from utils import plot
 import numpy as np
-from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooChebychev, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist, RooExponential
+from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist, RooExponential, RooLinkedList
 from lhcbstyle import LHCbStyle
 
 # - - - - - - - FUNCTIONS - - - - - - - #
@@ -204,7 +204,8 @@ if binned:
         # Creating Binned container sets using RooDataHist
         Binned_data = RooDataHist("Binned_data", "Binned Data Set", RooArgList(D0_M), ROOT.RooFit.Import(D0_Hist))
 
-        result = model["total"].chi2FitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
+        ll = ROOT.RooLinkedList()
+        result = model["total"].chi2FitTo(Binned_data, ll, RooFit.Save(True), RooFit.Extended(True))
 
         frame = D0_M.frame(RooFit.Name(""))
         legend_entries = dict()

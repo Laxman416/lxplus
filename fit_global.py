@@ -14,7 +14,7 @@ import numpy as np
 import uproot
 import argparse
 import os
-from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist, RooExponential
+from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist, RooExponential, RooLinkedList
 import time 
 start_time = time.time()
 def dir_path(string):
@@ -213,7 +213,8 @@ if binned:
     simultaneous_data = RooDataHist("simultaneous_data", "simultaneous data", RooArgList(D0_M), ROOT.RooFit.Index(binned_sample), *imports)
 
     # Performs the simultaneous fit
-    fitResult = simultaneous_pdf.chi2FitTo(simultaneous_data, Save=True, Extended=True)
+    ll = ROOT.RooLinkedList()
+    fitResult = simultaneous_pdf.chi2FitTo(simultaneous_data, ll, Save=True, Extended=True)
 else:
     # Creates unbinned data containers for all the meson/polarity combinations
     data_D0_up = RooDataSet("data_D0_up", "Data_D0_up", ttree_D0_up, RooArgSet(D0_M))
