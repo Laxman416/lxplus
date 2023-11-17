@@ -204,7 +204,7 @@ if binned:
         # Creating Binned container sets using RooDataHist
         Binned_data = RooDataHist("Binned_data", "Binned Data Set", RooArgList(D0_M), ROOT.RooFit.Import(D0_Hist))
 
-        result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
+        result = model["total"].chi2FitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
 
         frame = D0_M.frame(RooFit.Name(""))
         legend_entries = dict()

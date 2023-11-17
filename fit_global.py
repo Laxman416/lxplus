@@ -259,7 +259,7 @@ else:
     
     # Performs the simultaneous fit
     simPdf = ROOT.RooSimultaneous("simPdf", "simultaneous pdf", {"D0_up": model_D0_up, "D0_down": model_D0_down, "D0bar_up": model_D0bar_up, "D0bar_down": model_D0bar_down}, sample)
-    fitResult = simPdf.fitTo(combData, PrintLevel=-1, Save=True, Extended=True)
+    fitResult = simPdf.chi2FitTo(combData, PrintLevel=-1, Save=True, Extended=True)
 
 # Prints the simultaneous fit parameters
 fitResult.Print()
