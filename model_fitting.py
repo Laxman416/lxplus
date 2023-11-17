@@ -213,20 +213,20 @@ else:
     Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
 
     # Model CrystalBall2
+    Cmu = RooRealVar("Cmu", "Cmu", parameters[25])
     Csig2 = RooRealVar("Csig2", "Csig2", parameters[20])
     aL2 = RooRealVar("aL2", "aL2", parameters[21])
     nL2 = RooRealVar("nL2", "nL2", parameters[22])
     aR2 = RooRealVar("aR2", "aR2", parameters[23])
     nR2 = RooRealVar("nR2", "nR2", parameters[24])
-    crystal2 = RooCrystalBall("Crystal2", "Crystal Ball2", D0_M, mu, Csig2, aL2, nL2, aR2, nR2)
+    crystal2 = RooCrystalBall("Crystal2", "Crystal Ball2", D0_M, Cmu, Csig2, aL2, nL2, aR2, nR2)
 
-    Cmu = RooRealVar("Cmu", "Cmu", parameters[25])
     Csig = RooRealVar("Csig", "Csig", parameters[2])
     aL = RooRealVar("aL", "aL", parameters[3])
     nL = RooRealVar("nL", "nL", parameters[4])
     aR = RooRealVar("aR", "aR", parameters[5])
     nR = RooRealVar("nR", "nR", parameters[6])
-    Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, Cmu, Csig, aL, nL, aR, nR)
+    Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mu, Csig, aL, nL, aR, nR)
 
     # Model Exponential Background
     a = RooRealVar("a0", "a0", parameters[7])
