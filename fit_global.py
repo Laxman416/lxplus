@@ -122,7 +122,7 @@ sigma = RooRealVar("sigma", "sigma", 6.29, 0, 15)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model Gaussian 2
-gauss2_sigma = RooRealVar("gauss2_sigma", "gaussian sigma 2 ", 12, 0, 20)
+gauss2_sigma = RooRealVar("gauss2_sigma", "gaussian sigma 2 ", 2, 0, 20)
 gaussian2 = RooGaussian("gauss2", "gauss2", D0_M, mean, gauss2_sigma)
 
 # Model CrystalBall
@@ -140,11 +140,11 @@ background = RooExponential("exponential", "exponential", D0_M, a0)
 # Ratio of signal intensities between each model. For N PDFs need N-1 fractions 
 # DO MagUp
 frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.53, 0, 1)
-frac_D0_up_2 = RooRealVar("frac_D0_up_2", "frac_D0_up_2", 0.5, 0, 1)
+frac_D0_up_2 = RooRealVar("frac_D0_up_2", "frac_D0_up_2", 0.3, 0, 1)
 # D0 MagDown
 frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.556, 0, 1)
 frac_D0_down_2 = RooRealVar("frac_D0_down_2", "frac_D0_down_2", 0.3, 0, 1)
-# D0bar MagUp
+# D0bar MagUp2
 frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.562, 0, 1)
 frac_D0bar_up_2 = RooRealVar("frac_D0bar_up_2", "frac_D0bar_up_2", 0.3, 0, 1)
 # D0bar MagDown
