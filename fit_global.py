@@ -123,15 +123,15 @@ gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
 Csig = RooRealVar("Csig", "Csig", 10.2, 0, 20)
-aL = RooRealVar("aL", "aL", 2.20, -10, 10)
-nL = RooRealVar("nL", "nL", 48, -10, 50)
+aL = RooRealVar("aL", "aL", 4.6, -10, 10)
+nL = RooRealVar("nL", "nL", 27, -10, 50)
 aR = RooRealVar("aR", "aR", 6.1, -10, 10)
 nR = RooRealVar("nR", "nR", 0.46, -10, 40)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Bifurcated Gaussian
-sigmaL = RooRealVar("sigmaL", "left sigma", 10, 0, 15)
-sigmaR = RooRealVar("sigmaR", "right sigma", 6, 0, 15)
+sigmaL = RooRealVar("sigmaL", "left sigma", 13, 0, 15)
+sigmaR = RooRealVar("sigmaR", "right sigma", 10, 0, 15)
 bigauss = RooBifurGauss("BiGauss", "Bifurcated Gaussian", D0_M, mean, sigmaL, sigmaR)
 
 # Model Exponential Background

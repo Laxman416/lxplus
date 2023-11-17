@@ -238,7 +238,7 @@ else:
         # D0 MagUp
         elif options.polarity == "up":
             frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[9])
-            frac2 = RooRealVar("frac_D0_up_2", "frac_D0_up_2", parameters[25])
+            frac2 = RooRealVar("frac_D0_up_2", "frac_D0_up_2", parameters[22])
             Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[14])
             Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[15])
     elif options.meson == "D0bar":
