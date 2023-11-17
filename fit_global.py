@@ -130,13 +130,12 @@ nR = RooRealVar("nR", "nR", 0.46, -10, 40)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model CrystalBall2
-Cmu = RooRealVar("Cmu", "Cmu", 1862, 1860, 1870)
 Csig2 = RooRealVar("Csig2", "Csig2", 6.12, 0, 20)
 aL2 = RooRealVar("aL2", "aL2", 3, -10, 10)
 nL2 = RooRealVar("nL2", "nL2", 30, -10, 50)
 aR2 = RooRealVar("aR2", "aR2", 4, -10, 10)
 nR2 = RooRealVar("nR2", "nR2", 10, -10, 40)
-crystal2 = RooCrystalBall("Crystal2", "Crystal Ball2", D0_M, Cmu, Csig2, aL2, nL2, aR2, nR2)
+crystal2 = RooCrystalBall("Crystal2", "Crystal Ball2", D0_M, mean, Csig2, aL2, nL2, aR2, nR2)
 
 # Model Exponential Background
 a0 = RooRealVar("a0", "a0", -0.007, -1, 0)
@@ -278,7 +277,7 @@ else:
 fitResult.Print()
 
 # Get results
-parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV(), frac_D0_down.getValV(), frac_D0_up.getValV(), frac_D0bar_down.getValV(), frac_D0bar_up.getValV(), Nsig_D0_down.getValV(), Nbkg_D0_down.getValV(), Nsig_D0_up.getValV(), Nbkg_D0_up.getValV(), Nsig_D0bar_down.getValV(), Nbkg_D0bar_down.getValV(), Nsig_D0bar_up.getValV(), Nbkg_D0bar_up.getValV(), Csig2.getValV(), aL2.getValV(), nL2.getValV(), aR2.getValV(), nR2.getValV(), frac_D0_up_2.getValV(), Cmu.getValV()])
+parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV(), frac_D0_down.getValV(), frac_D0_up.getValV(), frac_D0bar_down.getValV(), frac_D0bar_up.getValV(), Nsig_D0_down.getValV(), Nbkg_D0_down.getValV(), Nsig_D0_up.getValV(), Nbkg_D0_up.getValV(), Nsig_D0bar_down.getValV(), Nbkg_D0bar_down.getValV(), Nsig_D0bar_up.getValV(), Nbkg_D0bar_up.getValV(), Csig2.getValV(), aL2.getValV(), nL2.getValV(), aR2.getValV(), nR2.getValV(), frac_D0_up_2.getValV()])
 np.savetxt(f"{args.path}/fit_parameters.txt", parameters, delimiter=',')
 print("My program took", time.time() - start_time, "to run")
 
