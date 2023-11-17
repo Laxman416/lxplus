@@ -15,7 +15,7 @@ import argparse
 import os
 from utils import plot
 import numpy as np
-from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooExponential, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist
+from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooExponential, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist, RooBifurGauss
 from lhcbstyle import LHCbStyle 
 import gc
 # - - - - - - - FUNCTIONS - - - - - - - #
@@ -212,13 +212,11 @@ else:
     Gsig = RooRealVar("sigma", "sigma", parameters[1])
     Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
 
-    # Model CrystalBall2
-    Csig2 = RooRealVar("Csig2", "Csig2", parameters[20])
-    aL2 = RooRealVar("aL2", "aL2", parameters[21])
-    nL2 = RooRealVar("nL2", "nL2", parameters[22])
-    aR2 = RooRealVar("aR2", "aR2", parameters[23])
-    nR2 = RooRealVar("nR2", "nR2", parameters[24])
-    crystal2 = RooCrystalBall("Crystal2", "Crystal Ball2", D0_M, mu, Csig2, aL2, nL2, aR2, nR2)
+    # Model Bifurcated Gaussian
+    sigmaL = RooRealVar("sigmaL", "left sigma", parameters[20])
+    sigmaR = RooRealVar("sigmaR", "right sigma", parameters[21])
+    bigauss = RooBifurGauss("BiGauss", "Bifurcated Gaussian", D0_M, mu, sigmaL, sigmaR)
+
 
     Csig = RooRealVar("Csig", "Csig", parameters[2])
     aL = RooRealVar("aL", "aL", parameters[3])
@@ -256,12 +254,12 @@ else:
             Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[19])
 
 # Create model
-signal = RooAddPdf("signal", "signal", RooArgList(Gauss, crystal2, Crystal), RooArgList(frac, frac2))
+signal = RooAddPdf("signal", "signal", RooArgList(Gauss, bigauss, Crystal), RooArgList(frac, frac2))
 model = {
     "total": RooAddPdf("total", "Total", RooArgList(signal, background), RooArgList(Nsig, Nbkg)), # extended likelihood
     "signals": {
         Gauss.GetName(): Gauss.GetTitle(),
-        crystal2.GetName(): crystal2.GetTitle(),
+        bigauss.GetName(): bigauss.GetTitle(),
         Crystal.GetName(): Crystal.GetTitle(),
     },
     "backgrounds": {

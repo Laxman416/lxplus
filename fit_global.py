@@ -14,7 +14,7 @@ import numpy as np
 import uproot
 import argparse
 import os
-from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist, RooExponential, RooLinkedList
+from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist, RooExponential, RooLinkedList, RooBifurGauss
 import time 
 start_time = time.time()
 def dir_path(string):
@@ -129,13 +129,10 @@ aR = RooRealVar("aR", "aR", 6.1, -10, 10)
 nR = RooRealVar("nR", "nR", 0.46, -10, 40)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
-# Model CrystalBall2
-Csig2 = RooRealVar("Csig2", "Csig2", 6.12, 0, 20)
-aL2 = RooRealVar("aL2", "aL2", 3, -10, 10)
-nL2 = RooRealVar("nL2", "nL2", 30, -10, 50)
-aR2 = RooRealVar("aR2", "aR2", 4, -10, 10)
-nR2 = RooRealVar("nR2", "nR2", 10, -10, 40)
-crystal2 = RooCrystalBall("Crystal2", "Crystal Ball2", D0_M, mean, Csig2, aL2, nL2, aR2, nR2)
+# Model Bifurcated Gaussian
+sigmaL = RooRealVar("sigmaL", "left sigma", 10, 0, 15)
+sigmaR = RooRealVar("sigmaR", "right sigma", 6, 0, 15)
+bigauss = RooBifurGauss("BiGauss", "Bifurcated Gaussian", D0_M, mean, sigmaL, sigmaR)
 
 # Model Exponential Background
 a0 = RooRealVar("a0", "a0", -0.007, -1, 0)
@@ -194,28 +191,28 @@ if binned:
 
     # Model Signal for D0 MagUp
     binned_sample.defineType("Binned_D0_up_sample")
-    signal_D0_up = RooAddPdf("signal_D0_up", "signal D0 up", RooArgList(gaussian, crystal2, crystal), RooArgList(frac_D0_up, frac_D0_up_2))
+    signal_D0_up = RooAddPdf("signal_D0_up", "signal D0 up", RooArgList(gaussian, bigauss, crystal), RooArgList(frac_D0_up, frac_D0_up_2))
     # Generate model for D0 MagUp
     model_D0_up = RooAddPdf("model_D0_up", "model D0 up", [signal_D0_up, background], [Nsig_D0_up, Nbkg_D0_up])
     simultaneous_pdf.addPdf(model_D0_up, "Binned_D0_up_sample")
     
     # Model Signal for D0 MagDown
     binned_sample.defineType("Binned_D0_down_sample")
-    signal_D0_down = RooAddPdf("signal_D0_down", "signal D0 down", RooArgList(gaussian, crystal2, crystal), RooArgList(frac_D0_down, frac_D0_down_2))
+    signal_D0_down = RooAddPdf("signal_D0_down", "signal D0 down", RooArgList(gaussian, bigauss, crystal), RooArgList(frac_D0_down, frac_D0_down_2))
     # Generate model for D0 MagDown
     model_D0_down = RooAddPdf("model_D0_down", "model D0 down", [signal_D0_down, background], [Nsig_D0_down, Nbkg_D0_down])
     simultaneous_pdf.addPdf(model_D0_down, "Binned_D0_down_sample")
 
     # Model Signal for D0bar MagUp
     binned_sample.defineType("Binned_D0bar_up_sample")
-    signal_D0bar_up = RooAddPdf("signal_D0bar_up", "signal D0bar up", RooArgList(gaussian, crystal2, crystal), RooArgList(frac_D0bar_up, frac_D0bar_up_2))
+    signal_D0bar_up = RooAddPdf("signal_D0bar_up", "signal D0bar up", RooArgList(gaussian, bigauss, crystal), RooArgList(frac_D0bar_up, frac_D0bar_up_2))
     # Generate model for D0bar MagUp
     model_D0bar_up = RooAddPdf("model_D0bar_up", "model D0bar up", [signal_D0bar_up, background], [Nsig_D0bar_up, Nbkg_D0bar_up])
     simultaneous_pdf.addPdf(model_D0bar_up, "Binned_D0bar_up_sample")
 
     # Model Signal for D0bar MagDown
     binned_sample.defineType("Binned_D0bar_down_sample")
-    signal_D0bar_down = RooAddPdf("signal_D0bar_down", "signal D0bar down", RooArgList(gaussian, crystal2, crystal), RooArgList(frac_D0bar_down, frac_D0bar_down_2))
+    signal_D0bar_down = RooAddPdf("signal_D0bar_down", "signal D0bar down", RooArgList(gaussian, bigauss, crystal), RooArgList(frac_D0bar_down, frac_D0bar_down_2))
     # Generate model for D0bar MagDown
     model_D0bar_down = RooAddPdf("model_D0bar_down", "model D0bar down", [signal_D0bar_down, background], [Nsig_D0bar_down, Nbkg_D0bar_down])
     simultaneous_pdf.addPdf(model_D0bar_down, "Binned_D0bar_down_sample")
@@ -277,7 +274,7 @@ else:
 fitResult.Print()
 
 # Get results
-parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV(), frac_D0_down.getValV(), frac_D0_up.getValV(), frac_D0bar_down.getValV(), frac_D0bar_up.getValV(), Nsig_D0_down.getValV(), Nbkg_D0_down.getValV(), Nsig_D0_up.getValV(), Nbkg_D0_up.getValV(), Nsig_D0bar_down.getValV(), Nbkg_D0bar_down.getValV(), Nsig_D0bar_up.getValV(), Nbkg_D0bar_up.getValV(), Csig2.getValV(), aL2.getValV(), nL2.getValV(), aR2.getValV(), nR2.getValV(), frac_D0_up_2.getValV()])
+parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV(), frac_D0_down.getValV(), frac_D0_up.getValV(), frac_D0bar_down.getValV(), frac_D0bar_up.getValV(), Nsig_D0_down.getValV(), Nbkg_D0_down.getValV(), Nsig_D0_up.getValV(), Nbkg_D0_up.getValV(), Nsig_D0bar_down.getValV(), Nbkg_D0bar_down.getValV(), Nsig_D0bar_up.getValV(), Nbkg_D0bar_up.getValV(), sigmaL.getValV(), sigmaR.getValV(), frac_D0_up_2.getValV()])
 np.savetxt(f"{args.path}/fit_parameters.txt", parameters, delimiter=',')
 print("My program took", time.time() - start_time, "to run")
 
