@@ -123,19 +123,19 @@ gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
 Cmu = RooRealVar("Cmu", "Cmu", 1862, 1860, 1870)
-Csig = RooRealVar("Csig", "Csig", 10.2, 0, 20)
-aL = RooRealVar("aL", "aL", 1.52, -10, 10)
-nL = RooRealVar("nL", "nL", 48, -10, 50)
+Csig = RooRealVar("Csig", "Csig", 8, 0, 20)
+aL = RooRealVar("aL", "aL", 1.37, -10, 10)
+nL = RooRealVar("nL", "nL", 28, -10, 50)
 aR = RooRealVar("aR", "aR", 6.1, -10, 10)
 nR = RooRealVar("nR", "nR", 0.46, -10, 40)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, Cmu, Csig, aL, nL, aR, nR)
 
 # Model CrystalBall2
-Csig2 = RooRealVar("Csig2", "Csig2", 7, 0, 20)
+Csig2 = RooRealVar("Csig2", "Csig2", 6.12, 0, 20)
 aL2 = RooRealVar("aL2", "aL2", 3, -10, 10)
 nL2 = RooRealVar("nL2", "nL2", 30, -10, 50)
-aR2 = RooRealVar("aR2", "aR2", 4, -10, 10)
-nR2 = RooRealVar("nR2", "nR2", 10, -10, 40)
+aR2 = RooRealVar("aR2", "aR2", -1.12, -10, 10)
+nR2 = RooRealVar("nR2", "nR2", 36, -10, 40)
 crystal2 = RooCrystalBall("Crystal2", "Crystal Ball2", D0_M, mean, Csig2, aL2, nL2, aR2, nR2)
 
 # Model Exponential Background
