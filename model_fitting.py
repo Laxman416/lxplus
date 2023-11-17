@@ -256,6 +256,7 @@ model = {
     "total": RooAddPdf("total", "Total", RooArgList(signal, background), RooArgList(Nsig, Nbkg)), # extended likelihood
     "signals": {
         Gauss.GetName(): Gauss.GetTitle(),
+        Gauss2.GetName(): Gauss2.GetTitle(),
         Crystal.GetName(): Crystal.GetTitle(),
     },
     "backgrounds": {
