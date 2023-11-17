@@ -122,12 +122,13 @@ sigma = RooRealVar("sigma", "sigma", 6.29, 0, 15)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
+Cmu = RooRealVar("Cmu", "Cmu", 1865.3, 1860, 1870)
 Csig = RooRealVar("Csig", "Csig", 10.2, 0, 20)
 aL = RooRealVar("aL", "aL", 1.52, -10, 10)
 nL = RooRealVar("nL", "nL", 48, -10, 50)
 aR = RooRealVar("aR", "aR", 6.1, -10, 10)
 nR = RooRealVar("nR", "nR", 0.46, -10, 40)
-crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
+crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, Cmu, Csig, aL, nL, aR, nR)
 
 # Model CrystalBall2
 Csig2 = RooRealVar("Csig2", "Csig2", 7, 0, 20)
@@ -277,7 +278,7 @@ else:
 fitResult.Print()
 
 # Get results
-parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV(), frac_D0_down.getValV(), frac_D0_up.getValV(), frac_D0bar_down.getValV(), frac_D0bar_up.getValV(), Nsig_D0_down.getValV(), Nbkg_D0_down.getValV(), Nsig_D0_up.getValV(), Nbkg_D0_up.getValV(), Nsig_D0bar_down.getValV(), Nbkg_D0bar_down.getValV(), Nsig_D0bar_up.getValV(), Nbkg_D0bar_up.getValV(), Csig2.getValV(), aL2.getValV(), nL2.getValV(), aR2.getValV(), nR2.getValV(), frac_D0_up_2.getValV()])
+parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV(), frac_D0_down.getValV(), frac_D0_up.getValV(), frac_D0bar_down.getValV(), frac_D0bar_up.getValV(), Nsig_D0_down.getValV(), Nbkg_D0_down.getValV(), Nsig_D0_up.getValV(), Nbkg_D0_up.getValV(), Nsig_D0bar_down.getValV(), Nbkg_D0bar_down.getValV(), Nsig_D0bar_up.getValV(), Nbkg_D0bar_up.getValV(), Csig2.getValV(), aL2.getValV(), nL2.getValV(), aR2.getValV(), nR2.getValV(), frac_D0_up_2.getValV(), Cmu.getValV()])
 np.savetxt(f"{args.path}/fit_parameters.txt", parameters, delimiter=',')
 print("My program took", time.time() - start_time, "to run")
 
