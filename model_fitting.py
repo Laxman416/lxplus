@@ -18,7 +18,12 @@ import numpy as np
 from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooExponential, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist
 from lhcbstyle import LHCbStyle 
 import gc
+from scipy.optimize import curve_fit
 # - - - - - - - FUNCTIONS - - - - - - - #
+
+def gaussian(x, A, mu, sig):
+    return A * np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+
 def dir_path(string):
     '''
     Checks if a given string is the path to a directory.
@@ -348,10 +353,7 @@ if binned:
         
         frame.GetXaxis().SetLabelSize(0)
         frame.GetXaxis().SetTitleSize(0)
-        if meson == "D0":
-            frame.GetXaxis().SetTitle("#it{D^{0}} mass / [MeV]")
-        elif meson == "D0bar":
-            frame.GetXaxis().SetTitle("#it{#bar{D}^{0} mass / [MeV]")
+
 
 
         frame.Draw()
@@ -367,7 +369,7 @@ if binned:
         latex.SetNDC()
         if meson == "D0":
             latex.DrawLatex(0.7, 0.8, "#it{D^{0} #rightarrow K^{-}#pi^{+}}")
-        elif meson == "D0bar":
+        else:
             latex.DrawLatex(0.7, 0.8, "#it{#bar{D}^{0} #rightarrow K^{+}#pi^{-}}")
 
         # Draw the text on the canvas
@@ -424,6 +426,10 @@ if binned:
         pull_frame.GetYaxis().SetLabelSize(label_size)
         pull_frame.GetYaxis().SetTitleSize(title_size)
         pull_frame.GetYaxis().SetTitleOffset(0.39)
+        if meson == "D0":
+            pull_frame.GetXaxis().SetTitle("D^{0} mass / [MeV]")
+        elif meson == "D0bar":
+            pull_frame.GetXaxis().SetTitle("{#bar{D}^{0} mass / [MeV]")
 
         line = ROOT.TLine(D0_M.getMin(), 0, D0_M.getMax(), 0)
         pull_frame.Draw()
@@ -438,26 +444,89 @@ if binned:
         three.Draw("same")
         nthree.Draw("same")
 
+
+        #Plotting pulls
+        pull = ROOT.TH1D("Pulls", "Pulls", 50, -5, 5)
+        for i in range(pull_hist.GetN()):
+            pull.Fill(pull_hist.GetPointY(i))
+
+        pull_canvas = ROOT.TCanvas("fit_pull", "pull canvas", 600, 400)
+        pull.GetXaxis().SetTitle("Distance from fit [#sigma]")
+        pull.GetYaxis().SetTitle("Entries")
+        pull.Draw('same')
+
+
+
+        #Putting Bincentres and Content into Lists
+        y = []
+        x = []
+        for i in range(pull.GetNbinsX()):
+            y.append(pull.GetBinContent(i))
+            x.append(pull.GetBinCenter(i))
+
+        #Using curve_fit to find Paramters
+        params, cov, *_ = curve_fit(gaussian, x, y, p0=[max(x),0,1], bounds=([0,-np.inf,0],[np.inf,np.inf,np.inf]))
+        errs = np.sqrt(np.diag(cov))
+        
+        rounded_pull_mean = round(params[1],2)
+        rounded_pull_std = round(params[2],2)
+        rounded_pull_mean_error = round(errs[1], 2)
+        rounded_pull_std_error = round(errs[2], 2)
+        str_pull_mean = str(rounded_pull_mean)
+        str_pull_sigma = str(rounded_pull_std)
+
+
+        gaussian_fit = ROOT.TF1("gaussian_fit", "gaus", -5, 5)
+        gaussian_fit.SetLineColor(4)
+        gaussian_fit.SetParameters(params[0],params[1],params[2])
+        gaussian_fit.Draw('same')
+
+        legend2 = ROOT.TLegend(
+            0.7, 0.78,0.8,0.90, "#bf{#it{"+plot_type+"}}"
+        )
+
+        legend2.SetFillStyle(0)
+        legend2.SetBorderSize(0)
+
+        legend2.SetTextSize(0.04)
+        legend2.AddEntry('Data', 'Data', "l")
+        legend2.AddEntry(gaussian_fit, "Gaussian Fit", "l")
+        legend2.Draw("same")
+        latex = ROOT.TLatex()
+        latex.SetNDC()
+        latex.SetTextSize(0.04)
+        latex.DrawLatex(0.7 ,0.75 , 'pull \mu:  ' + str(rounded_pull_mean) + ' \pm ' + str(rounded_pull_mean_error))
+        latex.DrawLatex(0.7 ,0.71 , 'pull \sigma:  ' + str(rounded_pull_std) + ' \pm ' + str(rounded_pull_std_error))
+
+    
+
+
+        pull_canvas.Show()
+
         # nparams = model["total"].getParameters(Binned_data).selectByAttrib("Constant", False).getSize()
         # chi2 = frame.chiSquare(model["total"].GetName(), 'Binned Data Set', nparams - 1)
 
         print("Saving plots")
         if global_local:
             c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}_fit_ANA.pdf")
+            pull_canvas.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}_fit_pulls.pdf")
             file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}.txt", "w+")
             text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError())
             file.write(text)
             file.close()
         else:
             c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_fit_ANA.pdf")
+            pull_canvas.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_fit_pulls.pdf")
             print('1') 
             file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w+")
             print('2')
-            text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError())
+            # Nsig Nsig_Err NBkg NBkg error pull_mean pull_sigma
+            text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError()) + ', ' + str_pull_mean + ', ' + str_pull_sigma
             print('3')
             file.write(text)
             print('4')
             file.close()
+        
         
   
 

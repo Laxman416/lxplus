@@ -18,6 +18,27 @@ import os
 from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist, RooExponential
 import time 
 start_time = time.time()
+
+def enableBinIntegrator(func, num_bins):
+    """
+    Force numeric integration and do this numeric integration with the
+    RooBinIntegrator, which sums the function values at the bin centers.
+    """
+    custom_config = ROOT.RooNumIntConfig(func.getIntegratorConfig())
+    custom_config.method1D().setLabel("RooBinIntegrator")
+    custom_config.getConfigSection("RooBinIntegrator").setRealValue("numBins", num_bins)
+    func.setIntegratorConfig(custom_config)
+    func.forceNumInt(True)
+
+def disableBinIntegrator(func):
+    """
+    Reset the integrator config to disable the RooBinIntegrator.
+    """
+    func.setIntegratorConfig()
+    func.forceNumInt(False)
+ 
+
+
 def dir_path(string):
     '''
     Checks if a given string is the path to a directory.
@@ -221,7 +242,8 @@ if binned:
     simultaneous_data = RooDataHist("simultaneous_data", "simultaneous data", RooArgList(D0_M), ROOT.RooFit.Index(binned_sample), *imports)
 
     # Performs the simultaneous fit
-    fitResult = simultaneous_pdf.fitTo(simultaneous_data, Save=True, Extended=True)
+    enableBinIntegrator(model_D0_up, D0_M.numBins())
+    fitResult = simultaneous_pdf.fitTo(simultaneous_data, IntegrateBins=1e-3, Save=True, PrintLevel=-1, SumW2Error=False, Extended=True)
 else:
     # Creates unbinned data containers for all the meson/polarity combinations
     data_D0_up = RooDataSet("data_D0_up", "Data_D0_up", ttree_D0_up, RooArgSet(D0_M))
@@ -256,7 +278,7 @@ else:
     sample.defineType("D0bar_up")
     sample.defineType("D0bar_down")
 
-    # Combine all models in order to perform a simultaneous fit for all polarities aand mesons
+    # Combine all models in order to perform a simultaneous fit for all polarities and mesons
     combData = ROOT.RooDataSet(
         "combData",
         "combined data",
@@ -271,6 +293,7 @@ else:
 
 # Prints the simultaneous fit parameters
 fitResult.Print()
+disableBinIntegrator(model_D0_up)
 
 # Get results
 parameters = np.array([mean.getValV(), sigma.getValV(), Csig.getValV(), aL.getValV(), nL.getValV(), aR.getValV(), nR.getValV(), a0.getValV(), frac_D0_down.getValV(), frac_D0_up.getValV(), frac_D0bar_down.getValV(), frac_D0bar_up.getValV(), Nsig_D0_down.getValV(), Nbkg_D0_down.getValV(), Nsig_D0_up.getValV(), Nbkg_D0_up.getValV(), Nsig_D0bar_down.getValV(), Nbkg_D0bar_down.getValV(), Nsig_D0bar_up.getValV(), Nbkg_D0bar_up.getValV()])

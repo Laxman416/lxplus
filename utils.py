@@ -91,11 +91,6 @@ def plot(
         title_size = fit_frame.GetYaxis().GetTitleSize() * 2.5
         label_size = fit_frame.GetYaxis().GetLabelSize() * 2.5
         fit_frame.GetYaxis().SetTitleOffset(1)
-        if meson == "D0":
-            frame.GetXaxis().SetTitle("#it{D^{0}} mass / [MeV]")
-        elif meson == "D0bar":
-            frame.GetXaxis().SetTitle("#it{#bar{D}^{0} mass / [MeV]")
-            
         fit_frame.GetYaxis().SetNdivisions(-406)
 
         # plot_type + total + signals + backgrounds
@@ -152,6 +147,10 @@ def plot(
         pull_frame.GetYaxis().SetLabelSize(label_size*0.9)
         pull_frame.GetYaxis().SetTitleSize(title_size*0.9)
         pull_frame.GetYaxis().SetTitleOffset(0.40)
+        if meson == "D0":
+            pull_frame.GetXaxis().SetTitle("D^{0} mass / [MeV]")
+        elif meson == "D0bar":
+            pull_frame.GetXaxis().SetTitle("{#bar{D}^{0} mass / [MeV]")
 
         line = R.TLine(observable.getMin(), 0, observable.getMax(), 0)
         line2 = R.TLine(observable.getMin(), 3, observable.getMax(), 3)
