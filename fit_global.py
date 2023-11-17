@@ -213,7 +213,7 @@ if binned:
     simultaneous_data = RooDataHist("simultaneous_data", "simultaneous data", RooArgList(D0_M), ROOT.RooFit.Index(binned_sample), *imports)
 
     # Performs the simultaneous fit
-    fitResult = simultaneous_pdf.fitTo(simultaneous_data, Save=True, Extended=True)
+    fitResult = simultaneous_pdf.chi2FitTo(simultaneous_data, Save=True, Extended=True)
 else:
     # Creates unbinned data containers for all the meson/polarity combinations
     data_D0_up = RooDataSet("data_D0_up", "Data_D0_up", ttree_D0_up, RooArgSet(D0_M))
@@ -259,7 +259,7 @@ else:
     
     # Performs the simultaneous fit
     simPdf = ROOT.RooSimultaneous("simPdf", "simultaneous pdf", {"D0_up": model_D0_up, "D0_down": model_D0_down, "D0bar_up": model_D0bar_up, "D0bar_down": model_D0bar_down}, sample)
-    fitResult = simPdf.chi2FitTo(combData, PrintLevel=-1, Save=True, Extended=True)
+    fitResult = simPdf.fitTo(combData, PrintLevel=-1, Save=True, Extended=True)
 
 # Prints the simultaneous fit parameters
 fitResult.Print()
