@@ -214,7 +214,7 @@ if binned:
 
     # Performs the simultaneous fit
     ll = ROOT.RooLinkedList()
-    fitResult = simultaneous_pdf.chi2FitTo(simultaneous_data, ll, Save=True, Extended=True)
+    fitResult = simultaneous_pdf.chi2FitTo(simultaneous_data, ll)
 else:
     # Creates unbinned data containers for all the meson/polarity combinations
     data_D0_up = RooDataSet("data_D0_up", "Data_D0_up", ttree_D0_up, RooArgSet(D0_M))

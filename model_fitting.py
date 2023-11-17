@@ -205,7 +205,7 @@ if binned:
         Binned_data = RooDataHist("Binned_data", "Binned Data Set", RooArgList(D0_M), ROOT.RooFit.Import(D0_Hist))
 
         ll = ROOT.RooLinkedList()
-        result = model["total"].chi2FitTo(Binned_data, ll, RooFit.Save(True), RooFit.Extended(True))
+        result = model["total"].chi2FitTo(Binned_data, ll)
 
         frame = D0_M.frame(RooFit.Name(""))
         legend_entries = dict()
