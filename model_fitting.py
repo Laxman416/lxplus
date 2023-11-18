@@ -215,7 +215,7 @@ else:
     # Model Bifurcated Gaussian
     sigmaL = RooRealVar("sigmaL", "left sigma", parameters[20])
     sigmaR = RooRealVar("sigmaR", "right sigma", parameters[21])
-    bigauss = RooBifurGauss("BiGauss", "Bifurcated Gaussian", D0_M, mu, sigmaL, sigmaR)
+    bigauss = RooBifurGauss("bigauss", "Bifurcated Gaussian", D0_M, mu, sigmaL, sigmaR)
 
 
     Csig = RooRealVar("Csig", "Csig", parameters[2])
