@@ -130,8 +130,8 @@ nR = RooRealVar("nR", "nR", 0.46, -10, 40)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Bifurcated Gaussian
-sigmaL = RooRealVar("sigmaL", "left sigma", 13, 0, 15)
-sigmaR = RooRealVar("sigmaR", "right sigma", 10, 0, 15)
+sigmaL = RooRealVar("sigmaL", "left sigma", 15, 0, 30)
+sigmaR = RooRealVar("sigmaR", "right sigma", 10, 0, 30)
 bigauss = RooBifurGauss("BiGauss", "Bifurcated Gaussian", D0_M, mean, sigmaL, sigmaR)
 
 # Model Exponential Background
