@@ -212,11 +212,13 @@ else:
     Gsig = RooRealVar("sigma", "sigma", parameters[1])
     Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
 
-    # Model Bifurcated Gaussian
-    sigmaL = RooRealVar("sigmaL", "left sigma", parameters[20])
-    sigmaR = RooRealVar("sigmaR", "right sigma", parameters[21])
-    bigauss = RooBifurGauss("bigauss", "bigauss", D0_M, mu, sigmaL, sigmaR)
-
+    # Model Crystal Ball 2
+    Csig2 = RooRealVar("Csig2", "Csig2", parameters[20])
+    aL2 = RooRealVar("aL2", "aL2", parameters[21])
+    nL2 = RooRealVar("nL2", "nL2", parameters[22])
+    aR2 = RooRealVar("aR2", "aR", parameters[23])
+    nR2 = RooRealVar("nR2", "nR2", parameters[24])
+    crystal2 = RooCrystalBall("Crystal2", "Crystal Ball2", D0_M, mu, Csig2, aL2, nL2, aR2, nR2)
 
     Csig = RooRealVar("Csig", "Csig", parameters[2])
     aL = RooRealVar("aL", "aL", parameters[3])
@@ -238,7 +240,7 @@ else:
         # D0 MagUp
         elif options.polarity == "up":
             frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[9])
-            frac2 = RooRealVar("frac_D0_up_2", "frac_D0_up_2", parameters[22])
+            frac2 = RooRealVar("frac_D0_up_2", "frac_D0_up_2", parameters[25])
             Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[14])
             Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[15])
     elif options.meson == "D0bar":
@@ -254,12 +256,12 @@ else:
             Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[19])
 
 # Create model
-signal = RooAddPdf("signal", "signal", RooArgList(Gauss, bigauss, Crystal), RooArgList(frac, frac2))
+signal = RooAddPdf("signal", "signal", RooArgList(Gauss, crystal2, Crystal), RooArgList(frac, frac2))
 model = {
     "total": RooAddPdf("total", "Total", RooArgList(signal, background), RooArgList(Nsig, Nbkg)), # extended likelihood
     "signals": {
         Gauss.GetName(): Gauss.GetTitle(),
-        bigauss.GetName(): bigauss.GetTitle(),
+        crystal2.GetName(): crystal2.GetTitle(),
         Crystal.GetName(): Crystal.GetTitle(),
     },
     "backgrounds": {
