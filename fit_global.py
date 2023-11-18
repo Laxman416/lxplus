@@ -118,20 +118,20 @@ D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1810, 1910)
 
 # Model Gaussian
 mean = RooRealVar("mean", "mean", 1865.3, 1860, 1870)
-sigma = RooRealVar("sigma", "sigma", 6.37, 0, 15)
+sigma = RooRealVar("sigma", "sigma", 6.42, 0, 15)
 gaussian = RooGaussian("gauss", "gauss", D0_M, mean, sigma)
 
 # Model CrystalBall
-Csig = RooRealVar("Csig", "Csig", 9.86, 0, 20)
-aL = RooRealVar("aL", "aL", -2.06, -10, 10)
-nL = RooRealVar("nL", "nL", 27, -10, 50)
-aR = RooRealVar("aR", "aR", 6.70, -10, 10)
-nR = RooRealVar("nR", "nR", -7.51, -10, 40)
+Csig = RooRealVar("Csig", "Csig", 10.0, 0, 20)
+aL = RooRealVar("aL", "aL", -1.63, -10, 10)
+nL = RooRealVar("nL", "nL", 10.8, -10, 50)
+aR = RooRealVar("aR", "aR", 6.88, -10, 10)
+nR = RooRealVar("nR", "nR", -9.96, -10, 40)
 crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mean, Csig, aL, nL, aR, nR)
 
 # Model Bifurcated Gaussian
-sigmaL = RooRealVar("sigmaL", "left sigma", 11.8, 0, 30)
-sigmaR = RooRealVar("sigmaR", "right sigma", 10.3, 0, 30)
+sigmaL = RooRealVar("sigmaL", "left sigma", 7.83, 0, 30)
+sigmaR = RooRealVar("sigmaR", "right sigma", 5.90, 0, 30)
 bigauss = RooBifurGauss("BiGauss", "Bifurcated Gaussian", D0_M, mean, sigmaL, sigmaR)
 
 # Model Exponential Background
@@ -140,8 +140,8 @@ background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Ratio of signal intensities between each model. For N PDFs need N-1 fractions 
 # DO MagUp
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.57, 0, 1)
-frac_D0_up_2 = RooRealVar("frac_D0_up_2", "frac_D0_up_2", 0.13, 0, 1)
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.52, 0, 1)
+frac_D0_up_2 = RooRealVar("frac_D0_up_2", "frac_D0_up_2", 0.39, 0, 1)
 # D0 MagDown
 frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.556, 0, 1)
 frac_D0_down_2 = RooRealVar("frac_D0_down_2", "frac_D0_down_2", 0.3, 0, 1)
