@@ -291,24 +291,14 @@ def integrated_asym(val, err):
 
 
 def plot_2Dhistogram(val, text):
-    val = np.asarray(val).ravel()
-    length = int(np.sqrt(len(val)))
-    data = np.asarray(val).reshape(length, length)
-    mpl.rcParams['pdf.fonttype'] = 42  # Make sure text is saved as editable text in PDF
-    mpl.rcParams['ps.fonttype'] = 42
-    mpl.rcParams['font.family'] = 'DejaVu Sans'
-    plt.rcParams.update({'axes.unicode_minus' : False})
-    sns.set()
-    ax2 = sns.heatmap(data, vmax=0, vmin=-2.5, annot=True, annot_kws={'size': 8}, cmap ='YlOrBr_r')
 
-    ax2.invert_yaxis()
-    ax2.set_title(f"{text}Asymmetry distribution")
-    ax2.set_xlabel("x index")
-    ax2.set_ylabel("y index")
-    fig2 = ax2.get_figure()
-    fig2.savefig(f"{options.path}/2D_asymmetry_distribution_{options.year}_{options.size}.pdf", dpi=600)
-    plt.clf()
-    plt.close(fig2)
+    # Import data
+
+    tree_name = "D02Kpi_Tuple/DecayTree"
+
+    
+    return
+
 
 # - - - - - - - MAIN CODE - - - - - - - #
 
