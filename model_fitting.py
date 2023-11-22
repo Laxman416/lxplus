@@ -21,6 +21,25 @@ import gc
 from scipy.optimize import curve_fit
 # - - - - - - - FUNCTIONS - - - - - - - #
 
+def enableBinIntegrator(func, num_bins):
+    """
+    Force numeric integration and do this numeric integration with the
+    RooBinIntegrator, which sums the function values at the bin centers.
+    """
+    custom_config = ROOT.RooNumIntConfig(func.getIntegratorConfig())
+    custom_config.method1D().setLabel("RooBinIntegrator")
+    custom_config.getConfigSection("RooBinIntegrator").setRealValue("numBins", num_bins)
+    func.setIntegratorConfig(custom_config)
+    func.forceNumInt(True)
+
+def disableBinIntegrator(func):
+    """
+    Reset the integrator config to disable the RooBinIntegrator.
+    """
+    func.setIntegratorConfig()
+    func.forceNumInt(False)
+ 
+
 def gaussian(x, A, mu, sig):
     return A * np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
 
@@ -274,8 +293,8 @@ if binned:
         D0_Hist = ROOT.gPad.GetPrimitive("D0_Hist")
         # Creating Binned container sets using RooDataHist
         Binned_data = RooDataHist("Binned_data", "Binned Data Set", RooArgList(D0_M), D0_Hist)
-
-        result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True))
+        enableBinIntegrator(signal, D0_M.numBins())
+        result = model["total"].fitTo(Binned_data, RooFit.Save(True), RooFit.Extended(True), IntegrateBins = 1e-03)
 
 
         frame = D0_M.frame(RooFit.Name(""))
@@ -285,15 +304,15 @@ if binned:
         model["total"].plotOn(
             frame,
             RooFit.Name(model["total"].GetName()),
-            RooFit.LineWidth(5),
-            RooFit.LineColor(ROOT.kAzure),
+            RooFit.LineWidth(8),
+            RooFit.LineColor(ROOT.kOrange + 1),
         )
         pull_hist = frame.pullHist()
 
         legend_entries[model["total"].GetName()] = {"title": model["total"].GetTitle(), "style": "l"}
 
         # plot signal components
-        signal_colours = [ROOT.kRed, ROOT.kSpring, ROOT.kAzure + 7, ROOT.kOrange + 7]
+        signal_colours = [ROOT.kRed, ROOT.kSpring, ROOT.kAzure + 7]
         signal_line_styles = [2, 7, 9, 10]
         i = 0
         for name, title in model["signals"].items():
@@ -327,10 +346,22 @@ if binned:
             i += 1
         
         # plot data points on top again
-        Binned_data.plotOn(frame, ROOT.RooFit.Name("remove_me_B"), ROOT.RooFit.MarkerColor(ROOT.kBlack))
+        Binned_data.plotOn(frame, ROOT.RooFit.Name("remove_me_B"))
         frame.remove("remove_me_A")
-        #frame.remove("remove_me_B")
-        frame.addTH1(D0_Hist, "pe", (ROOT.kBlack))
+        frame.remove("remove_me_B")
+
+        D0_Hist.SetMarkerStyle(20)
+        D0_Hist.SetMarkerSize(0.9)
+        D0_Hist.SetMarkerColor(ROOT.kBlack)
+
+
+        # Scale up the error bars by a factor of 5 (you can adjust the scaling factor as needed)
+        if global_local == False:
+            for bin in range(1, D0_Hist.GetNbinsX() + 1):
+                error = D0_Hist.GetBinError(bin)
+                D0_Hist.SetBinError(bin, 10 * error)
+
+        frame.addTH1(D0_Hist, "pe")
         legend_entries[D0_Hist.GetName()] = {"title": D0_Hist.GetTitle(), "style": "pe"}
 
 
@@ -347,6 +378,7 @@ if binned:
 
         c = ROOT.TCanvas("fit", "fit", 900, 800)
         fit_pad = ROOT.TPad("fit_pad", "fit pad", 0, 0.2, 1.0, 1.0)
+        fit_pad.SetLogy()
         fit_pad.Draw()
         fit_pad.cd()
         frame.Draw()
@@ -376,11 +408,11 @@ if binned:
         latex.Draw('same')
 
         legend = ROOT.TLegend(
-            0.18, 0.89 - ywidth - 0.05, 0.18 + xwidth, 0.89, "#bf{#it{"+plot_type+"}}"
+            0.16, 0.91 - ywidth - 0.05, 0.1 + xwidth, 0.91, "#bf{#it{"+plot_type+"}}"
         )
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
-        legend.SetTextSize(label_size*0.33)
+        legend.SetTextSize(label_size*0.28)
         for key, val in legend_entries.items():
             legend.AddEntry(key, val["title"], val["style"])
         legend.Draw("same")
@@ -465,22 +497,28 @@ if binned:
             x.append(pull.GetBinCenter(i))
 
         #Using curve_fit to find Paramters
-        params, cov, *_ = curve_fit(gaussian, x, y, p0=[max(x),0,1], bounds=([0,-np.inf,0],[np.inf,np.inf,np.inf]))
-        errs = np.sqrt(np.diag(cov))
+        try:
+            params, cov, *_ = curve_fit(gaussian, x, y, p0=[max(x),0,1], bounds=([0,-np.inf,0],[np.inf,np.inf,np.inf]))
+            errs = np.sqrt(np.diag(cov))
+            rounded_pull_mean = round(params[1],2)
+            rounded_pull_std = round(params[2],2)
+            rounded_pull_mean_error = round(errs[1], 2)
+            rounded_pull_std_error = round(errs[2], 2)
+            str_pull_mean = str(rounded_pull_mean)
+            str_pull_sigma = str(rounded_pull_std)
+            Failed = 0
+        except RuntimeError:
+            print("Optimal parameters not found")
+            Failed = 1
         
-        rounded_pull_mean = round(params[1],2)
-        rounded_pull_std = round(params[2],2)
-        rounded_pull_mean_error = round(errs[1], 2)
-        rounded_pull_std_error = round(errs[2], 2)
-        str_pull_mean = str(rounded_pull_mean)
-        str_pull_sigma = str(rounded_pull_std)
 
 
-        gaussian_fit = ROOT.TF1("gaussian_fit", "gaus", -5, 5)
-        gaussian_fit.SetLineColor(4)
-        gaussian_fit.SetParameters(params[0],params[1],params[2])
-        gaussian_fit.Draw('same')
-
+        if Failed == 0:
+            gaussian_fit = ROOT.TF1("gaussian_fit", "gaus", -5, 5)
+            gaussian_fit.SetLineColor(4)
+            gaussian_fit.SetParameters(params[0],params[1],params[2])
+            gaussian_fit.Draw('same')
+            
         legend2 = ROOT.TLegend(
             0.7, 0.78,0.8,0.90, "#bf{#it{"+plot_type+"}}"
         )
@@ -490,13 +528,15 @@ if binned:
 
         legend2.SetTextSize(0.04)
         legend2.AddEntry('Data', 'Data', "l")
-        legend2.AddEntry(gaussian_fit, "Gaussian Fit", "l")
+        if Failed == 0:
+            legend2.AddEntry(gaussian_fit, "Gaussian Fit", "l")
         legend2.Draw("same")
-        latex = ROOT.TLatex()
-        latex.SetNDC()
-        latex.SetTextSize(0.04)
-        latex.DrawLatex(0.7 ,0.75 , 'pull \mu:  ' + str(rounded_pull_mean) + ' \pm ' + str(rounded_pull_mean_error))
-        latex.DrawLatex(0.7 ,0.71 , 'pull \sigma:  ' + str(rounded_pull_std) + ' \pm ' + str(rounded_pull_std_error))
+        if Failed == 0:
+            latex = ROOT.TLatex()
+            latex.SetNDC()
+            latex.SetTextSize(0.04)
+            latex.DrawLatex(0.7 ,0.75 , 'pull \mu:  ' + str(rounded_pull_mean) + ' \pm ' + str(rounded_pull_mean_error))
+            latex.DrawLatex(0.7 ,0.71 , 'pull \sigma:  ' + str(rounded_pull_std) + ' \pm ' + str(rounded_pull_std_error))
 
     
 
@@ -509,23 +549,22 @@ if binned:
         print("Saving plots")
         if global_local:
             c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}_fit_ANA.pdf")
-            pull_canvas.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}_fit_pulls.pdf")
+            if Failed == 0:
+                pull_canvas.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}_fit_pulls.pdf")
             file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}.txt", "w+")
             text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError())
             file.write(text)
             file.close()
         else:
             c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_fit_ANA.pdf")
-            pull_canvas.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_fit_pulls.pdf")
-            print('1') 
+            if Failed == 0:
+                pull_canvas.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_fit_pulls.pdf")
             file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w+")
-            print('2')
             # Nsig Nsig_Err NBkg NBkg error pull_mean pull_sigma
             text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError()) + ', ' + str_pull_mean + ', ' + str_pull_sigma
-            print('3')
             file.write(text)
-            print('4')
             file.close()
+        disableBinIntegrator(signal)
         
         
   

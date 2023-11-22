@@ -271,12 +271,15 @@ def plot_histogram(val, result, uncertainty, text):
     plt.close(fig)
 
 
-
-
 def integrated_asym(val, err):
     
-    weight = err**-2
-    numerator = np.sum(val*weight)
+    weight = [x**-2 for x in err]
+    weight = np.array(weight)
+    val = np.array(val)
+    #print(err)
+    #print(val)
+    q = val * weight
+    numerator = np.sum(q)
     denominator = np.sum(weight)
     weighted_mean = numerator/denominator
     uncertainty = np.sum(weight)**-0.5
@@ -311,6 +314,14 @@ def plot_2Dhistogram(val, text):
 
 options = parse_arguments()
 
+A_raw_up_list_blinded = []
+A_raw_down_list_blinded = []
+A_raw_up_list_unblinded = []
+A_raw_down_list_unblinded = []
+A_raw_up_err_list = []
+A_raw_down_err_list = []
+
+
 for j in range(0,10):
     for i in range (0,10):
         bin_num = str(j)+str(i)
@@ -334,10 +345,16 @@ for j in range(0,10):
             A_unblind_down = A_raw_down
             # Asymmetry is blinded
             A_raw_down = blind(A_raw_down, A_raw_down_err, 'down')
-
             A_raw = (A_raw_down + A_raw_up) /2
             # output results
             output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num)
+            A_raw_up_list_blinded.append(A_raw_up)
+            A_raw_down_list_blinded.append(A_raw_down)
+            A_raw_up_list_unblinded.append(A_unblind_up)
+            A_raw_down_list_unblinded.append(A_unblind_down)
+            A_raw_up_err_list.append(A_raw_up_err)
+            A_raw_down_err_list.append(A_raw_down_err)
+
 
         else:
             # output results
@@ -353,14 +370,14 @@ if options.blind == 'y' or options.blind == 'Y':
     print("------------------------------")
 
     #A raw blinded and unblinded Up
-    blind_integrated_raw_up = integrated_asym(A_raw_up , A_raw_up_err)
-    unblind_integrated_raw_up = integrated_asym(A_unblind_up, A_raw_up_err)
+    blind_integrated_raw_up = integrated_asym(A_raw_up_list_blinded , A_raw_up_err_list)
+    unblind_integrated_raw_up = integrated_asym(A_raw_up_list_unblinded, A_raw_up_err_list)
     
     
 
     #A raw blinded and unblinded Down
-    blind_integrated_raw_down = integrated_asym(A_raw_down , A_raw_down_err)
-    unblind_integrated_raw_down = integrated_asym(A_unblind_down, A_raw_down_err)
+    blind_integrated_raw_down = integrated_asym(A_raw_down_list_blinded , A_raw_down_err_list)
+    unblind_integrated_raw_down = integrated_asym(A_raw_down_list_unblinded, A_raw_down_err_list)
     
     #A raw error
     A_raw_err_up = unblind_integrated_raw_up[1]

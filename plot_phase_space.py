@@ -127,36 +127,39 @@ eta = data["D0_ETA"]
 pT_flat = ak.to_numpy(pT).flatten()
 eta_flat = ak.to_numpy(eta).flatten()
 
-# First histogram
-fig = plt.figure()
-ax = fig.add_subplot(111)
-h2d = ax.hist2d(np.true_divide(pT_flat,1), np.true_divide(eta_flat,1), bins=200, cmap=newcmp)
-ax.set_xlabel(r'$p_{T}$ [GeV/c]')
-ax.set_ylabel(r'$\eta$')
-ax.set_title(r'$p_{T}$ vs $\eta$')
-fig.colorbar(h2d[3], ax=ax, label='Events')
-plt.savefig(f'{args.path}/2D_histogram_no_bins_extended_{args.meson}_{args.polarity}_{args.year}_{args.size}.pdf')
+#####################
+# # First histogram
+# fig = plt.figure()
+# ax = fig.add_subplot(111)
+# h2d = ax.hist2d(np.true_divide(pT_flat,1), np.true_divide(eta_flat,1), bins=200, cmap=newcmp)
+# ax.set_xlabel(r'$p_{T}$ [GeV/c]')
+# ax.set_ylabel(r'$\eta$')
+# ax.set_title(r'$p_{T}$ vs $\eta$')
+# fig.colorbar(h2d[3], ax=ax, label='Events')
+# plt.savefig(f'{args.path}/2D_histogram_no_bins_extended_{args.meson}_{args.polarity}_{args.year}_{args.size}.pdf')
 
 
-# Second histogram
-mask = np.ones(len(data["D0_PT"]))
-mask = np.logical_and(mask, data["D0_PT"]<=10000)
-data = data[mask]
-pT = data["D0_PT"]/1000
-eta = data["D0_ETA"]
+# # Second histogram
+# mask = np.ones(len(data["D0_PT"]))
+# mask = np.logical_and(mask, data["D0_PT"]<=10000)
+# data = data[mask]
+# pT = data["D0_PT"]/1000
+# eta = data["D0_ETA"]
 
-viridis = colormaps['YlOrRd']
-newcolors = viridis(np.linspace(0, 1, 25))
-newcmp = ListedColormap(newcolors)
+# viridis = colormaps['YlOrRd']
+# newcolors = viridis(np.linspace(0, 1, 25))
+# newcmp = ListedColormap(newcolors)
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
-h2d = ax.hist2d(np.true_divide(pT_flat,1), np.true_divide(eta_flat,1), bins=200, cmap=newcmp)
-ax.set_xlabel(r'$p_{T}$ [GeV/c]')
-ax.set_ylabel(r'$\eta$')
-ax.set_title(r'$p_{T}$ vs $\eta$')
-fig.colorbar(h2d[3], ax=ax, label='Events')
-plt.savefig(f'{args.path}/2D_histogram_no_bins_{args.meson}_{args.polarity}_{args.year}_{args.size}.pdf')
+# fig = plt.figure()
+# ax = fig.add_subplot(111)
+# h2d = ax.hist2d(np.true_divide(pT_flat,1), np.true_divide(eta_flat,1), bins=200, cmap=newcmp)
+# ax.set_xlabel(r'$p_{T}$ [GeV/c]')
+# ax.set_ylabel(r'$\eta$')
+# ax.set_title(r'$p_{T}$ vs $\eta$')
+# fig.colorbar(h2d[3], ax=ax, label='Events')
+# plt.savefig(f'{args.path}/2D_histogram_no_bins_{args.meson}_{args.polarity}_{args.year}_{args.size}.pdf')
+############################
+
 
 # Third histogram
 fig = plt.figure()
@@ -164,16 +167,15 @@ ax = fig.add_subplot(111)
 h2d = ax.hist2d(np.true_divide(pT_flat,1), np.true_divide(eta_flat,1), bins=200, cmap=newcmp)
 ax.set_xlabel(r'$p_{T}$ [GeV/c]')
 ax.set_ylabel(r'$\eta$')
-ax.set_title(r'$p_{T}$ vs $\eta$')
 ax.set_xlim(2, 10)
 ax.set_ylim(2, 5)
 fig.colorbar(h2d[3], ax=ax, label='Events')
 
 for index in np.arange(0,10):
     if index!=0:
-        ax.axvline(bins[0,index], ymin=0, ymax=1, color='blue')
+        ax.axvline(bins[0,index], ymin=0, ymax=1, color='blue', linestyle = 'dashdot')
     for j in np.arange(0,10):
         if j!=0:
-            ax.axhline(bins[index+1, j], xmin=(bins[0,index]-2)/8, xmax=(bins[0,index+1]-2)/8, color='blue')
+            ax.axhline(bins[index+1, j], xmin=(bins[0,index]-2)/8, xmax=(bins[0,index+1]-2)/8, color='blue', linestyle = 'dashdot')
     
 plt.savefig(f'{args.path}/2D_histogram_bins_{args.meson}_{args.polarity}_{args.year}_{args.size}.pdf')
