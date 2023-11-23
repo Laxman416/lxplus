@@ -7,7 +7,7 @@ directory=$1
 year=$2
 size=$3
 binned=$4
-selected=$5
+
 
 # if [[ "$binned" != "y" ]]; then
 #     if [[ "$binned" != "Y" ]]; then
@@ -15,8 +15,8 @@ selected=$5
 #             if [[ "$binned" != "N" ]]; then
 #                 echo "WARNING: You did not select a valid option for the binned fit"
 #                 echo
-#                 echo "An unbinned fit will be performed"
-#                 binned="n"
+#                 echo "An binned fit will be performed"
+#                 binned="y"
 #             fi   
 #         fi
 #     fi
@@ -25,10 +25,9 @@ selected=$5
 # # Create necessary directories to store output
 
 
-# if [[ "$selected" = "n" ]]; then
-#     mkdir $directory
-#     mkdir $directory"/selected_data"
-# fi
+# 
+# mkdir $directory
+# mkdir $directory"/selected_data"
 # mkdir $directory"/binned_data"
 # mkdir $directory"/binned_data/binning_scheme"
 # mkdir $directory"/model_fitting"
@@ -49,21 +48,19 @@ selected=$5
 
 
 # # Run the code
-# if [[ "$selected" = "n" ]]; then
-#     python selection_of_events.py --year $year --size $size --path $directory"/selected_data"
 
-#     echo
-#     for polar in up down
-#     do
+# python selection_of_events.py --year $year --size $size --path $directory"/selected_data"
 
-#         python multiple_candidates.py --year $year --size $size --polarity $polar --path $directory"/selected_data"
-#     done
-#     echo "Multiple candidates have been removed"
-# fi
+# echo
+# for polar in up down
+# do
 
-# if [[ "$selected" = "y" ]]; then
-#     echo "Skipping selection of events and multiple candidates"
-# fi
+#     python multiple_candidates.py --year $year --size $size --polarity $polar --path $directory"/selected_data"
+# done
+# echo "Multiple candidates have been removed"
+
+
+
 # python fit_global.py --year $year --size $size --path $directory"/model_fitting/global" --binned_fit $binned --input $directory"/selected_data"
 # for meson in D0 D0bar
 # do 
@@ -82,7 +79,7 @@ selected=$5
 # do 
 #     for polar in up down 
 #     do    
-#         python apply_binning_scheme.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
+#         # python apply_binning_scheme.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
 #         python plot_phase_space.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data/binning_scheme" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
 #         echo "Ploted 2D graph"
 #     done
@@ -108,12 +105,8 @@ selected=$5
 
 # #python analyse_chisquared.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/chi_squared" --input $directory"/model_fitting/local"
 
-#python production_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry" --input $directory"/model_fitting/local" --blind 'Y'
-for meson in D0 
-do 
-    for polar in up 
-    do    
-        python test.py --year $year --size $size --meson $meson --polarity $polar --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
-    done
-done
+# python production_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry" --input $directory"/model_fitting/" --blind 'Y' --results_path $directory"/results"
+
+python plot_asymm.py --year $year --size $size --bin_path $directory"/binned_data/binning_scheme" --asymm_path $directory"/raw_asymmetry_outcome/raw_asymmetry" --path $directory"/results"
+
 exit

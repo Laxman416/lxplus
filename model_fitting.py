@@ -251,24 +251,28 @@ else:
         # D0 MagDown
         if options.polarity == "down":
             frac = RooRealVar("frac_D0_down", "frac_D0_down", parameters[8])
-            Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[12])
+            Nsig = RooRealVar("Nsig_D0_down", "Nsig_D0_down", parameters[12])
             Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[13])
+            Nsig_error = parameters[20]
         # D0 MagUp
         elif options.polarity == "up":
             frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[9])
-            Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[14])
+            Nsig = RooRealVar("Nsig_D0_up", "Nsig_D0_up", parameters[14])
             Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[15])
+            Nsig_error = parameters[21]
     elif options.meson == "D0bar":
         # D0bar MagDown
         if options.polarity == "down":
             frac = RooRealVar("frac_D0bar_down", "frac_D0bar_down", parameters[10])
-            Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[16])
-            Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[17])
+            Nsig = RooRealVar("Nsig_D0bar_down", "Nsig_D0bar_down", parameters[16])
+            Nbkg = RooRealVar("Nbkg_D0bar_down", "Nbkg_D0bar_down", parameters[17])
+            Nsig_error = parameters[22]
         # D0bar MagUp
         elif options.polarity == "up":
             frac = RooRealVar("frac_D0bar_up", "frac_D0bar_up", parameters[11])
-            Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[18])
-            Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[19])
+            Nsig = RooRealVar("Nsig_D0bar_up", "Nsig_D0bar_up", parameters[18])
+            Nbkg = RooRealVar("Nbkg_D0bar_down", "Nbkg_D0bar_down", parameters[19])
+            Nsig_error = parameters[23]
 
 # Create model
 signal = RooAddPdf("signal", "signal", RooArgList(Gauss, Crystal), RooArgList(frac))
@@ -356,10 +360,10 @@ if binned:
 
 
         # Scale up the error bars by a factor of 5 (you can adjust the scaling factor as needed)
-        if global_local == False:
-            for bin in range(1, D0_Hist.GetNbinsX() + 1):
-                error = D0_Hist.GetBinError(bin)
-                D0_Hist.SetBinError(bin, 10 * error)
+        # if global_local == False:
+        #     for bin in range(1, D0_Hist.GetNbinsX() + 1):
+        #         error = D0_Hist.GetBinError(bin)
+        #         D0_Hist.SetBinError(bin, 10 * error)
 
         frame.addTH1(D0_Hist, "pe")
         legend_entries[D0_Hist.GetName()] = {"title": D0_Hist.GetTitle(), "style": "pe"}
@@ -459,9 +463,9 @@ if binned:
         pull_frame.GetYaxis().SetTitleSize(title_size)
         pull_frame.GetYaxis().SetTitleOffset(0.39)
         if meson == "D0":
-            pull_frame.GetXaxis().SetTitle("D^{0} mass / [MeV]")
+            pull_frame.GetXaxis().SetTitle("D^{0} mass / [MeVc^{-2}]")
         elif meson == "D0bar":
-            pull_frame.GetXaxis().SetTitle("{#bar{D}^{0} mass / [MeV]")
+            pull_frame.GetXaxis().SetTitle("{#bar{D}^{0} mass / [MeVc^{-2}]")
 
         line = ROOT.TLine(D0_M.getMin(), 0, D0_M.getMax(), 0)
         pull_frame.Draw()
@@ -561,7 +565,7 @@ if binned:
                 pull_canvas.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_fit_pulls.pdf")
             file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w+")
             # Nsig Nsig_Err NBkg NBkg error pull_mean pull_sigma
-            text = str(Nsig.getValV()) + ', ' + str(Nsig.getError()) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError()) + ', ' + str_pull_mean + ', ' + str_pull_sigma
+            text = str(Nsig.getValV()) + ', ' + str(Nsig_error) + ', ' + str(Nbkg.getValV()) + ', ' + str(Nbkg.getError()) + ', ' + str_pull_mean + ', ' + str_pull_sigma
             file.write(text)
             file.close()
         disableBinIntegrator(signal)

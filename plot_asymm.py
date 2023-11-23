@@ -61,20 +61,6 @@ def parse_arguments():
         help="flag to set the data taking year."
     )
     parser.add_argument(
-        "--polarity",
-        type=str,
-        choices=["up","down"],
-        required=True,
-        help="flag to set the data taking polarity."
-    )
-    parser.add_argument(
-        "--meson",
-        type=str,
-        choices=["D0","D0bar","both"],
-        required=True,
-        help="flag to set the D0 meson flavour."
-    )    
-    parser.add_argument(
         "--path",
         type=dir_path,
         required=False,
@@ -82,18 +68,18 @@ def parse_arguments():
         help="flag to set the path where the output files should be written to"
     )
     parser.add_argument(
-        "--input",
-        type=dir_path,
-        required=False,
-        default=os.getcwd(),
-        help="flag to set the path where the input data should be found"
-    )
-    parser.add_argument(
         "--bin_path",
         type=dir_path,
         required=False,
         default=os.getcwd(),
         help="flag to set the path where the binning scheme should be found"
+    )
+    parser.add_argument(
+        "--asymm_path",
+        type=dir_path,
+        required=False,
+        default=os.getcwd(),
+        help="flag to set the path where the production asymmetry for each bin should be found"
     )
     return parser.parse_args()
 
@@ -111,11 +97,37 @@ def chunk_list(input_list, chunk_size):
     """Split a list into chunks of a specified size."""
     return [input_list[i:i + chunk_size] for i in range(0, len(input_list), chunk_size)]
 
+def read_asymmetry_values():
+    with open(f'{args.path}/final_asymmetries_{args.year}_{args.size}.txt') as f:
+        lines = f.readlines()
+        binned_asymm = float(lines[0])
+        unbinned_asymm = float(lines[2])
+        f.close()
+    return unbinned_asymm, binned_asymm
+
 
 # - - - - - - - MAIN BODY - - - - - - - #
 args = parse_arguments()
 
-# Import data
+# Import 
+
+unbinned_asymm, binned_asymm = read_asymmetry_values()
+
+asymmetry = []
+for j in range(0,10):
+    for i in range (0,10):
+        bin_num = str(j)+str(i)
+        with open(f'{args.asymm_path}/asymmetries_{args.year}_{args.size}_bin{bin_num}.txt') as f:
+            lines = f.readlines()
+            A_prod = float(lines[0])
+            A_prod_err = float(lines[1])
+        f.close()
+        asymmetry.append(A_prod)
+
+max_value = -min(asymmetry)
+print(max_value)
+min_value = min(asymmetry)
+
 
 bins = np.loadtxt(f"{args.bin_path}/{args.year}_{args.size}_bins.txt", delimiter=',')
 bins[0] = bins[0]/1000 #GeV
@@ -161,7 +173,7 @@ for i in np.arange(0, 9): # for each pT line
                     #print(p[i]+value,e[l]+value2)
                     points.append([p[i]+value,e[l]+value2])
 if (len(points)) == 100:
-    print(len(points))
+    print('Length of Data points is 100 as expected.')
 else:
     print("Error: Expected 100 datapoints only got ", (len(points)))
     sys.exit(1)
@@ -174,7 +186,6 @@ y_min = 2 #y_min
 x_min = 2
 x_max = 10
 modified_e_bins = [[y_min] + sublist + [y_max] for sublist in e_bins]
-print(len(modified_e_bins[0]))
 
 
 x_values = []
@@ -183,27 +194,26 @@ y_values = []
 for coord in points:
     x_values.append(coord[0])
     y_values.append(coord[1])
-asymmetry = np.random.rand(len(x_values))
-
 
 x = chunk_list(x_values, 10) #split into 10 lists of 10
 y= chunk_list(y_values,10)   #split into 10 lists of 10
 A = chunk_list(asymmetry,10) #split into 10 lists of 10
 
-
-# # Loop: Histogram 2 to 9
 fig, ax = plt.subplots()
-
+# Plot Histogram 1
 h2d = ax.hist2d(
     np.true_divide(x[0], 1),
     np.true_divide(y[0], 1),
-    weights=np.true_divide(A[0], 1),
+    weights= A[0],
     bins=[1, modified_e_bins[0]],
-    cmap=newcmp,
-    cmin=0,
-    cmax=1,
+    cmap='coolwarm',
+    cmin= min_value,
+    cmax= max_value,
+    vmin = min_value,
+    vmax = max_value,
     range=[[x_min, x[0][0]], [y_min, y_max]]
 )
+# # Loop: Histogram 2 to 9
 for i in range(len(x)):
     if i == 0:
         continue
@@ -212,11 +222,13 @@ for i in range(len(x)):
     h2d = ax.hist2d(
         np.true_divide(x[i], 1),
         np.true_divide(y[i], 1),
-        weights=np.true_divide(A[i], 1),
+        weights= A[i],
         bins=[1, modified_e_bins[i]],
-        cmap=newcmp,
-        cmin=0,
-        cmax=1,
+        cmap='coolwarm',
+        cmin= min_value,
+        cmax= max_value,
+        vmin = min_value,
+        vmax = max_value,
         range=[[x[q][0], x[i][0]], [y_min, y_max]]
     )
 
@@ -225,22 +237,31 @@ for i in range(len(x)):
 h2d = ax.hist2d(
     np.true_divide(x[9], 1),
     np.true_divide(y[9], 1),
-    weights=np.true_divide(A[9], 1),
+    weights= A[9],
     bins=[1, modified_e_bins[9]],
-    cmap=newcmp,
-    cmin=0,
-    cmax=1,
+    cmap= 'coolwarm',
+    cmin= min_value,
+    cmax= max_value,
+    vmin = min_value,
+    vmax = max_value,
     range=[[x[9][0], x_max], [y_min, y_max]]
 )
 
 
-
-
-ax.set_xlabel(r'$p_{T}$ [GeV/c]')
-ax.set_ylabel(r'$\eta$')
+ax.set_xlabel(r'$p_{T}$ [GeV/c]', fontsize=16, labelpad=4)
+ax.set_ylabel(r'$\eta$', fontsize=16)
 ax.set_xlim(x_min, x_max)
 ax.set_ylim(y_min, y_max)
-cbar = fig.colorbar(h2d[3], ax=ax, label='Asymmetry')
+cbar = fig.colorbar(h2d[3], ax=ax, aspect = 10)
+#cbar.outline.set_linewidth(1.1)
+cbar.ax.tick_params(labelsize=12)
+cbar.set_label(r'$A_{\mathrm{prod}}$', fontsize=16, rotation=270, labelpad=20)
+ax.figure.axes[0].tick_params(axis="both", labelsize=12) 
+
+cbar.ax.axhline(binned_asymm, color='black', linestyle='-', label=r'Integrated $A_{\mathrm{prod}}$', linewidth = 3.5)
+cbar.ax.axhline(unbinned_asymm, color='white', linestyle='dotted', label=r'$A_{\mathrm{prod}}$', linewidth = 3.5)
+legend = cbar.ax.legend(loc='best', fontsize='large')
+legend.get_frame().set_alpha(0.3)
 
 
 
@@ -251,4 +272,5 @@ for index in np.arange(0,10):
         if j!=0:
             ax.axhline(bins[index+1, j], xmin=(bins[0,index]-2)/8, xmax=(bins[0,index+1]-2)/8, color='blue', linestyle = 'dashdot')
     
-plt.savefig(f'{args.path}/test_{args.meson}_{args.polarity}_{args.year}_{args.size}.pdf')
+plt.savefig(f'{args.path}/2DHist_{args.year}_{args.size}.pdf')
+print("Saved 2D Hist")

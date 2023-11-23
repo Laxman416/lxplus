@@ -164,7 +164,7 @@ eta_flat = ak.to_numpy(eta).flatten()
 # Third histogram
 fig = plt.figure()
 ax = fig.add_subplot(111)
-h2d = ax.hist2d(np.true_divide(pT_flat,1), np.true_divide(eta_flat,1), bins=200, cmap=newcmp)
+h2d = ax.hist2d(np.true_divide(pT_flat,1), np.true_divide(eta_flat,1), bins=100, cmap=newcmp)
 ax.set_xlabel(r'$p_{T}$ [GeV/c]')
 ax.set_ylabel(r'$\eta$')
 ax.set_xlim(2, 10)
