@@ -179,3 +179,4 @@ for index in np.arange(0,10):
             ax.axhline(bins[index+1, j], xmin=(bins[0,index]-2)/8, xmax=(bins[0,index+1]-2)/8, color='blue', linestyle = 'dashdot')
     
 plt.savefig(f'{args.path}/2D_histogram_bins_{args.meson}_{args.polarity}_{args.year}_{args.size}.pdf')
+

@@ -75,14 +75,14 @@ def parse_arguments():
     required=True,
     choices=["y", "Y", "n", "N"],
     help="flag to set whether the asymmetry should be blinded or not (y/n)."
-)
+    )
     parser.add_argument(
     "--seedval",
     type=int,
     required=False,
     default=12,
     help="input any number or word to set a seed for the blinding."
-)
+    )
     
     parser.add_argument(
             "--results_path",
@@ -91,6 +91,14 @@ def parse_arguments():
             default=os.getcwd(),
             help="flag to set the path where the final production asymmetry should be saved."
     )
+    parser.add_argument(
+        "--scheme",
+        type=str,
+        choices=["total","pT_eta","pT","eta"],
+        required=True,
+        help="flag to set whether a binned or an unbinned should be performed (y/n)"
+    )
+    
     return parser.parse_args()
 
 def dir_path(string):
@@ -103,13 +111,13 @@ def dir_path(string):
     else:
         raise NotADirectoryError(string)
         
-def read_from_file(meson, polarity, bin_num):
+def read_from_file(meson, polarity, bin_num, parameter):
     '''
     Opens a .txt files and reads the values of the signal normalization constant and its uncertainty.
     
     Returns these two values.
     '''
-    with open(f'{options.input}/local/{bin_num}/yields_{meson}_{polarity}_{options.year}_{options.size}_bin{bin_num}.txt') as f:
+    with open(f'{options.input}/{scheme}/{bin_num}/yields_{meson}_{polarity}_{options.year}_{options.size}_bin{bin_num}.txt') as f:
         for line in f:
             currentline = line.split(",")
             Nsig = float(currentline[0])
@@ -118,7 +126,7 @@ def read_from_file(meson, polarity, bin_num):
 
     return Nsig, Nsig_err
 
-def get_yield(bin_num):
+def get_yield(bin_num, scheme):
     '''
     Gets all the normalization yields, and their uncertainties, necessary to calculate the raw asymmetries.
     This takes into account both D0 and D0bar and both magnet polarities.
@@ -126,10 +134,10 @@ def get_yield(bin_num):
     Returns all the signal normalization constants, together with their uncertainties.
     '''
     
-    yield_D0_up = read_from_file("D0", "up", bin_num)
-    yield_D0bar_up = read_from_file("D0bar", "up", bin_num)
-    yield_D0_down = read_from_file("D0", "down", bin_num)
-    yield_D0bar_down = read_from_file("D0bar", "down", bin_num)
+    yield_D0_up = read_from_file("D0", "up", bin_num, scheme)
+    yield_D0bar_up = read_from_file("D0bar", "up", bin_num, scheme)
+    yield_D0_down = read_from_file("D0", "down", bin_num, scheme)
+    yield_D0bar_down = read_from_file("D0bar", "down", bin_num, scheme)
    
     return yield_D0_up[0], yield_D0_up[1], yield_D0bar_up[0], yield_D0bar_up[1], yield_D0_down[0], yield_D0_down[1], yield_D0bar_down[0], yield_D0bar_down[1]
 
@@ -261,25 +269,6 @@ def production_asymm(A_raw_up, A_raw_down, A_raw_up_err, A_raw_down_err, A_det_u
     return A_prod, A_prod_up, A_prod_down, A_prod_up_err, A_prod_down_err, A_prod_err
 
 
-def plot_histogram(val, result, uncertainty, text):
-    
-    initial = text[0]
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    plt.grid(lw=0.5, ls='--', alpha=0.2)
-    ax.hist(A_raw, 15, histtype='stepfilled', ec='k', color='wheat', alpha=0.6)
-    ax.set_xlabel(f"{text}Asymmetry")
-    ax.set_ylabel("Bins")
-    ax.set_title(f"{text}Asymmetry Distribution")
-    textstr = '\n \n'.join((
-        fr'Weighted $ A_{initial} =$',
-        r'${:.3f} \pm {:.3f}$'.format(result, uncertainty)))
-
-    plt.text(-4.5, 30, textstr, horizontalalignment='center', verticalalignment='center', bbox=dict(boxstyle='square,pad=1', fc='w', ec='k', alpha=1))
-    fig.savefig(f"{options.path}/1D_asymmetry_distribution_{options.year}_{options.size}.pdf", dpi=600)
-    plt.close(fig)
-
-
 def integrated_asym(val, err):
     
     weight = [x**-2 for x in err]
@@ -326,6 +315,7 @@ def read_from_file_global(meson, polarity):
 # - - - - - - - MAIN CODE - - - - - - - #
 
 options = parse_arguments()
+scheme = options.scheme
 
 A_raw_up_list_blinded = []
 A_raw_down_list_blinded = []
@@ -336,12 +326,62 @@ A_raw_down_err_list = []
 
 A_prod_unbinned = A_prod_unbinned()
 
+if scheme == 'pT_eta':
+    for j in range(0,10):
+        for i in range (0,10):
+            scheme = 'local'
+            bin_num = str(j)+str(i)
+            # get normalization yield from desired model 
+            N_D0_up, N_D0_up_err, N_D0bar_up, N_D0bar_up_err, N_D0_down, N_D0_down_err, N_D0bar_down, N_D0bar_down_err = get_yield(bin_num,scheme)
 
-for j in range(0,10):
-    for i in range (0,10):
-        bin_num = str(j)+str(i)
+            # get raw asymmetries for main model
+            A_raw_up, A_raw_up_err = calculate_raw_asymmetry(N_D0_up, N_D0bar_up, 1, N_D0_up_err, N_D0bar_up_err)
+            A_raw_down, A_raw_down_err = calculate_raw_asymmetry(N_D0_down, N_D0bar_down, 1, N_D0_down_err, N_D0bar_down_err)
+            #A_raw = (A_raw_up + A_raw_down) / 2
+            A_raw_err = ((A_raw_up_err**2 + A_raw_down_err**2)**0.5) /2
+
+            A_det_up, A_det_down, A_det_down_error, A_det_up_error = A_Det()
+            A_prod_bin = production_asymm(A_raw_up, A_raw_down, A_raw_up_err, A_raw_down_err, A_det_up, A_det_down, A_det_down_error, A_det_up_error)
+
+
+
+
+
+
+            if options.blind == 'y' or options.blind == 'Y':
+                A_unblind_up = A_raw_up
+                # Asymmetry is blinded
+                A_raw_up = blind(A_raw_up, A_raw_up_err, 'up')
+                A_unblind_down = A_raw_down
+                # Asymmetry is blinded
+                A_raw_down = blind(A_raw_down, A_raw_down_err, 'down')
+                A_raw = (A_raw_down + A_raw_up) /2
+
+                # Calculating Unblind prod Asymetry of each bin
+                # output results
+                output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num, A_prod_bin[0], A_prod_bin[5])
+                A_raw_up_list_blinded.append(A_raw_up)
+                A_raw_down_list_blinded.append(A_raw_down)
+                A_raw_up_list_unblinded.append(A_unblind_up)
+                A_raw_down_list_unblinded.append(A_unblind_down)
+                A_raw_up_err_list.append(A_raw_up_err)
+                A_raw_down_err_list.append(A_raw_down_err)
+
+
+            else:
+                # output results
+                output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num)
+                A_raw_up_list_unblinded.append(A_unblind_up)
+                A_raw_down_list_unblinded.append(A_unblind_down)
+                A_raw_up_err_list.append(A_raw_up_err)
+                A_raw_down_err_list.append(A_raw_down_err)
+
+            # Calculates A_det
+elif scheme == 'pT' or scheme == 'eta':
+    for j in range(0,10):
+        bin_num = str(j)
         # get normalization yield from desired model 
-        N_D0_up, N_D0_up_err, N_D0bar_up, N_D0bar_up_err, N_D0_down, N_D0_down_err, N_D0bar_down, N_D0bar_down_err = get_yield(bin_num)
+        N_D0_up, N_D0_up_err, N_D0bar_up, N_D0bar_up_err, N_D0_down, N_D0_down_err, N_D0bar_down, N_D0bar_down_err = get_yield(bin_num,scheme)
 
         # get raw asymmetries for main model
         A_raw_up, A_raw_up_err = calculate_raw_asymmetry(N_D0_up, N_D0bar_up, 1, N_D0_up_err, N_D0bar_up_err)
@@ -385,7 +425,6 @@ for j in range(0,10):
             A_raw_up_err_list.append(A_raw_up_err)
             A_raw_down_err_list.append(A_raw_down_err)
 
-        # Calculates A_det
 
 
 
@@ -470,11 +509,9 @@ if options.blind == 'y' or options.blind == 'Y':
     # Aprod, Aprod error -- both from weighted mean, Aprod from unbinned average, Aprod err from unbinned average
     array = np.array([Unblinded_prod[0],Unblinded_prod[5]
                      , A_prod_unbinned[0], A_prod_unbinned[1]])
-    np.savetxt(f"{options.results_path}/final_asymmetries_{options.year}_{options.size}.txt", array)
+    np.savetxt(f"{options.results_path}/final_asymmetries_{options.scheme}_{options.year}_{options.size}.txt", array)
 
 
-
-    #plot_histogram(Unblinded_prod[0], Unblinded_prod[0], Unblinded_prod[5], "Unblinded Production")
     
 
 else:
@@ -525,6 +562,3 @@ else:
     print("------------------------------")
     print("------------------------------")
     print("------------------------------")
-
-
-    plot_histogram(Unblinded_prod[0], Unblinded_prod[0], Unblinded_prod[5], "Unblinded Production")

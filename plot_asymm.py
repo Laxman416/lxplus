@@ -98,7 +98,7 @@ def chunk_list(input_list, chunk_size):
     return [input_list[i:i + chunk_size] for i in range(0, len(input_list), chunk_size)]
 
 def read_asymmetry_values():
-    with open(f'{args.path}/final_asymmetries_{args.year}_{args.size}.txt') as f:
+    with open(f'{args.path}/final_asymmetries_pT_eta_{args.year}_{args.size}.txt') as f:
         lines = f.readlines()
         binned_asymm = float(lines[0])
         unbinned_asymm = float(lines[2])
@@ -206,7 +206,7 @@ h2d = ax.hist2d(
     np.true_divide(y[0], 1),
     weights= A[0],
     bins=[1, modified_e_bins[0]],
-    cmap='coolwarm',
+    cmap='seismic',
     cmin= min_value,
     cmax= max_value,
     vmin = min_value,
@@ -224,7 +224,7 @@ for i in range(len(x)):
         np.true_divide(y[i], 1),
         weights= A[i],
         bins=[1, modified_e_bins[i]],
-        cmap='coolwarm',
+        cmap='seismic',
         cmin= min_value,
         cmax= max_value,
         vmin = min_value,
@@ -239,7 +239,7 @@ h2d = ax.hist2d(
     np.true_divide(y[9], 1),
     weights= A[9],
     bins=[1, modified_e_bins[9]],
-    cmap= 'coolwarm',
+    cmap= 'seismic',
     cmin= min_value,
     cmax= max_value,
     vmin = min_value,
@@ -255,11 +255,11 @@ ax.set_ylim(y_min, y_max)
 cbar = fig.colorbar(h2d[3], ax=ax, aspect = 10)
 #cbar.outline.set_linewidth(1.1)
 cbar.ax.tick_params(labelsize=12)
-cbar.set_label(r'$A_{\mathrm{prod}}$', fontsize=16, rotation=270, labelpad=20)
+cbar.set_label(r'$A_{\mathrm{prod}}$ [%]', fontsize=16, rotation=270, labelpad=20)
 ax.figure.axes[0].tick_params(axis="both", labelsize=12) 
 
-cbar.ax.axhline(binned_asymm, color='black', linestyle='-', label=r'Integrated $A_{\mathrm{prod}}$', linewidth = 3.5)
-cbar.ax.axhline(unbinned_asymm, color='white', linestyle='dotted', label=r'$A_{\mathrm{prod}}$', linewidth = 3.5)
+cbar.ax.axhline(binned_asymm, color='orange', linestyle='-', label=r'Integrated $A_{\mathrm{prod}}$', linewidth = 3.5)
+cbar.ax.axhline(unbinned_asymm, color='lime', linestyle='dotted', label=r'$A_{\mathrm{prod}}$', linewidth = 3.5)
 legend = cbar.ax.legend(loc='best', fontsize='large')
 legend.get_frame().set_alpha(0.3)
 

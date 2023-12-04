@@ -33,15 +33,30 @@ binned=$4
 # mkdir $directory"/model_fitting"
 # mkdir $directory"/model_fitting/global"
 # mkdir $directory"/model_fitting/local"
+# mkdir $directory"/model_fitting/pT"
+# mkdir $directory"/model_fitting/eta"
 # for ind in {0..99}
 # do
 #     index=$( printf '%02d' $ind)
 #     mkdir $directory"/model_fitting/local/"$index
 # done
+# for ind in {0..9}
+# do
+#     index=$( printf '%01d' $ind)
+#     mkdir $directory"/model_fitting/pT/"$index
+#     mkdir $directory"/model_fitting/eta/"$index
+# done
 # mkdir $directory"/raw_asymmetry_outcome"
 # mkdir $directory"/raw_asymmetry_outcome/chi_squared"
 # mkdir $directory"/raw_asymmetry_outcome/raw_asymmetry"
+# mkdir $directory"/raw_asymmetry_outcome/raw_asymmetry/pT"
+# mkdir $directory"/raw_asymmetry_outcome/raw_asymmetry/eta"
+# mkdir $directory"/raw_asymmetry_outcome/raw_asymmetry/local"
 # mkdir $directory"/results"
+# mkdir $directory"/binned_data/eta"
+# # mkdir $directory"/binned_data/eta/binning_scheme"
+# mkdir $directory"/binned_data/pT"
+# # mkdir $directory"/binned_data/pT/binning_scheme"
 
 # echo "The necessary directories have been created"
 # echo
@@ -66,7 +81,7 @@ binned=$4
 # do 
 #     for polar in up down 
 #     do    
-#         python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/global" --input $directory"/selected_data" --parameters_path $directory"/model_fitting/global" --global_local 'n' --binned_fit $binned
+#         python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/global" --input $directory"/selected_data" --parameters_path $directory"/model_fitting/global" --scheme 'total' --binned_fit $binned
 #     done
 # done
 
@@ -79,9 +94,9 @@ binned=$4
 # do 
 #     for polar in up down 
 #     do    
-#         # python apply_binning_scheme.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
-#         python plot_phase_space.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data/binning_scheme" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
-#         echo "Ploted 2D graph"
+#         python apply_binning_scheme.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
+#         # python plot_phase_space.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data/binning_scheme" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
+#         # echo "Ploted 2D graph"
 #     done
 # done
 
@@ -95,7 +110,7 @@ binned=$4
 #         for ind in {0..99}
 #         do
 #             index=$( printf '%02d' $ind)
-#             python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/local/"$index --input $directory"/binned_data" --parameters_path $directory"/model_fitting/global" --bin $index --binned_fit $binned --global_local 'y'
+#             python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/local/"$index --input $directory"/binned_data" --parameters_path $directory"/model_fitting/global" --bin $index --binned_fit $binned --scheme 'pT_eta'
 #         done
 #     done
 # done
@@ -105,8 +120,31 @@ binned=$4
 
 # #python analyse_chisquared.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/chi_squared" --input $directory"/model_fitting/local"
 
-# python production_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry" --input $directory"/model_fitting/" --blind 'Y' --results_path $directory"/results"
+# python production_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry/local" --input $directory"/model_fitting/" --blind 'Y' --results_path $directory"/results" --scheme 'pT_eta'
 
-python plot_asymm.py --year $year --size $size --bin_path $directory"/binned_data/binning_scheme" --asymm_path $directory"/raw_asymmetry_outcome/raw_asymmetry" --path $directory"/results"
+# python plot_asymm.py --year $year --size $size --bin_path $directory"/binned_data/binning_scheme" --asymm_path $directory"/raw_asymmetry_outcome/raw_asymmetry/local" --path $directory"/results"
+
+
+# for meson in D0 D0bar
+# do
+#    for polar in up down
+#    do 
+#         for ind in {0..9}
+#         do
+#             index=$( printf '%01d' $ind)
+#             python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/pT/"$index --input $directory"/binned_data/pT" --parameters_path $directory"/model_fitting/global" --bin $index --binned_fit $binned --scheme 'pT'
+#             python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/eta/"$index --input $directory"/binned_data/eta" --parameters_path $directory"/model_fitting/global" --bin $index --binned_fit $binned --scheme 'eta'
+#         done
+#     done
+# done
+
+# echo "pT and eta fitting completed"
+# echo
+
+# python production_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry/pT" --input $directory"/model_fitting/" --blind 'Y' --results_path $directory"/results" --scheme 'pT'
+# python production_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry/eta" --input $directory"/model_fitting/" --blind 'Y' --results_path $directory"/results" --scheme 'eta'
+
+python plot_pT_eta.py --year $year --size $size --bin_path $directory"/binned_data/binning_scheme" --asymm_path $directory"/raw_asymmetry_outcome/raw_asymmetry/pT" --path $directory"/results" --scheme 'pT'
+python plot_pT_eta.py --year $year --size $size --bin_path $directory"/binned_data/binning_scheme" --asymm_path $directory"/raw_asymmetry_outcome/raw_asymmetry/eta" --path $directory"/results" --scheme 'eta'
 
 exit
