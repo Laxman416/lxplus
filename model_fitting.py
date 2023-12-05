@@ -15,34 +15,12 @@ import argparse
 import os
 from utils import plot
 import numpy as np
-from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooExponential, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist
+from ROOT import TChain, RooRealVar, RooDataSet, RooGaussian, RooCrystalBall, RooExponential, RooAddPdf, RooArgList, RooFit, RooArgSet, RooDataHist, RooBifurGauss, RooJohnson, RooArgusBG, RooFormulaVar
 from lhcbstyle import LHCbStyle 
 import gc
 from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
 # - - - - - - - FUNCTIONS - - - - - - - #
-
-def enableBinIntegrator(func, num_bins):
-    """
-    Force numeric integration and do this numeric integration with the
-    RooBinIntegrator, which sums the function values at the bin centers.
-    """
-    custom_config = ROOT.RooNumIntConfig(func.getIntegratorConfig())
-    custom_config.method1D().setLabel("RooBinIntegrator")
-    custom_config.getConfigSection("RooBinIntegrator").setRealValue("numBins", num_bins)
-    func.setIntegratorConfig(custom_config)
-    func.forceNumInt(True)
-
-def disableBinIntegrator(func):
-    """
-    Reset the integrator config to disable the RooBinIntegrator.
-    """
-    func.setIntegratorConfig()
-    func.forceNumInt(False)
- 
-
-def gaussian(x, A, mu, sig):
-    return A * np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
-
 def dir_path(string):
     '''
     Checks if a given string is the path to a directory.
@@ -149,16 +127,34 @@ def parse_arguments():
         type=str,
         choices=["total","pT_eta","pT","eta"],
         required=True,
-        help="flag to set whether a binned or an unbinned should be performed (y/n)"
+        help="flag to set which binning scheme to use"
     )
     
     return parser.parse_args()
+def enableBinIntegrator(func, num_bins):
+    """
+    Force numeric integration and do this numeric integration with the
+    RooBinIntegrator, which sums the function values at the bin centers.
+    """
+    custom_config = ROOT.RooNumIntConfig(func.getIntegratorConfig())
+    custom_config.method1D().setLabel("RooBinIntegrator")
+    custom_config.getConfigSection("RooBinIntegrator").setRealValue("numBins", num_bins)
+    func.setIntegratorConfig(custom_config)
+    func.forceNumInt(True)
 
+def disableBinIntegrator(func):
+    """
+    Reset the integrator config to disable the RooBinIntegrator.
+    """
+    func.setIntegratorConfig()
+    func.forceNumInt(False)
+def gaussian(x, A, mu, sig):
+    return A * np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
 # - - - - - - - MAIN BODY - - - - - - - #
 
 options = parse_arguments()
 numbins = 150
-lower_boundary = 1820
+lower_boundary = 1815
 upper_boundary = 1910
 meson = options.meson
 polarity = options.polarity
@@ -196,94 +192,121 @@ parameters = np.loadtxt(f"{options.parameters_path}/fit_parameters.txt", delimit
 
 ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus("D0_MM", 1)
-D0_M = RooRealVar("D0_MM", "D0 mass / [MeV]", 1820, 1910) # D0_MM - invariant mass
+D0_M = RooRealVar("D0_MM", f"D0 mass / [MeVc^{-2}]", 1815, 1910) # Data - invariant mass
 
 if options.scheme != "total":
-    # Define variables for signal model, using the best fit parameters generated from fit_global.py
-    mu = RooRealVar("mu", "mu", parameters[0])
-    Gsig = RooRealVar("sigma", "sigma", parameters[1])
-    Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
+     # Define variables for signal model, using the best fit parameters generated from fit_global.py
+    # Model Bifurcated Gaussian
+    bifurmean = RooRealVar("bifurmean", "bifurmean", parameters[25])
+    sigmaL = RooRealVar("sigmaL", "sigmaL", parameters[13])
+    sigmaR = RooRealVar("sigmaR", "sigmaR", parameters[14])
+    Bifurgauss = RooBifurGauss("Bifurgauss", "Bifurgauss", D0_M, bifurmean, sigmaL, sigmaR)
 
-    Csig = RooRealVar("Csig", "Csig", parameters[2])
-    aL = RooRealVar("aL", "aL", parameters[3])
-    nL = RooRealVar("nL", "nL", parameters[4])
-    aR = RooRealVar("aR", "aR", parameters[5])
-    nR = RooRealVar("nR", "nR", parameters[6])
-    Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mu, Csig, aL, nL, aR, nR)
+    # Model Johnson SU Distribution
+    Jmu = RooRealVar("Jmu", "Jmu", parameters[21])
+    Jlam = RooRealVar("Jlam", "Jlam", parameters[22])
+    Jgam = RooRealVar("Jgam", "Jgam", parameters[23])
+    Jdel = RooRealVar("Jdel", "Jdel", parameters[24])
+    Johnson = RooJohnson("Johnson","Johnson", D0_M, Jmu, Jlam, Jgam, Jdel)
+
+    # Model Bifurcated Gaussian
+    bifurmean2 = RooRealVar("bifurmeam2", "bifurmean2", parameters[26])
+    sigmaL2 = RooRealVar("sigmaL2", "sigmaL2", parameters[15])
+    sigmaR2 = RooRealVar("sigmaR2", "sigmaR2", parameters[16])
+    Bifurgauss2 = RooBifurGauss("Bifurgauss2", "Bifurgauss2", D0_M, bifurmean2, sigmaL2, sigmaR2)
 
     # Model Exponential Background
-    a = RooRealVar("a0", "a0", parameters[7])
+    a = RooRealVar("a0", "a0", parameters[0])
     background = RooExponential("Exponential", "Exponential", D0_M, a)
 
     if options.meson == "D0":
         # D0 MagDown
         if options.polarity == "down":
-            frac = RooRealVar("frac_D0_down", "frac_D0_down", parameters[8])
+            frac = RooRealVar("frac_D0_down", "frac_D0_down", parameters[1])
+            frac2 = RooRealVar("frac_D0_down_2", "frac_D0_down_2", parameters[17])
         # D0 MagUp
         elif options.polarity == "up":
-            frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[9])
+            frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[2])
+            frac2 = RooRealVar("frac_D0_up_2", "frac_D0_up_2", parameters[18])
+
     elif options.meson == "D0bar":
         # D0bar MagDown
         if options.polarity == "down":
-            frac = RooRealVar("frac_D0bar_down", "frac_D0bar_down", parameters[10])
+            frac = RooRealVar("frac_D0bar_down", "frac_D0bar_down", parameters[3])
+            frac2 = RooRealVar("frac_D0bar_down_2", "frac_D0bar_down_2", parameters[19])
         # D0bar MagUp
         elif options.polarity == "up":
-            frac = RooRealVar("frac_D0bar_up", "frac_D0bar_up", parameters[11])
+            frac = RooRealVar("frac_D0bar_up", "frac_D0bar_up", parameters[4])
+            frac2 = RooRealVar("frac_D0bar_up_2", "frac_D0bar_up_2", parameters[20])
+
 
     Nsig = RooRealVar("Nsig", "Nsig", 0.95*ttree.GetEntries(), 0, ttree.GetEntries())
     Nbkg = RooRealVar("Nbkg", "Nbkg", 0.05*ttree.GetEntries(), 0, ttree.GetEntries())
 
 else:
     # Define variables for signal model, using the best fit parameters generated from fit_global.py
-    mu = RooRealVar("mu", "mu", parameters[0])
-    Gsig = RooRealVar("sigma", "sigma", parameters[1])
-    Gauss = RooGaussian("Gauss", "Gaussian", D0_M, mu, Gsig)
+    # Model Bifurcated Gaussian
+    bifurmean = RooRealVar("bifurmean", "bifurmean", parameters[25])
+    sigmaL = RooRealVar("sigmaL", "sigmaL", parameters[13])
+    sigmaR = RooRealVar("sigmaR", "sigmaR", parameters[14])
+    Bifurgauss = RooBifurGauss("Bifurgauss", "Bifurgauss", D0_M, bifurmean, sigmaL, sigmaR)
 
-    Csig = RooRealVar("Csig", "Csig", parameters[2])
-    aL = RooRealVar("aL", "aL", parameters[3])
-    nL = RooRealVar("nL", "nL", parameters[4])
-    aR = RooRealVar("aR", "aR", parameters[5])
-    nR = RooRealVar("nR", "nR", parameters[6])
-    Crystal = RooCrystalBall("Crystal", "Crystal Ball", D0_M, mu, Csig, aL, nL, aR, nR)
+    # Model Johnson SU Distribution
+    Jmu = RooRealVar("Jmu", "Jmu", parameters[21])
+    Jlam = RooRealVar("Jlam", "Jlam", parameters[22])
+    Jgam = RooRealVar("Jgam", "Jgam", parameters[23])
+    Jdel = RooRealVar("Jdel", "Jdel", parameters[24])
+    Johnson = RooJohnson("Johnson","Johnson", D0_M, Jmu, Jlam, Jgam, Jdel)
+
+    # Model Bifurcated Gaussian
+    bifurmean2 = RooRealVar("bifurmeam2", "bifurmean2", parameters[26])
+    sigmaL2 = RooRealVar("sigmaL2", "sigmaL2", parameters[15])
+    sigmaR2 = RooRealVar("sigmaR2", "sigmaR2", parameters[16])
+    Bifurgauss2 = RooBifurGauss("Bifurgauss2", "Bifurgauss2", D0_M, bifurmean2, sigmaL2, sigmaR2)
 
     # Model Exponential Background
-    a = RooRealVar("a0", "a0", parameters[7])
+    a = RooRealVar("a0", "a0", parameters[0])
     background = RooExponential("Exponential", "Exponential", D0_M, a)
 
     if options.meson == "D0":
         # D0 MagDown
         if options.polarity == "down":
-            frac = RooRealVar("frac_D0_down", "frac_D0_down", parameters[8])
-            Nsig = RooRealVar("Nsig_D0_down", "Nsig_D0_down", parameters[12])
-            Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[13])
-            Nsig_error = parameters[20]
+            frac = RooRealVar("frac_D0_down", "frac_D0_down", parameters[1])
+            frac2 = RooRealVar("frac_D0_down_2", "frac_D0_down_2", parameters[17])
+            Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[5])
+            Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[6])
+            Nsig_error = parameters[27]
         # D0 MagUp
         elif options.polarity == "up":
-            frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[9])
-            Nsig = RooRealVar("Nsig_D0_up", "Nsig_D0_up", parameters[14])
-            Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[15])
-            Nsig_error = parameters[21]
+            frac = RooRealVar("frac_D0_up", "frac_D0_up", parameters[2])
+            frac2 = RooRealVar("frac_D0_up_2", "frac_D0_up_2", parameters[18])
+            Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[7])
+            Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[8])
+            Nsig_error = parameters[28]
     elif options.meson == "D0bar":
         # D0bar MagDown
         if options.polarity == "down":
-            frac = RooRealVar("frac_D0bar_down", "frac_D0bar_down", parameters[10])
-            Nsig = RooRealVar("Nsig_D0bar_down", "Nsig_D0bar_down", parameters[16])
-            Nbkg = RooRealVar("Nbkg_D0bar_down", "Nbkg_D0bar_down", parameters[17])
-            Nsig_error = parameters[22]
+            frac = RooRealVar("frac_D0bar_down", "frac_D0bar_down", parameters[3])
+            frac2 = RooRealVar("frac_D0bar_down_2", "frac_D0bar_down_2", parameters[19])
+            Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[9])
+            Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[10])
+            Nsig_error = parameters[29]
         # D0bar MagUp
         elif options.polarity == "up":
-            frac = RooRealVar("frac_D0bar_up", "frac_D0bar_up", parameters[11])
-            Nsig = RooRealVar("Nsig_D0bar_up", "Nsig_D0bar_up", parameters[18])
-            Nbkg = RooRealVar("Nbkg_D0bar_down", "Nbkg_D0bar_down", parameters[19])
-            Nsig_error = parameters[23]
+            frac = RooRealVar("frac_D0bar_up", "frac_D0bar_up", parameters[4])
+            frac2 = RooRealVar("frac_D0bar_up_2", "frac_D0bar_up_2", parameters[20])
+            Nsig = RooRealVar("Nbkg_D0_up", "Nbkg_D0_up", parameters[11])
+            Nbkg = RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", parameters[12])
+            Nsig_error = parameters[30]
 
 # Create model
-signal = RooAddPdf("signal", "signal", RooArgList(Gauss, Crystal), RooArgList(frac))
+signal = RooAddPdf("signal", "signal", RooArgList(Johnson, Bifurgauss, Bifurgauss2), RooArgList(frac, frac2))
 model = {
     "total": RooAddPdf("total", "Total", RooArgList(signal, background), RooArgList(Nsig, Nbkg)), # extended likelihood
     "signals": {
-        Gauss.GetName(): Gauss.GetTitle(),
-        Crystal.GetName(): Crystal.GetTitle(),
+        Bifurgauss.GetName(): Bifurgauss.GetTitle(),
+        Bifurgauss2.GetName(): Bifurgauss2.GetTitle(),
+        Johnson.GetName(): Johnson.GetTitle(),
     },
     "backgrounds": {
         background.GetName(): background.GetTitle()
@@ -360,14 +383,13 @@ if binned:
         D0_Hist.SetMarkerStyle(20)
         D0_Hist.SetMarkerSize(0.9)
         D0_Hist.SetMarkerColor(ROOT.kBlack)
-        D0_Hist.SetTitle('Data')
-
+        D0_Hist.SetTitle("Data")
 
         # Scale up the error bars by a factor of 5 (you can adjust the scaling factor as needed)
-        # if global_local == False:
-        #     for bin in range(1, D0_Hist.GetNbinsX() + 1):
-        #         error = D0_Hist.GetBinError(bin)
-        #         D0_Hist.SetBinError(bin, 10 * error)
+        #if global_local == False:
+            # for bin in range(1, D0_Hist.GetNbinsX() + 1):
+            #     error = D0_Hist.GetBinError(bin)
+            #     D0_Hist.SetBinError(bin, 10 * error)
 
         frame.addTH1(D0_Hist, "pe")
         legend_entries[D0_Hist.GetName()] = {"title": D0_Hist.GetTitle(), "style": "pe"}
@@ -379,7 +401,7 @@ if binned:
             mD0_bins.append(D0_Hist.GetBinLowEdge(i))
         mD0_bins.append(D0_Hist.GetBinLowEdge(numbins) + D0_Hist.GetBinWidth(numbins))
         mD0_bins = np.array(mD0_bins, dtype=float)
-        frame.SetYTitle(f"Entries")
+        frame.SetYTitle(r"Entries [MeVc^{-2}]")
         frame.GetYaxis().SetTitleOffset(1.03)
 
 
@@ -427,7 +449,7 @@ if binned:
 
         
 
-        # Plots the pull distribution, where bad pulls (>5 sigma away from the fit) are made to be red
+        # Plots the pull distribution, where bad pulls (>5 sigma away from the fit) are made to be red
         pull_frame = D0_M.frame(ROOT.RooFit.Title(" "))
         pull_TH1 = ROOT.TH1D("pull_TH1", "pull_TH1", numbins, mD0_bins)
         bad_pull_TH1 = ROOT.TH1D("bad_pull_TH1", "bad_pull_TH1", numbins, mD0_bins)
@@ -467,9 +489,9 @@ if binned:
         pull_frame.GetYaxis().SetTitleSize(title_size)
         pull_frame.GetYaxis().SetTitleOffset(0.39)
         if meson == "D0":
-            pull_frame.GetXaxis().SetTitle("D^{0} mass / [MeVc^{-2}]")
+            pull_frame.GetXaxis().SetTitle(r"#it{D^{0}} mass [MeVc^{-2}]")
         elif meson == "D0bar":
-            pull_frame.GetXaxis().SetTitle("{#bar{D}^{0} mass / [MeVc^{-2}]")
+            pull_frame.GetXaxis().SetTitle(r"#it{#bar{D}^{0}} mass [MeVc^{-2}]")
 
         line = ROOT.TLine(D0_M.getMin(), 0, D0_M.getMax(), 0)
         pull_frame.Draw()
@@ -526,7 +548,7 @@ if binned:
             gaussian_fit.SetLineColor(4)
             gaussian_fit.SetParameters(params[0],params[1],params[2])
             gaussian_fit.Draw('same')
-            
+
         legend2 = ROOT.TLegend(
             0.7, 0.78,0.8,0.90, "#bf{#it{"+plot_type+"}}"
         )
@@ -543,8 +565,8 @@ if binned:
             latex = ROOT.TLatex()
             latex.SetNDC()
             latex.SetTextSize(0.04)
-            latex.DrawLatex(0.7 ,0.75 , 'pull \mu:  ' + str(rounded_pull_mean) + ' \pm ' + str(rounded_pull_mean_error))
-            latex.DrawLatex(0.7 ,0.71 , 'pull \sigma:  ' + str(rounded_pull_std) + ' \pm ' + str(rounded_pull_std_error))
+            latex.DrawLatex(0.7 ,0.75 , 'gaussian \mu:  ' + str(rounded_pull_mean) + ' \pm ' + str(rounded_pull_mean_error))
+            latex.DrawLatex(0.7 ,0.71 , 'gaussian \sigma:  ' + str(rounded_pull_std) + ' \pm ' + str(rounded_pull_std_error))
 
     
 

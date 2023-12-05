@@ -206,7 +206,7 @@ h2d = ax.hist2d(
     np.true_divide(y[0], 1),
     weights= A[0],
     bins=[1, modified_e_bins[0]],
-    cmap='seismic',
+    cmap='bwr',
     cmin= min_value,
     cmax= max_value,
     vmin = min_value,
@@ -224,7 +224,7 @@ for i in range(len(x)):
         np.true_divide(y[i], 1),
         weights= A[i],
         bins=[1, modified_e_bins[i]],
-        cmap='seismic',
+        cmap='bwr',
         cmin= min_value,
         cmax= max_value,
         vmin = min_value,
@@ -239,7 +239,7 @@ h2d = ax.hist2d(
     np.true_divide(y[9], 1),
     weights= A[9],
     bins=[1, modified_e_bins[9]],
-    cmap= 'seismic',
+    cmap= 'bwr',
     cmin= min_value,
     cmax= max_value,
     vmin = min_value,
@@ -267,10 +267,10 @@ legend.get_frame().set_alpha(0.3)
 
 for index in np.arange(0,10):
     if index!=0:
-        ax.axvline(bins[0,index], ymin=0, ymax=1, color='blue', linestyle = 'dashdot')
+        ax.axvline(bins[0,index], ymin=0, ymax=1, color='black', linestyle = 'dashdot', linewidth = 1 )
     for j in np.arange(0,10):
         if j!=0:
-            ax.axhline(bins[index+1, j], xmin=(bins[0,index]-2)/8, xmax=(bins[0,index+1]-2)/8, color='blue', linestyle = 'dashdot')
+            ax.axhline(bins[index+1, j], xmin=(bins[0,index]-2)/8, xmax=(bins[0,index+1]-2)/8, color='black', linestyle = 'dashdot',linewidth = 1 )
     
-plt.savefig(f'{args.path}/2DHist_{args.year}_{args.size}.pdf')
+plt.savefig(f'{args.path}/2DHist_{args.year}_{args.size}.pdf', bbox_inches = "tight")
 print("Saved 2D Hist")

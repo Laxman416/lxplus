@@ -149,9 +149,9 @@ plt.axhspan(unbinned_asymm-unbinned_asymm_error, unbinned_asymm+unbinned_asymm_e
 
 ax.legend()
 if args.scheme == 'pT':
-    plt.savefig(f'{args.path}/pT_Asymm_{args.year}_{args.size}.pdf')
+    plt.savefig(f'{args.path}/pT_Asymm_{args.year}_{args.size}.pdf', bbox_inches = "tight")
 elif args.scheme == 'eta':
-    plt.savefig(f'{args.path}/eta_Asymm_{args.year}_{args.size}.pdf')
+    plt.savefig(f'{args.path}/eta_Asymm_{args.year}_{args.size}.pdf', bbox_inches = "tight")
 
 
 plt.show()
