@@ -90,15 +90,15 @@ binned=$4
 
 
 # python create_binning_scheme.py --year $year --size $size --path $directory"/binned_data/binning_scheme" --input $directory"/selected_data"
-# for meson in D0 D0bar
-# do 
-#     for polar in up down 
-#     do    
-#         python apply_binning_scheme.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
-#         # python plot_phase_space.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data/binning_scheme" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
-#         # echo "Ploted 2D graph"
-#     done
-# done
+for meson in D0 D0bar
+do 
+    for polar in up down 
+    do    
+        # python apply_binning_scheme.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
+        python plot_phase_space.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data/binning_scheme" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
+        echo "Ploted 2D graph"
+    done
+done
 
 # echo "The data has been binned"
 # echo
@@ -144,7 +144,7 @@ binned=$4
 # python production_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry/pT" --input $directory"/model_fitting/" --blind 'Y' --results_path $directory"/results" --scheme 'pT'
 # python production_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry/eta" --input $directory"/model_fitting/" --blind 'Y' --results_path $directory"/results" --scheme 'eta'
 
-python plot_pT_eta.py --year $year --size $size --bin_path $directory"/binned_data/binning_scheme" --asymm_path $directory"/raw_asymmetry_outcome/raw_asymmetry/pT" --path $directory"/results" --scheme 'pT'
-python plot_pT_eta.py --year $year --size $size --bin_path $directory"/binned_data/binning_scheme" --asymm_path $directory"/raw_asymmetry_outcome/raw_asymmetry/eta" --path $directory"/results" --scheme 'eta'
+# python plot_pT_eta.py --year $year --size $size --bin_path $directory"/binned_data/binning_scheme" --asymm_path $directory"/raw_asymmetry_outcome/raw_asymmetry/pT" --path $directory"/results" --scheme 'pT'
+# python plot_pT_eta.py --year $year --size $size --bin_path $directory"/binned_data/binning_scheme" --asymm_path $directory"/raw_asymmetry_outcome/raw_asymmetry/eta" --path $directory"/results" --scheme 'eta'
 
 exit
