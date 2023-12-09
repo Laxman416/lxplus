@@ -22,7 +22,7 @@ binned=$4
 #     fi
 # fi
 
-# # Create necessary directories to store output
+# Create necessary directories to store output
 
 
 
@@ -55,12 +55,13 @@ binned=$4
 # mkdir $directory"/results"
 # mkdir $directory"/binned_data/eta"
 # mkdir $directory"/binned_data/pT"
+# mkdir $directory"/binned_data/local"
 
 # echo "The necessary directories have been created"
 # echo
 
 
-# # Run the code
+# Run the code
 
 # python selection_of_events.py --year $year --size $size --path $directory"/selected_data"
 
@@ -74,10 +75,10 @@ binned=$4
 
 
 
-# python fit_global.py --year $year --size $size --path $directory"/model_fitting/global" --binned_fit $binned --input $directory"/selected_data"
-# for meson in D0 D0bar
+# python fit_global.py --year $year --size $size --path $directory"/model_fitting/global" --binned_fit $binned --input $directory"/selected_data" --scheme "total"
+# for meson in D0 D0bar 
 # do 
-#     for polar in up down 
+#     for polar in up down
 #     do    
 #         python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/global" --input $directory"/selected_data" --parameters_path $directory"/model_fitting/global" --scheme 'total' --binned_fit $binned
 #     done
@@ -88,50 +89,66 @@ binned=$4
 
 
 # python create_binning_scheme.py --year $year --size $size --path $directory"/binned_data/binning_scheme" --input $directory"/selected_data"
-for meson in D0 D0bar
-do 
-    for polar in up down 
-    do    
-        # python apply_binning_scheme.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
-        python plot_phase_space.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data/binning_scheme" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
-        echo "Ploted 2D graph"
-    done
-done
+# for meson in D0 D0bar
+# do 
+#     for polar in up down 
+#     do    
+#         python apply_binning_scheme.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
+#         python plot_phase_space.py --year $year --size $size --meson $meson --polarity $polar --path $directory"/binned_data/binning_scheme" --input $directory"/selected_data" --bin_path $directory"/binned_data/binning_scheme"
+#         echo "Ploted 2D graph"
+#     done
+# done
 
 # echo "The data has been binned"
 # echo
 
-# for meson in D0 D0bar
-# do
-#    for polar in up down
-#    do 
-#         for ind in {0..99}
+# for ind in {0..99}
 #         do
 #             index=$( printf '%02d' $ind)
-#             python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/local/"$index --input $directory"/binned_data" --parameters_path $directory"/model_fitting/global" --bin $index --binned_fit $binned --scheme 'pT_eta'
+#             python fit_global.py --year $year --size $size --path $directory"/model_fitting/local/"$index --binned_fit $binned --input $directory"/binned_data/local" --bin $index --scheme 'pT_eta'
+#             echo "Fitted Bin "$index
 #         done
-#     done
-# done
+
+for meson in D0 D0bar 
+do
+   for polar in down up
+   do 
+        for ind in {75..76}
+        do
+            index=$( printf '%02d' $ind)
+            python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/local/"$index --input $directory"/binned_data/local" --parameters_path $directory"/model_fitting/local/"$index --bin $index --binned_fit $binned --scheme 'pT_eta'
+        done
+    done
+done
+
 
 # echo "Local fitting completed"
 # echo
 
-# #python analyse_chisquared.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/chi_squared" --input $directory"/model_fitting/local"
+# # python analyse_chisquared.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/chi_squared" --input $directory"/model_fitting/local"
 
 # python production_asymmetry.py --year $year --size $size --path $directory"/raw_asymmetry_outcome/raw_asymmetry/local" --input $directory"/model_fitting/" --blind 'Y' --results_path $directory"/results" --scheme 'pT_eta'
 
 # python plot_asymm.py --year $year --size $size --bin_path $directory"/binned_data/binning_scheme" --asymm_path $directory"/raw_asymmetry_outcome/raw_asymmetry/local" --path $directory"/results"
 
+# for ind in {0..9}
+#         do
+#             index=$( printf '%01d' $ind)
+#             python fit_global.py --year $year --size $size --path $directory"/model_fitting/pT/"$index --binned_fit $binned --input $directory"/binned_data/pT" --bin $index --scheme 'pT'
+#             python fit_global.py --year $year --size $size --path $directory"/model_fitting/eta/"$index --binned_fit $binned --input $directory"/binned_data/eta" --bin $index --scheme 'eta'
+#             echo "Fitted Bin "$index
+#         done
 
-# for meson in D0 D0bar
+# for meson in D0bar D0
 # do
-#    for polar in up down
+#    for polar in down up
 #    do 
 #         for ind in {0..9}
 #         do
 #             index=$( printf '%01d' $ind)
-#             python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/pT/"$index --input $directory"/binned_data/pT" --parameters_path $directory"/model_fitting/global" --bin $index --binned_fit $binned --scheme 'pT'
-#             python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/eta/"$index --input $directory"/binned_data/eta" --parameters_path $directory"/model_fitting/global" --bin $index --binned_fit $binned --scheme 'eta'
+            
+#             python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/pT/"$index --input $directory"/binned_data/pT" --parameters_path $directory"/model_fitting/pT/"$index --bin $index --binned_fit $binned --scheme 'pT'
+#             python model_fitting.py --year $year --size $size --meson $meson --polarity $polar  --path $directory"/model_fitting/eta/"$index --input $directory"/binned_data/eta" --parameters_path $directory"/model_fitting/eta/"$index --bin $index --binned_fit $binned --scheme 'eta'
 #         done
 #     done
 # done

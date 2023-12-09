@@ -140,9 +140,9 @@ for i in np.arange(0, 10):
         nevents = np.append(nevents, len(selected_data["D0_PT"]))
         # Write out bin
         if args.meson=="both":
-            out_file_name = f"{args.path}/{args.polarity}_{args.year}_{args.size}_bin{j}{i}.root"
+            out_file_name = f"{args.path}/local/{args.polarity}_{args.year}_{args.size}_bin{j}{i}.root"
         else:
-            out_file_name = f"{args.path}/{args.meson}_{args.polarity}_{args.year}_{args.size}_bin{j}{i}.root"
+            out_file_name = f"{args.path}/local/{args.meson}_{args.polarity}_{args.year}_{args.size}_bin{j}{i}.root"
         out_tree = "D02Kpi_Tuple/DecayTree"
         print(f"Writing to {out_file_name}...")
         out_file = uproot.recreate(out_file_name)

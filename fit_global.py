@@ -81,6 +81,19 @@ def parse_arguments():
         default=os.getcwd(),
         help="flag to set the path where the input files should be read"
     )
+    parser.add_argument(
+        "--scheme",
+        type=str,
+        choices=["total","pT_eta","pT","eta"],
+        required=True,
+        help="flag to set which binning scheme to use"
+    )
+    parser.add_argument(
+        "--bin",
+        type=str,
+        required=False,
+        help="flag to set whether a binned or an unbinned should be performed (y/n)"
+    )
     
     return parser.parse_args()
 def enableBinIntegrator(func, num_bins):
@@ -104,7 +117,7 @@ def disableBinIntegrator(func):
 # - - - - - - - MAIN BODY - - - - - - - #
 args = parse_arguments()
 # Bin Parameters
-numbins = 150
+numbins = 240
 lower_boundary = 1815
 upper_boundary = 1910
 
@@ -114,48 +127,75 @@ else:
     binned = False
 ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR) # mute RooFit warnings
 
-# Selects invariant mass (D0_MM) of DO for MagUp
-ttree_D0_up = TChain("D02Kpi_Tuple/DecayTree")
-ttree_D0_up.Add(f"{args.input}/D0_up_data_{args.year}_{args.size}_clean.root")
-ttree_D0_up.SetBranchStatus("*", 0)
-ttree_D0_up.SetBranchStatus("D0_MM", 1)
+if args.scheme == "total":
 
-# Selects invariant mass (D0_MM) of DO for MagDown
-ttree_D0_down = TChain("D02Kpi_Tuple/DecayTree")
-ttree_D0_down.Add(f"{args.input}/D0_down_data_{args.year}_{args.size}_clean.root")
-ttree_D0_down.SetBranchStatus("*", 0)
-ttree_D0_down.SetBranchStatus("D0_MM", 1)
+    # Selects invariant mass (D0_MM) of DO for MagUp
+    ttree_D0_up = TChain("D02Kpi_Tuple/DecayTree")
+    ttree_D0_up.Add(f"{args.input}/D0_up_data_{args.year}_{args.size}_clean.root")
+    ttree_D0_up.SetBranchStatus("*", 0)
+    ttree_D0_up.SetBranchStatus("D0_MM", 1)
 
-# Selects invariant mass (D0_MM) of DObar for MagDown
-ttree_D0bar_up = TChain("D02Kpi_Tuple/DecayTree")
-ttree_D0bar_up.Add(f"{args.input}/D0bar_up_data_{args.year}_{args.size}_clean.root")
-ttree_D0bar_up.SetBranchStatus("*", 0)
-ttree_D0bar_up.SetBranchStatus("D0_MM", 1)
+    # Selects invariant mass (D0_MM) of DO for MagDown
+    ttree_D0_down = TChain("D02Kpi_Tuple/DecayTree")
+    ttree_D0_down.Add(f"{args.input}/D0_down_data_{args.year}_{args.size}_clean.root")
+    ttree_D0_down.SetBranchStatus("*", 0)
+    ttree_D0_down.SetBranchStatus("D0_MM", 1)
 
-# Selects invariant mass (D0_MM) of DObar for MagDown
-ttree_D0bar_down = TChain("D02Kpi_Tuple/DecayTree")
-ttree_D0bar_down.Add(f"{args.input}/D0bar_down_data_{args.year}_{args.size}_clean.root")
-ttree_D0bar_down.SetBranchStatus("*", 0)
-ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
+    # Selects invariant mass (D0_MM) of DObar for MagDown
+    ttree_D0bar_up = TChain("D02Kpi_Tuple/DecayTree")
+    ttree_D0bar_up.Add(f"{args.input}/D0bar_up_data_{args.year}_{args.size}_clean.root")
+    ttree_D0bar_up.SetBranchStatus("*", 0)
+    ttree_D0bar_up.SetBranchStatus("D0_MM", 1)
+
+    # Selects invariant mass (D0_MM) of DObar for MagDown
+    ttree_D0bar_down = TChain("D02Kpi_Tuple/DecayTree")
+    ttree_D0bar_down.Add(f"{args.input}/D0bar_down_data_{args.year}_{args.size}_clean.root")
+    ttree_D0bar_down.SetBranchStatus("*", 0)
+    ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
+else:
+    # Selects invariant mass (D0_MM) of DO for MagUp
+    ttree_D0_up = TChain("D02Kpi_Tuple/DecayTree")
+    ttree_D0_up.Add(f"{args.input}/D0_up_{args.year}_{args.size}_bin{args.bin}.root")
+    ttree_D0_up.SetBranchStatus("*", 0)
+    ttree_D0_up.SetBranchStatus("D0_MM", 1)
+
+    # Selects invariant mass (D0_MM) of DO for MagDown
+    ttree_D0_down = TChain("D02Kpi_Tuple/DecayTree")
+    ttree_D0_down.Add(f"{args.input}/D0_down_{args.year}_{args.size}_bin{args.bin}.root")
+    ttree_D0_down.SetBranchStatus("*", 0)
+    ttree_D0_down.SetBranchStatus("D0_MM", 1)
+
+    # Selects invariant mass (D0_MM) of DObar for MagDown
+    ttree_D0bar_up = TChain("D02Kpi_Tuple/DecayTree")
+    ttree_D0bar_up.Add(f"{args.input}/D0bar_up_{args.year}_{args.size}_bin{args.bin}.root")
+    ttree_D0bar_up.SetBranchStatus("*", 0)
+    ttree_D0bar_up.SetBranchStatus("D0_MM", 1)
+
+    # Selects invariant mass (D0_MM) of DObar for MagDown
+    ttree_D0bar_down = TChain("D02Kpi_Tuple/DecayTree")
+    ttree_D0bar_down.Add(f"{args.input}/D0bar_down_{args.year}_{args.size}_bin{args.bin}.root")
+    ttree_D0bar_down.SetBranchStatus("*", 0)
+    ttree_D0bar_down.SetBranchStatus("D0_MM", 1)
+
 
 D0_M = ROOT.RooRealVar("D0_MM", "D0 mass / [MeV/c*c]", 1815, 1910)
 
 # Johnson SU Distribution
-Jmu = RooRealVar("Jmu", "Jmu", 1868, 1860, 1870)
-Jlam = RooRealVar("Jlam", "Jlam", 19.8, 10, 20)
-Jgam = RooRealVar("Jgam", "Jgam", 0.39, 0, 10)
-Jdel = RooRealVar("Jdel", "Jdel", 1.72, 0, 10)
+Jmu = RooRealVar("Jmu", "Jmu", 1865, 1860, 1870)
+Jlam = RooRealVar("Jlam", "Jlam", 18.7, 10, 20)
+Jgam = RooRealVar("Jgam", "Jgam", 0.36, 0, 10)
+Jdel = RooRealVar("Jdel", "Jdel", 1.55, 0, 10)
 Johnson = RooJohnson("Johnson","Johnson", D0_M, Jmu, Jlam, Jgam, Jdel)
 
 # Bifurcated Gaussian
-bifurmean = RooRealVar("bifurmean", "bifurmean", 1865.4, 1860, 1870)
-sigmaL =  RooRealVar("sigmaL", "sigmaL", 8.11, 0, 10)
-sigmaR = RooRealVar("sigmaR", "sigmaR", 6.13, 0, 10)
+bifurmean = RooRealVar("bifurmean", "bifurmean", 1865.2, 1860, 1870)
+sigmaL =  RooRealVar("sigmaL", "sigmaL", 8.24, 0, 10)
+sigmaR = RooRealVar("sigmaR", "sigmaR", 6.1, 0, 10)
 bifurgauss = RooBifurGauss("Bifurgauss", "Bifurgauss", D0_M, bifurmean, sigmaL, sigmaR)
 
 # Bifurcated Gaussian 
-bifurmean2 = RooRealVar("bifurmean2", "bifurmean2", 1865.4, 1860, 1870)
-sigmaL2 =  RooRealVar("sigmaL2", "sigmaL2", 5.91, 0, 10)
+bifurmean2 = RooRealVar("bifurmean2", "bifurmean2", 1865.5, 1860, 1870)
+sigmaL2 =  RooRealVar("sigmaL2", "sigmaL2", 6, 0, 10)
 sigmaR2 = RooRealVar("sigmaR2", "sigmaR2", 8.49, 0, 10)
 bifurgauss2 = RooBifurGauss("Bifurgaussian2", "Bifurgaussian2", D0_M, bifurmean2, sigmaL2, sigmaR2)
 
@@ -165,17 +205,17 @@ background = RooExponential("exponential", "exponential", D0_M, a0)
 
 # Ratio of signal intensities between each model. For N PDFs need N-1 fractions 
 # DO MagUp
-frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.18, 0, 1)
-frac_D0_up_2 = RooRealVar("frac_D0_up_2", "frac_D0_up_2", 0.42, 0, 1)
+frac_D0_up = RooRealVar("frac_D0_up", "frac_D0_up", 0.16, 0, 1)
+frac_D0_up_2 = RooRealVar("frac_D0_up_2", "frac_D0_up_2", 0.4, 0, 1)
 # D0 MagDown
-frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.19, 0, 1)
-frac_D0_down_2 = RooRealVar("frac_D0_down_2", "frac_D0_down_2", 0.46, 0, 1)
+frac_D0_down = RooRealVar("frac_D0_down", "frac_D0_down", 0.17, 0, 1)
+frac_D0_down_2 = RooRealVar("frac_D0_down_2", "frac_D0_down_2", 0.45, 0, 1)
 # D0bar MagUp2
-frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.17, 0, 1)
-frac_D0bar_up_2 = RooRealVar("frac_D0bar_up_2", "frac_D0bar_up_2", 0.42, 0, 1)
+frac_D0bar_up = RooRealVar("frac_D0bar_up", "frac_D0bar_up", 0.16, 0, 1)
+frac_D0bar_up_2 = RooRealVar("frac_D0bar_up_2", "frac_D0bar_up_2", 0.4, 0, 1)
 # D0bar MagDown
-frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.18, 0, 1)
-frac_D0bar_down_2 = RooRealVar("frac_D0bar_down_2", "frac_D0bar_down_2", 0.47, 0, 1)
+frac_D0bar_down = RooRealVar("frac_D0bar_down", "frac_D0bar_down", 0.16, 0, 1)
+frac_D0bar_down_2 = RooRealVar("frac_D0bar_down_2", "frac_D0bar_down_2", 0.46, 0, 1)
 
 # Generate normalisation variables
 Nsig_D0_up = ROOT.RooRealVar("Nsig_D0_up", "Nsig_D0_up", 0.95*ttree_D0_up.GetEntries(), 0, ttree_D0_up.GetEntries())
@@ -186,6 +226,7 @@ Nsig_D0_down = ROOT.RooRealVar("Nsig_D0_down", "Nsig_D0_down", 0.95*ttree_D0_dow
 Nsig_D0bar_down = ROOT.RooRealVar("Nsig_D0bar_down", "Nsig_D0bar_down", 0.95*ttree_D0bar_down.GetEntries(), 0, ttree_D0bar_down.GetEntries())
 Nbkg_D0_down = ROOT.RooRealVar("Nbkg_D0_down", "Nbkg_D0_down", 0.05*ttree_D0_down.GetEntries(), 0, ttree_D0_down.GetEntries())
 Nbkg_D0bar_down = ROOT.RooRealVar("Nbkg_D0bar_down", "Nbkg_D0bar_down", 0.05*ttree_D0bar_down.GetEntries(), 0, ttree_D0bar_down.GetEntries())
+
 
 if binned:
     # Creating the histograms for both polarities for D0 and D0bar by converting the TTree D0_MM data inside the TChain to a TH1(base class of ROOT histograms)
@@ -247,9 +288,9 @@ if binned:
     simultaneous_data = RooDataHist("simultaneous_data", "simultaneous data", RooArgList(D0_M), ROOT.RooFit.Index(binned_sample), *imports)
 
     # Performs the simultaneous fit
-    enableBinIntegrator(model_D0_down, numbins)
+    #enableBinIntegrator(model_D0_down, numbins)
     fitResult = simultaneous_pdf.fitTo(simultaneous_data, IntegrateBins = 1e-3, PrintLevel=-1, Save=True, Extended=True)
-    disableBinIntegrator(model_D0_down)
+    #disableBinIntegrator(model_D0_down)
 else:
     # Creates unbinned data containers for all the meson/polarity combinations
     data_D0_up = RooDataSet("data_D0_up", "Data_D0_up", ttree_D0_up, RooArgSet(D0_M))

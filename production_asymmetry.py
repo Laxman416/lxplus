@@ -111,7 +111,7 @@ def dir_path(string):
     else:
         raise NotADirectoryError(string)
         
-def read_from_file(meson, polarity, bin_num, parameter):
+def read_from_file(meson, polarity, bin_num, scheme):
     '''
     Opens a .txt files and reads the values of the signal normalization constant and its uncertainty.
     
@@ -122,8 +122,6 @@ def read_from_file(meson, polarity, bin_num, parameter):
             currentline = line.split(",")
             Nsig = float(currentline[0])
             Nsig_err = float(currentline[1])
-        f.close()
-
     return Nsig, Nsig_err
 
 def get_yield(bin_num, scheme):
@@ -270,18 +268,9 @@ def production_asymm(A_raw_up, A_raw_down, A_raw_up_err, A_raw_down_err, A_det_u
 
 
 def integrated_asym(val, err):
-    
-    weight = [x**-2 for x in err]
-    weight = np.array(weight)
-    val = np.array(val)
-    #print(err)
-    #print(val)
-    q = val * weight
-    numerator = np.sum(q)
-    denominator = np.sum(weight)
-    weighted_mean = numerator/denominator
-    uncertainty = np.sum(weight)**-0.5
 
+    weighted_mean, sum_weights = np.average(np.array(val), weights=np.power(np.array(err), -2), returned=True)
+    uncertainty = np.power(sum_weights, -0.5)
     return weighted_mean, uncertainty
 
 
@@ -317,12 +306,13 @@ def read_from_file_global(meson, polarity):
 options = parse_arguments()
 scheme = options.scheme
 
-A_raw_up_list_blinded = []
-A_raw_down_list_blinded = []
-A_raw_up_list_unblinded = []
-A_raw_down_list_unblinded = []
-A_raw_up_err_list = []
-A_raw_down_err_list = [] 
+
+A_prod_list = []
+A_prod_err_list = []
+A_prod_up_list = []
+A_prod_up_err_list = []
+A_prod_down_list = []
+A_prod_down_err_list = []
 
 A_prod_unbinned = A_prod_unbinned()
 
@@ -343,11 +333,6 @@ if scheme == 'pT_eta':
             A_det_up, A_det_down, A_det_down_error, A_det_up_error = A_Det()
             A_prod_bin = production_asymm(A_raw_up, A_raw_down, A_raw_up_err, A_raw_down_err, A_det_up, A_det_down, A_det_down_error, A_det_up_error)
 
-
-
-
-
-
             if options.blind == 'y' or options.blind == 'Y':
                 A_unblind_up = A_raw_up
                 # Asymmetry is blinded
@@ -360,21 +345,26 @@ if scheme == 'pT_eta':
                 # Calculating Unblind prod Asymetry of each bin
                 # output results
                 output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num, A_prod_bin[0], A_prod_bin[5])
-                A_raw_up_list_blinded.append(A_raw_up)
-                A_raw_down_list_blinded.append(A_raw_down)
-                A_raw_up_list_unblinded.append(A_unblind_up)
-                A_raw_down_list_unblinded.append(A_unblind_down)
-                A_raw_up_err_list.append(A_raw_up_err)
-                A_raw_down_err_list.append(A_raw_down_err)
+                
+                A_prod_list.append(A_prod_bin[0])
+                A_prod_err_list.append(A_prod_bin[5])
+                A_prod_up_list.append(A_prod_bin[1])
+                A_prod_up_err_list.append(A_prod_bin[3])
+                A_prod_down_list.append(A_prod_bin[2])
+                A_prod_down_err_list.append(A_prod_bin[4])
+                
 
 
             else:
                 # output results
                 output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num)
-                A_raw_up_list_unblinded.append(A_unblind_up)
-                A_raw_down_list_unblinded.append(A_unblind_down)
-                A_raw_up_err_list.append(A_raw_up_err)
-                A_raw_down_err_list.append(A_raw_down_err)
+                A_prod_list.append(A_prod_bin[0])
+                A_prod_err_list.append(A_prod_bin[5])
+                A_prod_up_list.append(A_prod_bin[1])
+                A_prod_up_err_list.append(A_prod_bin[3])
+                A_prod_down_list.append(A_prod_bin[2])
+                A_prod_down_err_list.append(A_prod_bin[4])
+                
 
             # Calculates A_det
 elif scheme == 'pT' or scheme == 'eta':
@@ -409,156 +399,82 @@ elif scheme == 'pT' or scheme == 'eta':
             # Calculating Unblind prod Asymetry of each bin
             # output results
             output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num, A_prod_bin[0], A_prod_bin[5])
-            A_raw_up_list_blinded.append(A_raw_up)
-            A_raw_down_list_blinded.append(A_raw_down)
-            A_raw_up_list_unblinded.append(A_unblind_up)
-            A_raw_down_list_unblinded.append(A_unblind_down)
-            A_raw_up_err_list.append(A_raw_up_err)
-            A_raw_down_err_list.append(A_raw_down_err)
+
+            A_prod_list.append(A_prod_bin[0])
+            A_prod_err_list.append(A_prod_bin[5])
+            A_prod_up_list.append(A_prod_bin[1])
+            A_prod_up_err_list.append(A_prod_bin[3])
+            A_prod_down_list.append(A_prod_bin[2])
+            A_prod_down_err_list.append(A_prod_bin[4])
 
 
         else:
             # output results
             output_results(A_raw, A_raw_err, A_raw_up, A_raw_up_err, A_raw_down, A_raw_down_err, bin_num)
-            A_raw_up_list_unblinded.append(A_unblind_up)
-            A_raw_down_list_unblinded.append(A_unblind_down)
-            A_raw_up_err_list.append(A_raw_up_err)
-            A_raw_down_err_list.append(A_raw_down_err)
+            # A_raw_up_list_unblinded.append(A_unblind_up)
+            # A_raw_down_list_unblinded.append(A_unblind_down)
+            # A_raw_up_err_list.append(A_raw_up_err)
+            # A_raw_down_err_list.append(A_raw_down_err)
+            A_prod_list.append(A_prod_bin[0])
+            A_prod_err_list.append(A_prod_bin[5])
+            A_prod_up_list.append(A_prod_bin[1])
+            A_prod_up_err_list.append(A_prod_bin[3])
+            A_prod_down_list.append(A_prod_bin[2])
+            A_prod_down_err_list.append(A_prod_bin[4])
+
+# Calculates the integrated production asymmetry for both and unblinded asymmetries
+print("------------------------------")
+print("------------------------------")
+print("------------------------------")
+
+#Prod
+AProd = integrated_asym(A_prod_list, A_prod_err_list)
+AProd_Up = integrated_asym(A_prod_up_list, A_prod_up_err_list)
+AProd_Down = integrated_asym(A_prod_down_list, A_prod_down_err_list)
+
+print("------------------------------")
+print("------------------------------")
+print("------------------------------")
+
+print('The MagUp detector asymmetry is: ', round(A_det_up, 2), '% +/-', round(A_det_up_error, 2), '%')
+print('The MagDown detector asymmetry is: ', round(A_det_down, 2), '% +/-', round(A_det_down_error, 2), '%')
+
+print("------------------------------")
+print("------------------------------")
+print("------------------------------")
+
+
+print("------------------------------")
+print("------------------------------")
+print("------------------------------")
+print(f"The 20{options.year} unblinded integrated MagUp prod asymmetry is: ", round(AProd_Up[0],3), "% +/-", round(AProd_Up[1], 3), '%')
+print(f"The 20{options.year} unblinded integrated MagDown prod asymmetry is: ", round(AProd_Down[0],3), "% +/-", round(AProd_Down[1], 3), '%')
+print(f"The 20{options.year} unblinded integrated total prod asymmetry is: ", round(AProd[0],3), "% +/-", round(AProd[1], 3), '%')
 
 
 
+#Saving Aprod calculated from weighted average and Aprod calculated from unbinned average of D0_up, D0_down, D0bar up, D0bar down
 
+# Aprod, Aprod error -- both from weighted mean, Aprod from unbinned average, Aprod err from unbinned average
+array = np.array([AProd[0],AProd[1]
+                    , A_prod_unbinned[0], A_prod_unbinned[5], AProd_Up[0],AProd_Up[1],AProd_Down[0],AProd_Down[1],A_prod_unbinned[1],A_prod_unbinned[3],A_prod_unbinned[2],A_prod_unbinned[4]]) 
+np.savetxt(f"{options.results_path}/final_asymmetries_{options.scheme}_{options.year}_{options.size}.txt", array)
 
+file_path = f"{options.results_path}/final_Text_asymmetries_{options.scheme}_{options.year}_{options.size}.txt"
 
-
-
-
-if options.blind == 'y' or options.blind == 'Y':
-    # Calculates the integrated production asymmetry for both and unblinded asymmetries
-    print("------------------------------")
-    print("------------------------------")
-    print("------------------------------")
-
-    #A raw blinded and unblinded Up
-    blind_integrated_raw_up = integrated_asym(A_raw_up_list_blinded , A_raw_up_err_list)
-    unblind_integrated_raw_up = integrated_asym(A_raw_up_list_unblinded, A_raw_up_err_list)
-    
-    
-
-    #A raw blinded and unblinded Down
-    blind_integrated_raw_down = integrated_asym(A_raw_down_list_blinded , A_raw_down_err_list)
-    unblind_integrated_raw_down = integrated_asym(A_raw_down_list_unblinded, A_raw_down_err_list)
-    
-    #A raw error
-    A_raw_err_up = unblind_integrated_raw_up[1]
-    A_raw_err_down = unblind_integrated_raw_down[1]
-
-    #A raw blinded and unblinded Total
-    A_raw_blinded = (blind_integrated_raw_up[0] + blind_integrated_raw_down[0]) / 2
-    A_raw_unblinded = (unblind_integrated_raw_up[0] + unblind_integrated_raw_down[0])/2
-    A_raw_err = ((A_raw_err_up**2 + A_raw_err_up**2)**0.5) /2
-
-    
-
-
-    # A_prod, A_prod_up, A_prod_down, A_prod_up_err, A_prod_down_err, A_prod_err: Blinded and Unblinded are given from production_asymm
-    # production_asymm requires A_raw_up, A_raw_down, A_raw_up_err, A_raw_down_err, A_det_up, A_det_down, A_det_down_err, A_det_up_err
-    blinded_prod = production_asymm(blind_integrated_raw_up[0], blind_integrated_raw_down[0], A_raw_err_up, A_raw_err_down, A_det_up, A_det_down, A_det_down_error, A_det_up_error)
-    Unblinded_prod = production_asymm(unblind_integrated_raw_up[0], unblind_integrated_raw_down[0], A_raw_err_up, A_raw_err_down, A_det_up, A_det_down, A_det_down_error, A_det_up_error)
-
-    print("------------------------------")
-    print("------------------------------")
-    print("------------------------------")
-
-    print('The MagUp detector asymmetry is: ', round(A_det_up, 2), '% +/-', round(A_det_up_error, 2), '%')
-    print('The MagDown detector asymmetry is: ', round(A_det_down, 2), '% +/-', round(A_det_down_error, 2), '%')
-
-    print("------------------------------")
-    print("------------------------------")
-    print("------------------------------")
-
-
-    #print all unblinded
-    print(f"The 20{options.year} unblinded integrated raw MagUp asymmetry is: ", round(unblind_integrated_raw_up[0],3), "% +/-", round(unblind_integrated_raw_up[1], 3), '%')
-    print(f"The 20{options.year} unblinded integrated raw MagDown asymmetry is: ", round(unblind_integrated_raw_down[0],3), "% +/-", round(unblind_integrated_raw_down[1], 3), '%')
-    print(f"The 20{options.year} unblinded integrated total raw asymmetry is: ", round(A_raw_unblinded,3), "% +/-", round(A_raw_err, 3), '%')
-    print(f"The 20{options.year} unblinded integrated prod MagUp asymmetry is: ", round(Unblinded_prod[1],3), "% +/-", round(Unblinded_prod[3], 3), '%')
-    print(f"The 20{options.year} unblinded integrated prod MagDown asymmetry is: ", round(Unblinded_prod[2],3), "% +/-", round(Unblinded_prod[4], 3), '%')
-    print(f"The 20{options.year} unblinded integrated total prod asymmetry is: ", round(Unblinded_prod[0],3), "% +/-", round(Unblinded_prod[5], 3), '%')
-
-    print("------------------------------")
-    print("------------------------------")
-    print("------------------------------")
-
-
-    #print all blinded
-    print(f"The 20{options.year} blinded integrated raw MagUp asymmetry is: ", round(blind_integrated_raw_up[0],3), "% +/-", round(blind_integrated_raw_up[1], 3), '%')
-    print(f"The 20{options.year} blinded integrated raw MagDown asymmetry is: ", round(blind_integrated_raw_down[0],3), "% +/-", round(blind_integrated_raw_down[1], 3), '%')
-    print(f"The 20{options.year} blinded integrated total raw asymmetry is: ", round(A_raw_blinded,3), "% +/-", round(A_raw_err, 3), '%')
-    print(f"The 20{options.year} blinded integrated prod MagUp asymmetry is: ", round(blinded_prod[1],3), "% +/-", round(blinded_prod[3], 3), '%')
-    print(f"The 20{options.year} blinded integrated prod MagDown asymmetry is: ", round(blinded_prod[2],3), "% +/-", round(blinded_prod[4], 3), '%')
-    print(f"The 20{options.year} blinded integrated total prod asymmetry is: ", round(blinded_prod[0],3), "% +/-", round(blinded_prod[5], 3), '%')
-
-
-    print("------------------------------")
-    print("------------------------------")
-    print("------------------------------")
-
-    #Saving Aprod calculated from weighted average and Aprod calculated from unbinned average of D0_up, D0_down, D0bar up, D0bar down
-
-    # Aprod, Aprod error -- both from weighted mean, Aprod from unbinned average, Aprod err from unbinned average
-    array = np.array([Unblinded_prod[0],Unblinded_prod[5]
-                     , A_prod_unbinned[0], A_prod_unbinned[1]])
-    np.savetxt(f"{options.results_path}/final_asymmetries_{options.scheme}_{options.year}_{options.size}.txt", array)
-
-
-    
-
-else:
-    print('The MagUp detector asymmetry is: (', round(A_det_up, 2), '+/-', round(A_det_up_error, 2), ') %')
-    print('The MagDown detector asymmetry is: (', round(A_det_down, 2), '+/-', round(A_det_down_error, 2), ') %')
-
-    # Calculates the integrated production asymmetry for both and unblinded asymmetries
-    print("------------------------------")
-    print("------------------------------")
-    print("------------------------------")
-
-    #A raw blinded and unblinded Up
-    unblind_integrated_raw_down = integrated_asym(A_raw_down_list_unblinded, A_raw_down_err_list)
-    unblind_integrated_raw_up = integrated_asym(A_raw_up_list_unblinded, A_raw_up_err_list)
-    
-    #A raw error
-    A_raw_err_up = unblind_integrated_raw_up[1]
-    A_raw_err_down = unblind_integrated_raw_down[1]
-
-    #A raw and unblinded Total
-    A_raw_unblinded = (unblind_integrated_raw_up[0] + unblind_integrated_raw_down[0])/2
-    A_raw_err = ((A_raw_err_up**2 + A_raw_err_up**2)**0.5) /2
-
-    # A_prod, A_prod_up, A_prod_down, A_prod_up_err, A_prod_down_err, A_prod_err: Unblinded are given from production_asymm
-    # production_asymm requires A_raw_up, A_raw_down, A_raw_up_err, A_raw_down_err, A_det_up, A_det_down, A_det_down_err, A_det_up_err
-    Unblinded_prod = production_asymm(unblind_integrated_raw_up[0], unblind_integrated_raw_down[0], A_raw_err_up, A_raw_err_down, A_det_up, A_det_down, A_det_down_error, A_det_up_error)
-
-    print("------------------------------")
-    print("------------------------------")
-    print("------------------------------")
-
-    print('The MagUp detector asymmetry is: (', round(A_det_up, 2), '+/-', round(A_det_up_error, 2), ') %')
-    print('The MagDown detector asymmetry is: (', round(A_det_down, 2), '+/-', round(A_det_down_error, 2), ') %')
-
-    print("------------------------------")
-    print("------------------------------")
-    print("------------------------------")
-
-
-    #print all unblinded
-    print(f"The 20{options.year} unblinded integrated raw MagUp asymmetry is: ", round(unblind_integrated_raw_up[0],3), "% +/-", round(unblind_integrated_raw_up[1], 3), '%')
-    print(f"The 20{options.year} unblinded integrated raw MagDown asymmetry is: ", round(unblind_integrated_raw_down[0],3), "% +/-", round(unblind_integrated_raw_down[1], 3), '%')
-    print(f"The 20{options.year} unblinded integrated total raw asymmetry is: ", round(A_raw_unblinded,3), "% +/-", round(A_raw_err, 3), '%')
-    print(f"The 20{options.year} unblinded integrated prod MagUp asymmetry is: ", round(Unblinded_prod[1],3), "% +/-", round(Unblinded_prod[3], 3), '%')
-    print(f"The 20{options.year} unblinded integrated prod MagDown asymmetry is: ", round(Unblinded_prod[2],3), "% +/-", round(Unblinded_prod[4], 3), '%')
-    print(f"The 20{options.year} unblinded integrated total prod asymmetry is: ", round(Unblinded_prod[0],3), "% +/-", round(Unblinded_prod[5], 3), '%')
-
-    print("------------------------------")
-    print("------------------------------")
-    print("------------------------------")
+with open(file_path, "w") as file:
+    text = (
+        f'A_prod_bin: {round(AProd[0], 3)}\n'
+        f'A_prod_err_bin: {round(AProd[1], 3)}\n'
+        f'A_prod_intergrated: {round(A_prod_unbinned[0], 3)}\n'
+        f'A_prod_err_intergrated: {round(A_prod_unbinned[5], 3)}\n'
+        f'A_prod_UP_bin: {round(AProd_Up[0], 3)}\n'
+        f'A_prod_UP_err_bin: {round(AProd_Up[1], 3)}\n'
+        f'A_prod_DOWN_bin: {round(AProd_Down[0], 3)}\n'
+        f'A_prod_DOWN_err_bin: {round(AProd_Down[1], 3)}\n'
+        f'A_prod_UP_intergrated: {round(A_prod_unbinned[1], 3)}\n'
+        f'A_prod_UP_err_intergrated: {round(A_prod_unbinned[3], 3)}\n'
+        f'A_prod_DOWN_intergrated: {round(A_prod_unbinned[2], 3)}\n'
+        f'A_prod_DOWN_err_intergrated: {round(A_prod_unbinned[4], 3)}\n'
+    )
+    file.write(text)
